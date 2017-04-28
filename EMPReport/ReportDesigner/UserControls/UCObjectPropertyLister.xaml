@@ -1,0 +1,87 @@
+﻿<UserControl x:Class="ReportDesigner.UserControls.UCObjectPropertyLister"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:ReportDesigner.UserControls"
+             mc:Ignorable="d" 
+             BorderThickness="1"
+             BorderBrush="Gray"
+             d:DesignHeight="300" d:DesignWidth="500">
+    
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/Resources/UCObjectPropertyLister.xaml"></ResourceDictionary>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    
+    <Grid>
+        <Border Background="LightGray" Opacity="0.2"></Border>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="50"></RowDefinition>
+                <RowDefinition></RowDefinition>
+            </Grid.RowDefinitions>
+            <Border Grid.Row="0">
+                <Grid>
+                    <Grid Grid.Row="0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="50"></ColumnDefinition>
+                            <ColumnDefinition></ColumnDefinition>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="25"></RowDefinition>
+                            <RowDefinition></RowDefinition>
+                        </Grid.RowDefinitions>
+                        <Border Grid.Row="0" Grid.Column="0" Grid.RowSpan="2">
+                            <Rectangle Margin="5">
+                                <Rectangle.Fill>
+                                    <VisualBrush Visual="{Binding}"></VisualBrush>
+                                </Rectangle.Fill>
+                            </Rectangle>
+                        </Border>
+                        <TextBlock Name="TxtElementType" Grid.Column="1" Grid.Row="0" Style="{DynamicResource TextBlockElementTypeStyle}"
+                       Text="{Binding StrElementType,RelativeSource={RelativeSource FindAncestor,AncestorType={x:Type local:UCObjectPropertyLister}}}"></TextBlock>
+                        <TextBox Name="TxtElementText" Grid.Column="1" Grid.Row="1" Style="{DynamicResource TextBoxElementTextStyle}"
+                       Text="{Binding StrElementText,RelativeSource={RelativeSource FindAncestor,AncestorType={x:Type local:UCObjectPropertyLister}}}"></TextBox>
+                    </Grid>
+                </Grid>
+            </Border>
+            <Grid Grid.Row="1">
+                <ListBox Name="ListBoxPropertyList"
+                     Style="{DynamicResource ListBoxPropertyStyle}"
+                     ItemContainerStyle="{DynamicResource ListBoxItemPropertyStyle}">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate DataType="{x:Type ListBoxItem}">
+                            <Border Style="{DynamicResource BorderPropertyItemStyle}">
+                                <DockPanel LastChildFill="True">
+                                    <Border Width="{Binding NameWidth,RelativeSource={RelativeSource FindAncestor,AncestorType={x:Type local:UCObjectPropertyLister}}}" DockPanel.Dock="Left" Style="{DynamicResource BorderPropertyNameStyle}">
+                                        <StackPanel Orientation="Horizontal">
+                                            <TextBlock Text="{Binding PropertyName}" 
+                                           ToolTip="{Binding PropertyName}"
+                                           Style="{DynamicResource TxtPropertyNameStyle}"></TextBlock>
+                                        </StackPanel>
+                                    </Border>
+                                    <Thumb DockPanel.Dock="Left" Style="{DynamicResource ThumbSpliter}"
+                                   DragDelta="Thumb_OnDragDelta"></Thumb>
+                                    <Border Style="{DynamicResource BroderPropertyValueStyle}">
+                                        <Grid>
+                                            <local:UCObjectPropertyEditor PropertyInfoItem="{Binding}"></local:UCObjectPropertyEditor>
+                                        </Grid>
+                                    </Border>
+                                </DockPanel>
+                            </Border>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                    <ListBox.GroupStyle>
+                        <GroupStyle ContainerStyle="{StaticResource ListBoxGroupStyle}">
+                        </GroupStyle>
+                    </ListBox.GroupStyle>
+                </ListBox>
+            </Grid>
+        </Grid>
+    </Grid>
+   
+</UserControl>

@@ -1,0 +1,341 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{F140C627-F2A2-4349-88F0-FB0B96E673B0}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>ReportDesigner</RootNamespace>
+    <AssemblyName>ReportDesigner</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>report.ico</ApplicationIcon>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="MySql.Data, Version=6.9.9.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Dlls\MySql.Data.dll</HintPath>
+    </Reference>
+    <Reference Include="NIAvalonDock">
+      <HintPath>..\..\NIAvalonDock\NIAvalonDock\bin\Release\NIAvalonDock.dll</HintPath>
+    </Reference>
+    <Reference Include="NICustomControls">
+      <HintPath>..\..\NICustomControls\NICustomControls\bin\Release\NICustomControls.dll</HintPath>
+    </Reference>
+    <Reference Include="NIRibbon">
+      <HintPath>..\..\NIRibbon\NIRibbon\bin\Release\NIRibbon.dll</HintPath>
+    </Reference>
+    <Reference Include="NIWindowsShells">
+      <HintPath>..\..\NIAvalonDock\NIWindowsShells\bin\Release\NIWindowsShells.dll</HintPath>
+    </Reference>
+    <Reference Include="Oracle.DataAccess, Version=2.112.3.0, Culture=neutral, PublicKeyToken=89b483f429c47342, processorArchitecture=AMD64">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Dlls\Oracle.DataAccess.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Xaml">
+      <RequiredTargetFramework>4.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="WindowsBase" />
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
+  </ItemGroup>
+  <ItemGroup>
+    <ApplicationDefinition Include="App.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </ApplicationDefinition>
+    <Compile Include="..\..\NICommon\NICommon\Defines.cs">
+      <Link>Common\Defines.cs</Link>
+    </Compile>
+    <Compile Include="..\..\NICommon\NICommon\LogOperator.cs">
+      <Link>Common\LogOperator.cs</Link>
+    </Compile>
+    <Compile Include="..\..\NICommon\NICommon\OperationReturn.cs">
+      <Link>Common\OperationReturn.cs</Link>
+    </Compile>
+    <Compile Include="..\..\NICommon\NICommon\XMLHelper.cs">
+      <Link>Common\XMLHelper.cs</Link>
+    </Compile>
+    <Compile Include="..\..\NIDBAccess\NIDBAccess\DBAccessDefine.cs">
+      <Link>DBAccess\DBAccessDefine.cs</Link>
+    </Compile>
+    <Compile Include="..\..\NIDBAccess\NIDBAccess\MssqlDataType.cs">
+      <Link>DBAccess\MssqlDataType.cs</Link>
+    </Compile>
+    <Compile Include="..\..\NIDBAccess\NIDBAccess\MssqlOperation.cs">
+      <Link>DBAccess\MssqlOperation.cs</Link>
+    </Compile>
+    <Compile Include="..\..\NIDBAccess\NIDBAccess\MysqlDataType.cs">
+      <Link>DBAccess\MysqlDataType.cs</Link>
+    </Compile>
+    <Compile Include="..\..\NIDBAccess\NIDBAccess\MysqlOperation.cs">
+      <Link>DBAccess\MysqlOperation.cs</Link>
+    </Compile>
+    <Compile Include="..\..\NIDBAccess\NIDBAccess\OracleDataType.cs">
+      <Link>DBAccess\OracleDataType.cs</Link>
+    </Compile>
+    <Compile Include="..\..\NIDBAccess\NIDBAccess\OracleOperation.cs">
+      <Link>DBAccess\OracleOperation.cs</Link>
+    </Compile>
+    <Compile Include="Commands\ReportDesignerCommands.cs" />
+    <Compile Include="Models\BorderStyleViewModel.cs" />
+    <Compile Include="Models\CellStyleViewModel.cs" />
+    <Compile Include="Models\ColorViewModel.cs" />
+    <Compile Include="Models\DatabaseInfo.cs" />
+    <Compile Include="Models\DataSetItem.cs" />
+    <Compile Include="Models\DataSourceConfig.cs" />
+    <Compile Include="Models\DataSourceInfo.cs" />
+    <Compile Include="Models\DataSourceItem.cs" />
+    <Compile Include="Models\DesignerConfig.cs" />
+    <Compile Include="Models\ListItem.cs" />
+    <Compile Include="Models\ObjectPropertyInfo.cs" />
+    <Compile Include="Models\ObjectPropertyInfoItem.cs" />
+    <Compile Include="Models\PropertyEditFormat.cs" />
+    <Compile Include="Models\PropertyValueEnumItem.cs" />
+    <Compile Include="Models\ReportFileObject.cs" />
+    <Compile Include="Models\TextElementPropertyFactory.cs" />
+    <Compile Include="Models\ViewModel.cs" />
+    <Compile Include="PopupWindow.xaml.cs">
+      <DependentUpon>PopupWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ReportDesignPanel.xaml.cs">
+      <DependentUpon>ReportDesignPanel.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UserControls\UCDataSetWizard.xaml.cs">
+      <DependentUpon>UCDataSetWizard.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UserControls\UCDataSourceModify.xaml.cs">
+      <DependentUpon>UCDataSourceModify.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UserControls\UCObjectPropertyEditor.xaml.cs">
+      <DependentUpon>UCObjectPropertyEditor.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UserControls\UCObjectPropertyLister.xaml.cs">
+      <DependentUpon>UCObjectPropertyLister.xaml</DependentUpon>
+    </Compile>
+    <Page Include="MainWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Compile Include="App.xaml.cs">
+      <DependentUpon>App.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="MainWindow.xaml.cs">
+      <DependentUpon>MainWindow.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Page Include="PopupWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ReportDesignPanel.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Resources\Brush.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Resources\MainWindowResource.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Resources\UCObjectPropertyEditor.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Resources\UCObjectPropertyLister.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UserControls\UCDataSetWizard.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UserControls\UCDataSourceModify.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UserControls\UCObjectPropertyEditor.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UserControls\UCObjectPropertyLister.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Models\ComboItem.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <AppDesigner Include="Properties\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\EMPReportControl\EMPReportControl.csproj">
+      <Project>{615d1d88-58aa-4005-a661-0a601c1e2a64}</Project>
+      <Name>EMPReportControl</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\EMPReport\EMPReport.csproj">
+      <Project>{6eeb07ba-d637-45b3-9aad-ab1003b8c484}</Project>
+      <Name>EMPReport</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\00003.png" />
+    <Resource Include="Images\00001.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\00002.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\00005.png" />
+    <Resource Include="Images\00004.png" />
+    <Resource Include="Images\00006.png" />
+    <Resource Include="Images\00007.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\00008.png" />
+    <Resource Include="Images\00009.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\00011.png" />
+    <Resource Include="Images\00012.png" />
+    <Resource Include="Images\00013.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\00010.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\00014.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\00015.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\00016.png" />
+    <Resource Include="Images\00017.png" />
+    <Resource Include="Images\00018.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\00019001.png" />
+    <Resource Include="Images\00019002.png" />
+    <Resource Include="Images\00019003.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\00020.png" />
+    <Resource Include="Images\00021.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\00023.png" />
+    <Resource Include="Images\00024.png" />
+    <Resource Include="Images\00025.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\00022.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\00026.png" />
+    <Resource Include="Images\00027.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\00028.png" />
+    <Resource Include="Images\00029.png" />
+    <Resource Include="Images\00030.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\00032.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\00031.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\00033.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\00034.png" />
+    <Resource Include="Images\00035.png" />
+    <Resource Include="Images\00036.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\00037.png" />
+    <Resource Include="Images\00038.png" />
+    <Resource Include="Images\00039.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\00040.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\00041.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\00042.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\00043.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="report.ico" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

@@ -1,0 +1,53 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <!--Yellow-->
+    <!--<Color x:Key="SystemColor1">#FEFEFE</Color>
+    <Color x:Key="SystemColor2">#DEDEDE</Color>
+    <Color x:Key="SystemColor3">#AEAEAE</Color>
+    <Color x:Key="SystemColor4">#6E6E6E</Color>
+    <Color x:Key="SystemColor5">#4E4E4E</Color>
+    <Color x:Key="SystemColor6">#1E1E1E</Color>
+    <Color x:Key="SystemColor7">#486D05</Color>
+    <Color x:Key="SystemColor8">#699912</Color>
+    <Color x:Key="SystemColor9">#89B33E</Color>
+    <Color x:Key="SystemColor10">#C2E189</Color>-->
+    <!--Yellow-->
+
+    <!--Blue-->
+    <!--<Color x:Key="SystemColor1">#FEFEFE</Color>
+    <Color x:Key="SystemColor2">#DEDEDE</Color>
+    <Color x:Key="SystemColor3">#AEAEAE</Color>
+    <Color x:Key="SystemColor4">#6E6E6E</Color>
+    <Color x:Key="SystemColor5">#4E4E4E</Color>
+    <Color x:Key="SystemColor6">#1E1E1E</Color>
+    <Color x:Key="SystemColor7">#4117A2</Color>
+    <Color x:Key="SystemColor8">#6940C9</Color>
+    <Color x:Key="SystemColor9">#8A6CD1</Color>
+    <Color x:Key="SystemColor10">#C2B0EE</Color>-->
+    <!--Blue-->
+
+    <!--Green-->
+    <Color x:Key="SystemColor1">#FEFEFE</Color>
+    <Color x:Key="SystemColor2">#DEDEDE</Color>
+    <Color x:Key="SystemColor3">#AEAEAE</Color>
+    <Color x:Key="SystemColor4">#6E6E6E</Color>
+    <Color x:Key="SystemColor5">#4E4E4E</Color>
+    <Color x:Key="SystemColor6">#1E1E1E</Color>
+    <Color x:Key="SystemColor7">#036569</Color>
+    <Color x:Key="SystemColor8">#0F979C</Color>
+    <Color x:Key="SystemColor9">#2BB1B6</Color>
+    <Color x:Key="SystemColor10">#81E3E7</Color>
+    <!--Green-->
+
+    <SolidColorBrush x:Key="SystemBrush1" Color="{DynamicResource SystemColor1}"></SolidColorBrush>
+    <SolidColorBrush x:Key="SystemBrush2" Color="{DynamicResource SystemColor2}"></SolidColorBrush>
+    <SolidColorBrush x:Key="SystemBrush3" Color="{DynamicResource SystemColor3}"></SolidColorBrush>
+    <SolidColorBrush x:Key="SystemBrush4" Color="{DynamicResource SystemColor4}"></SolidColorBrush>
+    <SolidColorBrush x:Key="SystemBrush5" Color="{DynamicResource SystemColor5}"></SolidColorBrush>
+    <SolidColorBrush x:Key="SystemBrush6" Color="{DynamicResource SystemColor6}"></SolidColorBrush>
+    <SolidColorBrush x:Key="SystemBrush7" Color="{DynamicResource SystemColor7}"></SolidColorBrush>
+    <SolidColorBrush x:Key="SystemBrush8" Color="{DynamicResource SystemColor8}"></SolidColorBrush>
+    <SolidColorBrush x:Key="SystemBrush9" Color="{DynamicResource SystemColor9}"></SolidColorBrush>
+    <SolidColorBrush x:Key="SystemBrush10" Color="{DynamicResource SystemColor10}"></SolidColorBrush>
+
+</ResourceDictionary>

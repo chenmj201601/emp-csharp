@@ -1,0 +1,351 @@
+﻿<r:RibbonWindow x:Class="ReportDesigner.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:r="http://www.netinfo.com/Ribbon"
+        xmlns:d="http://www.netinfo.com/wpf/avalondock"
+        xmlns:cmd="clr-namespace:ReportDesigner.Commands"
+        xmlns:local="clr-namespace:ReportDesigner"
+        xmlns:uc="clr-namespace:ReportDesigner.UserControls"
+        Title="报表设计器" Height="500" Width="800" Background="#FFEBEDF0">
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/Resources/MainWindowResource.xaml"></ResourceDictionary>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Window.Resources>
+    <Grid>
+        <DockPanel LastChildFill="True">
+
+            <r:Ribbon x:Name="RibbonTools" DockPanel.Dock="Top" AutomaticStateManagement="True">
+                <r:Ribbon.QuickAccessItems>
+                    <r:QuickAccessMenuItem IsChecked="True">
+                        <r:Button Header="保存" ToolTip="保存" Icon="Images/00003.png" Command="ApplicationCommands.Save"></r:Button>
+                    </r:QuickAccessMenuItem>
+                    <r:QuickAccessMenuItem IsChecked="True">
+                        <r:Button  x:Name="BtnClose" Header="关闭" ToolTip="关闭" Icon="Images/00016.png" Command="ApplicationCommands.Close"></r:Button>
+                    </r:QuickAccessMenuItem>
+                    <r:QuickAccessMenuItem IsChecked="True">
+                        <r:Button x:Name="BtnHelp" Header="帮助" ToolTip="帮助" Icon="Images/00017.png" Command="ApplicationCommands.Help"></r:Button>
+                    </r:QuickAccessMenuItem>
+                    <r:QuickAccessMenuItem IsChecked="True" >
+                        <r:Button x:Name="BtnAbout" Header="关于" ToolTip="关于" Icon="Images/00018.png" Command="cmd:ReportDesignerCommands.AppAboutCommand"></r:Button>
+                    </r:QuickAccessMenuItem>
+                </r:Ribbon.QuickAccessItems>
+                <r:RibbonTabItem Header="基本">
+                    <r:RibbonGroupBox Header="文件">
+                        <r:Button x:Name="BtnNew" Header="新建" ToolTip="新建" LargeIcon="Images/00001.png" 
+                                  Command="ApplicationCommands.New"></r:Button>
+                        <r:Button x:Name="BtnPreview" Header="预览" ToolTip="预览" LargeIcon="Images/00015.png" 
+                                  Command="cmd:ReportDesignerCommands.PreviewCommand"></r:Button>
+                        <r:RibbonToolBar>
+                            <r:RibbonToolBar.LayoutDefinitions>
+                                <r:RibbonToolBarLayoutDefinition>
+                                    <r:RibbonToolBarRow>
+                                        <r:RibbonToolBarControlDefinition Target="BtnOpen"></r:RibbonToolBarControlDefinition>
+                                        <r:RibbonToolBarControlDefinition Target="BtnSave"></r:RibbonToolBarControlDefinition>
+                                    </r:RibbonToolBarRow>
+                                    <r:RibbonToolBarRow>
+                                        <r:RibbonToolBarControlDefinition Target="BtnDirCreate"></r:RibbonToolBarControlDefinition>
+                                        <r:RibbonToolBarControlDefinition Target="BtnDelete"></r:RibbonToolBarControlDefinition>
+                                    </r:RibbonToolBarRow>
+                                </r:RibbonToolBarLayoutDefinition>
+                            </r:RibbonToolBar.LayoutDefinitions>
+                            <r:Button x:Name="BtnOpen" Header="打开" ToolTip="打开" Icon="Images/00002.png" 
+                                      Command="ApplicationCommands.Open"></r:Button>
+                            <r:Button x:Name="BtnSave" Header="保存" ToolTip="保存" Icon="Images/00003.png" 
+                                      Command="ApplicationCommands.Save"></r:Button>
+                            <r:Button x:Name="BtnDirCreate" Header="创建文件夹" ToolTip="创建文件夹" Icon="Images/00042.png" 
+                                      Command="cmd:ReportDesignerCommands.DirCreateCommand"></r:Button>
+                            <r:Button x:Name="BtnDelete" Header="删除" ToolTip="删除" Icon="Images/00041.png" 
+                                      Command="cmd:ReportDesignerCommands.ReportFileDeleteCommand"></r:Button>
+                        </r:RibbonToolBar>
+                    </r:RibbonGroupBox>
+                    <r:RibbonGroupBox Header="编辑">
+                        <r:RibbonToolBar>
+                            <r:RibbonToolBar.LayoutDefinitions>
+                                <r:RibbonToolBarLayoutDefinition>
+                                    <r:RibbonToolBarRow>
+                                        <r:RibbonToolBarControlDefinition Target="BtnEditUndo"></r:RibbonToolBarControlDefinition>
+                                        <r:RibbonToolBarControlDefinition Target="BtnEditRedo"></r:RibbonToolBarControlDefinition>
+                                    </r:RibbonToolBarRow>
+                                    <r:RibbonToolBarRow>
+                                        <r:RibbonToolBarControlDefinition Target="BtnEditClip"></r:RibbonToolBarControlDefinition>
+                                        <r:RibbonToolBarControlDefinition Target="BtnEditCopy"></r:RibbonToolBarControlDefinition>
+                                        <r:RibbonToolBarControlDefinition Target="BtnEditParse"></r:RibbonToolBarControlDefinition>
+                                    </r:RibbonToolBarRow>
+                                </r:RibbonToolBarLayoutDefinition>
+                            </r:RibbonToolBar.LayoutDefinitions>
+                            <r:Button x:Name="BtnEditUndo" Header="撤销" ToolTip="撤销" Icon="Images/00004.png" Command="ApplicationCommands.Undo"></r:Button>
+                            <r:Button x:Name="BtnEditRedo" Header="重做" ToolTip="重做" Icon="Images/00005.png" Command="ApplicationCommands.Redo"></r:Button>
+                            <r:Button x:Name="BtnEditClip" Header="剪切" ToolTip="剪切" Icon="Images/00006.png" Command="ApplicationCommands.Cut"></r:Button>
+                            <r:Button x:Name="BtnEditCopy" Header="复制" ToolTip="复制" Icon="Images/00007.png" Command="ApplicationCommands.Copy"></r:Button>
+                            <r:Button x:Name="BtnEditParse" Header="粘贴" ToolTip="粘贴" Icon="Images/00014.png" Command="ApplicationCommands.Paste"></r:Button>
+                        </r:RibbonToolBar>
+                    </r:RibbonGroupBox>
+                    <r:RibbonGroupBox Header="字体">
+                        <r:RibbonToolBar>
+                            <r:RibbonToolBar.LayoutDefinitions>
+                                <r:RibbonToolBarLayoutDefinition>
+                                    <r:RibbonToolBarRow>
+                                        <r:RibbonToolBarControlDefinition Target="ComboFontFamily" Width="90"></r:RibbonToolBarControlDefinition>
+                                        <r:RibbonToolBarControlDefinition Target="ComboFontSize" Width="50"></r:RibbonToolBarControlDefinition>
+                                        <r:RibbonToolBarControlDefinition Target="BtnFontLeft"></r:RibbonToolBarControlDefinition>
+                                        <r:RibbonToolBarControlDefinition Target="BtnFontCenter"></r:RibbonToolBarControlDefinition>
+                                        <r:RibbonToolBarControlDefinition Target="BtnFontRight"></r:RibbonToolBarControlDefinition>
+                                    </r:RibbonToolBarRow>
+                                    <r:RibbonToolBarRow>
+                                        <r:RibbonToolBarControlDefinition Target="BtnFontBold"></r:RibbonToolBarControlDefinition>
+                                        <r:RibbonToolBarControlDefinition Target="BtnFontItalic"></r:RibbonToolBarControlDefinition>
+                                        <r:RibbonToolBarControlDefinition Target="BtnFontUnderlined"></r:RibbonToolBarControlDefinition>
+                                        <r:RibbonToolBarControlDefinition Target="BtnFontColor"></r:RibbonToolBarControlDefinition>
+                                        <r:RibbonToolBarControlDefinition Target="BtnFillColor"></r:RibbonToolBarControlDefinition>
+                                        <r:RibbonToolBarControlDefinition Target="BtnFontTop"></r:RibbonToolBarControlDefinition>
+                                        <r:RibbonToolBarControlDefinition Target="BtnFontMiddle"></r:RibbonToolBarControlDefinition>
+                                        <r:RibbonToolBarControlDefinition Target="BtnFontBottom"></r:RibbonToolBarControlDefinition>
+                                    </r:RibbonToolBarRow>
+                                </r:RibbonToolBarLayoutDefinition>
+                            </r:RibbonToolBar.LayoutDefinitions>
+                            <r:ComboBox x:Name="ComboFontFamily" ToolTip="字体"></r:ComboBox>
+                            <r:ComboBox x:Name="ComboFontSize" ToolTip="字号"></r:ComboBox>
+                            <r:SplitButton x:Name="BtnFontColor" ToolTip="字体颜色">
+                                <r:SplitButton.Icon>
+                                    <Grid>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="*"></RowDefinition>
+                                            <RowDefinition Height="2"></RowDefinition>
+                                        </Grid.RowDefinitions>
+                                        <Image Grid.Row="0" Margin="1" Source="/ReportDesigner;component/Images/00032.png"></Image>
+                                        <Border Grid.Row="1">
+                                            <Border.Background>
+                                                <SolidColorBrush Color="{Binding ColorViewModel.FontColor,RelativeSource={RelativeSource FindAncestor,AncestorType={x:Type local:MainWindow}}}"></SolidColorBrush>
+                                            </Border.Background>
+                                        </Border>
+                                    </Grid>
+                                </r:SplitButton.Icon>
+                                <r:ColorGallery x:Name="GalleryFontColor" SelectedColor="{Binding ColorViewModel.FontColor,RelativeSource={RelativeSource FindAncestor,AncestorType={x:Type local:MainWindow}},Mode=TwoWay}"></r:ColorGallery>
+                            </r:SplitButton>
+                            <r:SplitButton x:Name="BtnFillColor" ToolTip="填充颜色">
+                                <r:SplitButton.Icon>
+                                    <Grid>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="*"></RowDefinition>
+                                            <RowDefinition Height="2"></RowDefinition>
+                                        </Grid.RowDefinitions>
+                                        <Image Grid.Row="0" Margin="1" Source="/ReportDesigner;component/Images/00031.png"></Image>
+                                        <Border Grid.Row="1">
+                                            <Border.Background>
+                                                <SolidColorBrush Color="{Binding ColorViewModel.FillColor,RelativeSource={RelativeSource FindAncestor,AncestorType={x:Type local:MainWindow}}}"></SolidColorBrush>
+                                            </Border.Background>
+                                        </Border>
+                                    </Grid>
+                                </r:SplitButton.Icon>
+                                <r:ColorGallery x:Name="GalleryFillColor" SelectedColor="{Binding ColorViewModel.FillColor,RelativeSource={RelativeSource FindAncestor,AncestorType={x:Type local:MainWindow}},Mode=TwoWay}"></r:ColorGallery>
+                            </r:SplitButton>
+                            <r:ToggleButton x:Name="BtnFontBold" ToolTip="加粗" Icon="Images/00008.png"></r:ToggleButton>
+                            <r:ToggleButton x:Name="BtnFontItalic" ToolTip="斜体"  Icon="Images/00009.png"></r:ToggleButton>
+                            <r:ToggleButton x:Name="BtnFontUnderlined" ToolTip="下划线" Icon="Images/00010.png"></r:ToggleButton>
+                            <r:ToggleButton x:Name="BtnFontLeft" ToolTip="左对齐" Icon="Images/00011.png"></r:ToggleButton>
+                            <r:ToggleButton x:Name="BtnFontCenter" ToolTip="居中对齐" Icon="Images/00012.png"></r:ToggleButton>
+                            <r:ToggleButton x:Name="BtnFontRight" ToolTip="右对齐" Icon="Images/00013.png"></r:ToggleButton>
+                            <r:ToggleButton x:Name="BtnFontTop" ToolTip="顶对齐" Icon="Images/00028.png"></r:ToggleButton>
+                            <r:ToggleButton x:Name="BtnFontMiddle" ToolTip="中间对齐" Icon="Images/00029.png"></r:ToggleButton>
+                            <r:ToggleButton x:Name="BtnFontBottom" ToolTip="底对齐" Icon="Images/00030.png"></r:ToggleButton>
+                        </r:RibbonToolBar>
+                    </r:RibbonGroupBox>
+                    <r:RibbonGroupBox Header="单元格">
+                        <r:RibbonToolBar>
+                            <r:RibbonToolBar.LayoutDefinitions>
+                                <r:RibbonToolBarLayoutDefinition>
+                                    <r:RibbonToolBarRow>
+                                        <r:RibbonToolBarControlDefinition Target="BtnBorderStyle"></r:RibbonToolBarControlDefinition>
+                                        <r:RibbonToolBarControlDefinition Target="ComboBorderWidth" Width="50"></r:RibbonToolBarControlDefinition>
+                                    </r:RibbonToolBarRow>
+                                    <r:RibbonToolBarRow>
+                                        <r:RibbonToolBarControlDefinition Target="BtnBorderColor"></r:RibbonToolBarControlDefinition>
+                                        <r:RibbonToolBarControlDefinition Target="BtnMergeCell"></r:RibbonToolBarControlDefinition>
+                                        <r:RibbonToolBarControlDefinition Target="BtnUnmergeCell"></r:RibbonToolBarControlDefinition>
+                                    </r:RibbonToolBarRow>
+                                </r:RibbonToolBarLayoutDefinition>
+                            </r:RibbonToolBar.LayoutDefinitions>
+                            <r:SplitButton x:Name="BtnBorderStyle" ToolTip="边框样式" Icon="Images/00019001.png">
+                                <r:Gallery x:Name="GalleryBorderStyle" ItemTemplate="{StaticResource BorderStyleTemplate}"></r:Gallery>
+                                <r:Gallery></r:Gallery>
+                            </r:SplitButton>
+                            <r:ComboBox x:Name="ComboBorderWidth" ToolTip="边框宽度"></r:ComboBox>
+                            <r:SplitButton x:Name="BtnBorderColor" ToolTip="边框颜色">
+                                <r:SplitButton.Icon>
+                                    <Grid>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="*"></RowDefinition>
+                                            <RowDefinition Height="2"></RowDefinition>
+                                        </Grid.RowDefinitions>
+                                        <Image Grid.Row="0" Margin="1" Source="/ReportDesigner;component/Images/00033.png"></Image>
+                                        <Border Grid.Row="1">
+                                            <Border.Background>
+                                                <SolidColorBrush Color="{Binding ColorViewModel.BorderColor,RelativeSource={RelativeSource FindAncestor,AncestorType={x:Type local:MainWindow}}}"></SolidColorBrush>
+                                            </Border.Background>
+                                        </Border>
+                                    </Grid>
+                                </r:SplitButton.Icon>
+                                <r:ColorGallery x:Name="GalleryBorderColor" SelectedColor="{Binding ColorViewModel.BorderColor,RelativeSource={RelativeSource FindAncestor,AncestorType={x:Type local:MainWindow}},Mode=TwoWay}"></r:ColorGallery>
+                            </r:SplitButton>
+                            <r:Button x:Name="BtnMergeCell" ToolTip="合并单元格" Icon="Images/00020.png" Command="cmd:ReportDesignerCommands.CellMergeCommand"></r:Button>
+                            <r:Button x:Name="BtnUnmergeCell" ToolTip="取消合并单元格" Icon="Images/00021.png" Command="cmd:ReportDesignerCommands.CellUnmergeCommand"></r:Button>
+                        </r:RibbonToolBar>
+                    </r:RibbonGroupBox>
+                    <r:RibbonGroupBox Header="插入">
+                        <r:RibbonToolBar>
+                            <r:RibbonToolBar.LayoutDefinitions>
+                                <r:RibbonToolBarLayoutDefinition>
+                                    <r:RibbonToolBarRow>
+                                        <r:RibbonToolBarControlDefinition Target="BtnInsertText"></r:RibbonToolBarControlDefinition>
+                                        <r:RibbonToolBarControlDefinition Target="BtnInsertDataSequence"></r:RibbonToolBarControlDefinition>
+                                    </r:RibbonToolBarRow>
+                                    <r:RibbonToolBarRow>
+                                        <r:RibbonToolBarControlDefinition Target="BtnInsertImage"></r:RibbonToolBarControlDefinition>
+                                        <r:RibbonToolBarControlDefinition Target="BtnInsertChart"></r:RibbonToolBarControlDefinition>
+                                    </r:RibbonToolBarRow>
+                                </r:RibbonToolBarLayoutDefinition>
+                            </r:RibbonToolBar.LayoutDefinitions>
+                            <r:Button x:Name="BtnInsertText" ToolTip="插入静态文本" Icon="Images/00022.png" Command="cmd:ReportDesignerCommands.InsertTextCommand"></r:Button>
+                            <r:Button x:Name="BtnInsertDataSequence" ToolTip="插入数据列" Icon="Images/00023.png" Command="cmd:ReportDesignerCommands.InsertSequenceCommand"></r:Button>
+                            <r:Button x:Name="BtnInsertImage" ToolTip="插入图片" Icon="Images/00024.png" Command="cmd:ReportDesignerCommands.InsertImageCommand"></r:Button>
+                            <r:Button x:Name="BtnInsertChart" ToolTip="插入图标" Icon="Images/00025.png" Command="cmd:ReportDesignerCommands.InsertChartCommand"></r:Button>
+                        </r:RibbonToolBar>
+                    </r:RibbonGroupBox>
+                    <r:RibbonGroupBox Header="样式">
+                        <r:InRibbonGallery x:Name="GalleryStyles" MinItemsInRow="1" MaxItemsInRow="5"
+                                           ItemWidth="60" ItemHeight="55"
+                                           ItemTemplate="{DynamicResource CellStyleTemplate}"></r:InRibbonGallery>
+                    </r:RibbonGroupBox>
+                </r:RibbonTabItem>
+                <r:RibbonTabItem Header="数据">
+                    <r:RibbonGroupBox Header="数据源" State="Middle">
+                        <r:Button x:Name="BtnDataSourceAdd" Header="添加数据源" Icon="Images/00034.png"
+                                  Command="cmd:ReportDesignerCommands.DataSourceAddCommand"></r:Button>
+                        <r:Button x:Name="BtnDataSourceModify" Header="修改数据源" Icon="Images/00036.png"
+                                  Command="cmd:ReportDesignerCommands.DataSourceModifyCommand"></r:Button>
+                        <r:Button x:Name="BtnDataSourceDelete" Header="删除数据源" Icon="Images/00035.png"
+                                  Command="cmd:ReportDesignerCommands.DataSourceDeleteCommand"></r:Button>
+                    </r:RibbonGroupBox>
+                    <r:RibbonGroupBox Header="数据集" State="Middle">
+                        <r:Button x:Name="BtnDataSetAdd" Header="添加数据集" Icon="Images/00034.png"
+                                  Command="cmd:ReportDesignerCommands.DataSetAddCommand"></r:Button>
+                        <r:Button x:Name="BtnDataSetModify" Header="修改数据集" Icon="Images/00036.png"
+                                  Command="cmd:ReportDesignerCommands.DataSetModifyCommand"></r:Button>
+                        <r:Button x:Name="BtnDataSetDelete" Header="删除数据集" Icon="Images/00035.png"
+                                  Command="cmd:ReportDesignerCommands.DataSetDeleteCommand"></r:Button>
+                    </r:RibbonGroupBox>
+                </r:RibbonTabItem>
+                <r:RibbonTabItem Header="视图">
+                    <r:RibbonGroupBox Header="面板" State="Middle">
+                        <r:CheckBox x:Name="CheckBoxFileExplorer" Header="文件浏览器"
+                                    Command="cmd:ReportDesignerCommands.ViewPanelCheckCommand" CommandParameter="PanelFileExplorer"></r:CheckBox>
+                        <r:CheckBox x:Name="CheckBoxDataSource" Header="数据源"
+                                    Command="cmd:ReportDesignerCommands.ViewPanelCheckCommand" CommandParameter="PanelDataSource"></r:CheckBox>
+                        <r:CheckBox x:Name="CheckBoxDataSet" Header="数据集"
+                                    Command="cmd:ReportDesignerCommands.ViewPanelCheckCommand" CommandParameter="PanelDataSet"></r:CheckBox>
+                        <r:CheckBox x:Name="CheckBoxObjectProperty" Header="属性编辑器"
+                                    Command="cmd:ReportDesignerCommands.ViewPanelCheckCommand" CommandParameter="PanelObjectProperty"></r:CheckBox>
+                        <r:CheckBox x:Name="CheckBoxCellExtension" Header="单元格扩展"
+                                    Command="cmd:ReportDesignerCommands.ViewPanelCheckCommand" CommandParameter="PanelCellExtension"></r:CheckBox>
+                    </r:RibbonGroupBox>
+                    <r:RibbonGroupBox Header="布局" State="Middle">
+                        <r:Button x:Name="BtnLayoutSave" Header="保存布局" Icon="/Images/00003.png"
+                                  Command="cmd:ReportDesignerCommands.LayoutSaveCommand"></r:Button>
+                        <r:Button x:Name="BtnLayoutRestore" Header="恢复布局" Icon="/Images/00040.png"
+                                  Command="cmd:ReportDesignerCommands.LayoutRestoreCommand"></r:Button>
+                    </r:RibbonGroupBox>
+                </r:RibbonTabItem>
+            </r:Ribbon>
+
+            <StatusBar DockPanel.Dock="Bottom" Height="24" FontSize="9">
+                <Grid VerticalAlignment="Center">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="40*"></ColumnDefinition>
+                        <ColumnDefinition Width="20*"></ColumnDefinition>
+                        <ColumnDefinition Width="20*"></ColumnDefinition>
+                        <ColumnDefinition Width="20*"></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Grid.Column="1" Orientation="Horizontal">
+
+                    </StackPanel>
+                    <StackPanel Grid.Column="2" Orientation="Horizontal">
+                        <TextBlock Text="选择: "></TextBlock>
+                        <TextBlock Name="TxtSelection"></TextBlock>
+                    </StackPanel>
+                    <StackPanel Grid.Column="3" Orientation="Horizontal">
+                        <TextBlock Text="单元格: "></TextBlock>
+                        <TextBlock Name="TxtCell"></TextBlock>
+                    </StackPanel>
+                </Grid>
+            </StatusBar>
+
+            <Grid>
+                <d:DockingManager x:Name="PanelManager" AllowMixedOrientation="True" BorderThickness="1">
+                    <d:LayoutRoot>
+                        <d:LayoutPanel>
+                            <d:LayoutAnchorablePaneGroup Orientation="Vertical" DockWidth="250">
+                                <d:LayoutAnchorablePane>
+                                    <d:LayoutAnchorable x:Name="PanelFileExplorer" Title="文件浏览器" ContentId="PanelFileExplorer">
+                                        <DockPanel LastChildFill="True">
+                                            <Border DockPanel.Dock="Top">
+
+                                            </Border>
+                                            <Grid>
+                                                <TreeView x:Name="TvFiles" ItemContainerStyle="{DynamicResource TreeViewItemReportFileStyle}"
+                                                          ItemTemplate="{DynamicResource ReportFileItemTemplate}">
+                                                </TreeView>
+                                            </Grid>
+                                        </DockPanel>
+                                    </d:LayoutAnchorable>
+                                </d:LayoutAnchorablePane>
+                                <d:LayoutAnchorablePane>
+                                    <d:LayoutAnchorable x:Name="PanelDataSource" Title="数据源" ContentId="PanelDataSource">
+                                        <DockPanel LastChildFill="True">
+                                            <Border DockPanel.Dock="Top">
+
+                                            </Border>
+                                            <Grid>
+                                                <ListBox x:Name="ListBoxDataSources"
+                                                         ItemContainerStyle="{DynamicResource ListBoxItemDataSourceStyle}"
+                                                         ItemTemplate="{DynamicResource DataSourceItemTemplate}"></ListBox>
+                                            </Grid>
+                                        </DockPanel>
+                                    </d:LayoutAnchorable>
+                                    <d:LayoutAnchorable x:Name="PanelDataSet" Title="数据集" ContentId="PanelDataSet">
+                                        <DockPanel LastChildFill="True">
+                                            <Border DockPanel.Dock="Top">
+
+                                            </Border>
+                                            <Grid>
+                                                <ListBox x:Name="ListBoxDataSets"
+                                                         ItemContainerStyle="{DynamicResource ListBoxItemDataSetStyle}"
+                                                         ItemTemplate="{DynamicResource DataSetItemTemplate}"></ListBox>
+                                            </Grid>
+                                        </DockPanel>
+                                    </d:LayoutAnchorable>
+                                </d:LayoutAnchorablePane>
+                            </d:LayoutAnchorablePaneGroup>
+                            <d:LayoutDocumentPane x:Name="DocumentList">
+                                <!--<d:LayoutDocument x:Name="PanelDocument1" Title="Report 1" CanFloat="False"></d:LayoutDocument>-->
+                            </d:LayoutDocumentPane>
+                            <d:LayoutAnchorablePaneGroup Orientation="Vertical" DockWidth="300">
+                                <d:LayoutAnchorablePane>
+                                    <d:LayoutAnchorable x:Name="PanelObjectProperty" Title="属性编辑框" ContentId="PanelObjectProperty">
+                                        <uc:UCObjectPropertyLister x:Name="ObjectPropertyLister"></uc:UCObjectPropertyLister>
+                                    </d:LayoutAnchorable>
+                                </d:LayoutAnchorablePane>
+                                <d:LayoutAnchorablePane>
+                                    <d:LayoutAnchorable x:Name="PanelCellExtension" Title="单元格扩展属性" ContentId="PanelCellExtension"></d:LayoutAnchorable>
+                                </d:LayoutAnchorablePane>
+                            </d:LayoutAnchorablePaneGroup>
+                        </d:LayoutPanel>
+                    </d:LayoutRoot>
+                </d:DockingManager>
+            </Grid>
+            
+        </DockPanel>
+    </Grid>
+</r:RibbonWindow>

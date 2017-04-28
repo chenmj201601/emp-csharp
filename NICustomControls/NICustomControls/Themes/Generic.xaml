@@ -1,0 +1,15 @@
+<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="/NICustomControls;component/Themes/Brushes.xaml"></ResourceDictionary>
+        <ResourceDictionary Source="/NICustomControls;component/Themes/Buttons.xaml"></ResourceDictionary>
+        <ResourceDictionary Source="/NICustomControls;component/Themes/Glyphs.xaml"></ResourceDictionary>
+        <ResourceDictionary Source="/NICustomControls;component/Themes/Common.xaml"></ResourceDictionary>
+        <ResourceDictionary Source="/NICustomControls;component/Themes/TextBox.xaml"></ResourceDictionary>
+        <ResourceDictionary Source="/NICustomControls;component/Themes/ButtonSpinner.xaml"></ResourceDictionary>
+        <ResourceDictionary Source="/NICustomControls;component/Themes/NumericUpDown.xaml"></ResourceDictionary>
+    </ResourceDictionary.MergedDictionaries>
+
+</ResourceDictionary>

@@ -1,0 +1,161 @@
+<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="clr-namespace:NetInfo.EMP.Reports.Controls"
+    xmlns:nic="clr-namespace:NetInfo.Wpf.Controls;assembly=NICustomControls">
+
+
+    <Style x:Key="GridHeadGripperStyle" TargetType="{x:Type Thumb}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type Thumb}">
+                    <Rectangle Fill="Gray" Opacity="0.0001"></Rectangle>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style TargetType="{x:Type local:GridBorder}">
+        <Setter Property="BorderBrush" Value="#ECEAEA"></Setter>
+    </Style>
+
+    <Style TargetType="{x:Type local:GridColumnHeader}">
+        <Setter Property="Grid.Row" Value="{Binding RowIndex}"></Setter>
+        <Setter Property="Grid.Column" Value="{Binding ColumnIndex}"></Setter>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type local:GridColumnHeader}">
+                    <Border>
+                        <Grid>
+                            <Button Command="local:GridHeader.HeadClickCommand" CommandParameter="{Binding}" Background="#E8E8E8"></Button>
+                            <Thumb x:Name="PART_Thumb" 
+                                   Width="5" 
+                                   HorizontalAlignment="Right"
+                                   Cursor="SizeWE" 
+                                   Style="{StaticResource GridHeadGripperStyle}"></Thumb>
+                            <Border Name="SelectMask" Background="Gold" IsHitTestVisible="False" Visibility="Collapsed"></Border>
+                            <ContentPresenter HorizontalAlignment="Center"
+                                              VerticalAlignment="Center" IsHitTestVisible="False"></ContentPresenter>
+                        </Grid>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsSelected" Value="True">
+                            <Setter TargetName="SelectMask" Property="Visibility" Value="Visible"></Setter>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style TargetType="{x:Type local:GridRowHeader}">
+        <Setter Property="Grid.Row" Value="{Binding RowIndex}"></Setter>
+        <Setter Property="Grid.Column" Value="{Binding ColumnIndex}"></Setter>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type local:GridRowHeader}">
+                    <Border>
+                        <Grid>
+                            <Button Command="local:GridHeader.HeadClickCommand" CommandParameter="{Binding}" Background="#E8E8E8"></Button>
+                            <Thumb x:Name="PART_Thumb" 
+                                   Height="5" 
+                                   VerticalAlignment="Bottom" 
+                                   Cursor="SizeNS" 
+                                   Style="{StaticResource GridHeadGripperStyle}"></Thumb>
+                            <Border Name="SelectMask" Background="Gold" IsHitTestVisible="False" Visibility="Collapsed"></Border>
+                            <ContentPresenter HorizontalAlignment="Center"
+                                              VerticalAlignment="Center" IsHitTestVisible="False"></ContentPresenter>
+                        </Grid>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsSelected" Value="True">
+                            <Setter TargetName="SelectMask" Property="Visibility" Value="Visible"></Setter>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style TargetType="{x:Type local:GridTableHeader}">
+        <Setter Property="Grid.Row" Value="{Binding RowIndex}"></Setter>
+        <Setter Property="Grid.Column" Value="{Binding ColumnIndex}"></Setter>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type local:GridTableHeader}">
+                    <Border>
+                        <Grid>
+                            <Button Command="local:GridHeader.HeadClickCommand" CommandParameter="{Binding}" Background="#E8E8E8"></Button>
+                            <Thumb x:Name="PART_HThumb" 
+                                   Width="5" 
+                                   HorizontalAlignment="Right"
+                                   Cursor="SizeWE" 
+                                   Style="{StaticResource GridHeadGripperStyle}"></Thumb>
+                            <Thumb x:Name="PART_VThumb" 
+                                   Height="5" 
+                                   VerticalAlignment="Bottom" 
+                                   Cursor="SizeNS" 
+                                   Style="{StaticResource GridHeadGripperStyle}"></Thumb>
+                            <Border Name="SelectMask" Background="Gold" IsHitTestVisible="False" Visibility="Collapsed"></Border>
+                            <ContentPresenter HorizontalAlignment="Center"
+                                              VerticalAlignment="Center" IsHitTestVisible="False"></ContentPresenter>
+                        </Grid>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsSelected" Value="True">
+                            <Setter TargetName="SelectMask" Property="Visibility" Value="Visible"></Setter>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style TargetType="{x:Type local:GridCell}">
+        <Setter Property="Grid.Row" Value="{Binding RowIndex}"></Setter>
+        <Setter Property="Grid.Column" Value="{Binding ColumnIndex}"></Setter>
+        <Setter Property="Grid.RowSpan" Value="{Binding RowSpan}"></Setter>
+        <Setter Property="Grid.ColumnSpan" Value="{Binding ColSpan}"></Setter>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type local:GridCell}">
+                    <Border Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}">
+                        <Grid>
+                            <Border Background="LightGray" Opacity="0.001"></Border>
+                            <ContentPresenter></ContentPresenter>
+                        </Grid>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style TargetType="local:EditableElement">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type local:EditableElement}">
+                    <Grid>
+                        <TextBlock x:Name="PART_TextBlock" Text="{Binding Text,RelativeSource={RelativeSource TemplatedParent}}"
+                                   Background="{TemplateBinding Background}"></TextBlock>
+                        <nic:AutoSelectTextBox x:Name="PART_EditBox" Text="{Binding Text,RelativeSource={RelativeSource TemplatedParent}}"
+                                                 IsReadOnly="{Binding IsReadOnly,RelativeSource={RelativeSource TemplatedParent}}"
+                                                 Background="{TemplateBinding Background}"></nic:AutoSelectTextBox>
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsInEditMode" Value="True">
+                            <Setter TargetName="PART_TextBlock" Property="Visibility" Value="Collapsed"></Setter>
+                            <Setter TargetName="PART_EditBox" Property="Visibility" Value="Visible"></Setter>
+                        </Trigger>
+                        <Trigger Property="IsInEditMode" Value="False">
+                            <Setter TargetName="PART_TextBlock" Property="Visibility" Value="Visible"></Setter>
+                            <Setter TargetName="PART_EditBox" Property="Visibility" Value="Collapsed"></Setter>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+</ResourceDictionary>

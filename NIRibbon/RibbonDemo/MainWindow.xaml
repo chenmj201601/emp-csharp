@@ -1,0 +1,29 @@
+﻿<r:RibbonWindow x:Class="RibbonDemo.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:r="http://www.netinfo.com/Ribbon"
+        Title="MainWindow" Height="500" Width="800"  Background="#FFEBEDF0">
+    <Grid>
+        <DockPanel LastChildFill="True">
+            <r:Ribbon Name="RibbonTools" DockPanel.Dock="Top">
+                <r:RibbonTabItem Header="Home">
+                    <r:RibbonGroupBox Header="Basic">
+                        <r:Button x:Name="BtnNew" Header="New"></r:Button>
+                        <r:Button x:Name="BtnOpen" Header="New"></r:Button>
+                        <r:Button x:Name="BtnSave" Header="New"></r:Button>
+                    </r:RibbonGroupBox>
+                </r:RibbonTabItem>
+            </r:Ribbon>
+            <Grid>
+                <TreeView>
+                    <TreeView.Items>
+                        <TreeViewItem>jdifjowjfow</TreeViewItem>
+                        <TreeViewItem>jdifjowow</TreeViewItem>
+                        <TreeViewItem>jdifwjfow</TreeViewItem>
+                        <TreeViewItem>jdifjowow</TreeViewItem>
+                    </TreeView.Items>
+                </TreeView>
+            </Grid>
+        </DockPanel>
+    </Grid>
+</r:RibbonWindow>
