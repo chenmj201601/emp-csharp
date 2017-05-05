@@ -500,6 +500,7 @@ namespace ReportDesigner.UserControls
                 ReportDataField reportField = new ReportDataField();
                 reportField.DataSet = dataSet;
                 reportField.Table = reportTable;
+                reportField.TableName = reportTable.Name;
                 reportField.Name = fieldItem.StrValue;
                 reportField.Display = reportField.Name;
                 dataSet.Fields.Add(reportField);

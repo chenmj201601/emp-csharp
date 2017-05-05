@@ -144,7 +144,7 @@ namespace ReportDesigner
                 {
                     var cell = cells[i];
                     cell.Content = null;
-                    TextElement textElement = new TextElement();
+                    EditableElement textElement = new EditableElement();
                     cell.Content = textElement;
                 }
             }
@@ -158,7 +158,7 @@ namespace ReportDesigner
                 if (cells.Count > 0)
                 {
                     var cell = cells[0];
-                    var textElement = cell.Content as TextElement;
+                    var textElement = cell.Content as EditableElement;
                     if (textElement != null)
                     {
                         textElement.IsInEditMode = true;
@@ -261,15 +261,42 @@ namespace ReportDesigner
                     #region 单元格内容
 
                     ReportElement reportElement = null;
-                    var textElement = cell.Content as TextElement;
-                    if (textElement != null)
+                    EditableElement textElement;
+                    var sequenceElement = cell.Content as SequenceElement;
+                    if (sequenceElement != null)
                     {
-                        if (!string.IsNullOrEmpty(textElement.Text))
+                        ReportSequence reportSequence = new ReportSequence();
+                        var dataSet = sequenceElement.DataSet;
+                        if (dataSet != null)
                         {
-                            ReportText reportText = new ReportText();
-                            reportText.Text = textElement.Text;
-                            textElement.Tag = reportText;
-                            reportElement = reportText;
+                            reportSequence.DataSetName = dataSet.Name;
+                        }
+                        var dataField = sequenceElement.DataField;
+                        if (dataField != null)
+                        {
+                            reportSequence.DataFieldName = dataField.Name;
+                            var dataTable = dataField.Table;
+                            if (dataTable != null)
+                            {
+                                reportSequence.DataTableName = dataTable.Name;
+                            }
+                        }
+                        reportSequence.Expression = sequenceElement.Text;
+                        reportElement = reportSequence;
+                        textElement = sequenceElement;
+                    }
+                    else
+                    {
+                        textElement = cell.Content as EditableElement;
+                        if (textElement != null)
+                        {
+                            if (!string.IsNullOrEmpty(textElement.Text))
+                            {
+                                ReportText reportText = new ReportText();
+                                reportText.Text = textElement.Text;
+                                textElement.Tag = reportText;
+                                reportElement = reportText;
+                            }
                         }
                     }
                     if (reportElement != null)
@@ -287,23 +314,17 @@ namespace ReportDesigner
 
                     #region 单元格样式
 
-                    textElement = cell.Content as TextElement;
-                    if (textElement != null)
+                    if (reportElement != null)
                     {
                         VisualStyle style = new VisualStyle();
-                        var fontFamily = textElement.FontFamily;
-                        if (fontFamily != null)
-                        {
-                            style.FontFamily = fontFamily.ToString();
-                        }
-                        var fontSize = textElement.FontSize;
-                        style.FontSize = (int)fontSize;
-                        var fontWeight = textElement.FontWeight;
+                        style.FontFamily = cell.FontFamily.ToString();
+                        style.FontSize = (int)cell.FontSize;
+                        var fontWeight = cell.FontWeight;
                         if (fontWeight == FontWeights.Bold)
                         {
                             style.FontStyle = style.FontStyle | (int)NetInfo.EMP.Reports.FontStyle.Bold;
                         }
-                        var fontStyle = textElement.FontStyle;
+                        var fontStyle = cell.FontStyle;
                         if (fontStyle == FontStyles.Italic)
                         {
                             style.FontStyle = style.FontStyle | (int)NetInfo.EMP.Reports.FontStyle.Italic;
@@ -317,20 +338,17 @@ namespace ReportDesigner
                                 style.FontStyle = style.FontStyle | (int)NetInfo.EMP.Reports.FontStyle.Underlined;
                             }
                         }
-                        var hAlign = textElement.HorizontalAlignment;
-                        style.HorizontalAlignment = (int)hAlign;
-                        var vAlign = textElement.VerticalAlignment;
-                        style.VerticalAlignment = (int)vAlign;
-
-                        var fontBrush = textElement.Foreground as SolidColorBrush;
+                        style.HorizontalAlignment = (int)textElement.HAlign;
+                        style.VerticalAlignment = (int)textElement.VAlign;
+                        var fontBrush = cell.Foreground as SolidColorBrush;
                         if (fontBrush != null)
                         {
                             style.Foreground = fontBrush.Color.ToString();
                         }
-                        var fillBrush = textElement.Background as SolidColorBrush;
+                        var fillBrush = cell.Background as SolidColorBrush;
                         if (fillBrush != null)
                         {
-                            style.Background = fontBrush.Color.ToString();
+                            style.Background = fillBrush.Color.ToString();
                         }
 
                         var temp = listVisualStyles.FirstOrDefault(s => s.Key == style.Key);
@@ -340,8 +358,7 @@ namespace ReportDesigner
                         }
 
                         var index = listVisualStyles.FindIndex(s => s.Key == style.Key);
-                        if (index >= 0
-                            && reportElement != null)
+                        if (index >= 0)
                         {
                             reportElement.Style = index;
                         }

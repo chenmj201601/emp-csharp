@@ -22,7 +22,7 @@ using System.Windows.Input;
 
 namespace NetInfo.EMP.Reports.Controls
 {
-    public class EditableElement : Control
+    public class EditableElement : Control, ICellElement
     {
         private bool mCanEditable;
 
@@ -32,7 +32,7 @@ namespace NetInfo.EMP.Reports.Controls
                 new FrameworkPropertyMetadata(typeof(EditableElement)));
 
             EditableTextChangedEvent = EventManager.RegisterRoutedEvent("EditableTextChanged", RoutingStrategy.Bubble,
-                typeof (RoutedPropertyChangedEventHandler<EditableTextChangedEventArgs>), typeof (EditableElement));
+                typeof(RoutedPropertyChangedEventHandler<EditableTextChangedEventArgs>), typeof(EditableElement));
         }
 
         public EditableElement()
@@ -78,6 +78,34 @@ namespace NetInfo.EMP.Reports.Controls
         {
             get { return (string)GetValue(TextProperty); }
             set { SetValue(TextProperty, value); }
+        }
+
+        #endregion
+
+
+        #region HAlign
+
+        public static readonly DependencyProperty HAlignProperty =
+            DependencyProperty.Register("HAlign", typeof(HorizontalAlignment), typeof(EditableElement), new PropertyMetadata(HorizontalAlignment.Stretch));
+
+        public HorizontalAlignment HAlign
+        {
+            get { return (HorizontalAlignment)GetValue(HAlignProperty); }
+            set { SetValue(HAlignProperty, value); }
+        }
+
+        #endregion
+
+
+        #region VAlign
+
+        public static readonly DependencyProperty VAlignProperty =
+            DependencyProperty.Register("VAlign", typeof(VerticalAlignment), typeof(EditableElement), new PropertyMetadata(VerticalAlignment.Stretch));
+
+        public VerticalAlignment VAlign
+        {
+            get { return (VerticalAlignment)GetValue(VAlignProperty); }
+            set { SetValue(VAlignProperty, value); }
         }
 
         #endregion
@@ -203,6 +231,13 @@ namespace NetInfo.EMP.Reports.Controls
                 textBlock.RaiseEvent(args);
             }
         }
+
+        #endregion
+
+
+        #region AddedData
+
+        public object AddedData1 { get; set; }
 
         #endregion
 

@@ -15,10 +15,6 @@
 //
 //======================================================================
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Xml.Serialization;
 
 
@@ -27,6 +23,12 @@ namespace NetInfo.EMP.Reports
     [XmlRoot(Namespace = "http://netinfo.com/emp/reports")]
     public class ReportSequence : ReportElement
     {
+        [XmlAttribute]
+        public string DataSetName { get; set; }
+        [XmlAttribute]
+        public string DataTableName { get; set; }
+        [XmlAttribute]
+        public string DataFieldName { get; set; }
         [XmlElement]
         public string Expression { get; set; }
     }

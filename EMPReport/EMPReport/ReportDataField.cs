@@ -29,6 +29,8 @@ namespace NetInfo.EMP.Reports
         public string Display { get; set; }
         [XmlAttribute]
         public int DataType { get; set; }
+        [XmlAttribute]
+        public string TableName { get; set; }
 
         [XmlIgnore]
         public ReportDataTable Table { get; set; }

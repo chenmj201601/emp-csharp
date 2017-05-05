@@ -286,6 +286,31 @@
             </ComboBox>
         </Border>
     </ControlTemplate>
+    
+    <ControlTemplate x:Key="Editor301Template" TargetType="{x:Type local:UCObjectPropertyEditor}">
+        <Border Name="PART_Panel"
+                Background="{TemplateBinding Background}">
+            <nic:ColorPicker Name="PART_ColorTextBox"
+                             HorizontalAlignment="Stretch"
+                             VerticalAlignment="Center"
+                             SelectedColor="{Binding ColorValue,RelativeSource={RelativeSource TemplatedParent}}">
+                <nic:ColorPicker.Style>
+                    <Style TargetType="{x:Type nic:ColorPicker}">
+                        <Style.Triggers>
+                            <MultiTrigger>
+                                <MultiTrigger.Conditions>
+                                    <Condition Property="IsKeyboardFocusWithin" Value="False"/>
+                                    <Condition Property="IsMouseOver" Value="False" />
+                                </MultiTrigger.Conditions>
+                                <Setter Property="BorderBrush" Value="Transparent" />
+                                <Setter Property="ShowDropDownButton" Value="False" />
+                            </MultiTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </nic:ColorPicker.Style>
+            </nic:ColorPicker>
+        </Border>
+    </ControlTemplate>
 
     <Style x:Key="UCObjectPropertyEditorStyle" TargetType="{x:Type local:UCObjectPropertyEditor}">
         <Setter Property="Margin" Value="2"></Setter>
@@ -301,6 +326,9 @@
             </Trigger>
             <Trigger Property="EditFormat" Value="SingleSelect">
                 <Setter Property="Template" Value="{StaticResource Editor300Template}"></Setter>
+            </Trigger>
+            <Trigger Property="EditFormat" Value="ColorSelect">
+                <Setter Property="Template" Value="{StaticResource Editor301Template}"></Setter>
             </Trigger>
         </Style.Triggers>
     </Style>

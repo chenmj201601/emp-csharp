@@ -516,12 +516,12 @@ namespace NetInfo.EMP.Reports.Controls
                     cell.ColSpan = 1;
                     cell.Grid = this;
                     cell.DataContext = cell;
-                    cell.SetBinding(ToolTipProperty, new Binding("Rect"));
+                    //cell.SetBinding(ToolTipProperty, new Binding("Rect"));
 
                     if (cell.Content == null)
                     {
                         //如果单元格没有内容，添加一个可编辑的文本控件
-                        TextElement textElement = new TextElement();
+                        EditableElement textElement = new EditableElement();
                         textElement.Text = string.Empty;
                         cell.Content = textElement;
                     }
@@ -536,6 +536,7 @@ namespace NetInfo.EMP.Reports.Controls
         private void InitDefinedCell()
         {
             if (Document == null) { return; }
+            var dataSets = Document.DataSets;
             var reportCells = Document.Cells;
             for (int i = 0; i < reportCells.Count; i++)
             {
@@ -561,7 +562,7 @@ namespace NetInfo.EMP.Reports.Controls
                 cell.Grid = this;
                 cell.DataContext = cell;
                 cell.Tag = reportCell;
-                cell.SetBinding(ToolTipProperty, new Binding("Rect"));
+                //cell.SetBinding(ToolTipProperty, new Binding("Rect"));
 
 
                 #region Cell Border
@@ -579,18 +580,37 @@ namespace NetInfo.EMP.Reports.Controls
                 var reportText = reportCell.Element as ReportText;
                 if (reportText != null)
                 {
-                    TextElement textElement = new TextElement();
+                    EditableElement textElement = new EditableElement();
                     textElement.Text = reportText.Text;
                     textElement.Tag = reportText;
                     cell.Content = textElement;
+                }
+                var reportSequence = reportCell.Element as ReportSequence;
+                if (reportSequence != null)
+                {
+                    SequenceElement sequenceElement=new SequenceElement();
+                    var dataSet = dataSets.FirstOrDefault(d => d.Name == reportSequence.DataSetName);
+                    sequenceElement.DataSet = dataSet;
+                    if (dataSet != null)
+                    {
+                        var field =
+                            dataSet.Fields.FirstOrDefault(
+                                f =>
+                                    f.DataSet == dataSet && f.TableName == reportSequence.DataTableName &&
+                                    f.Name == reportSequence.DataFieldName);
+                        sequenceElement.DataField = field;
+                    }
+                    sequenceElement.Text = reportSequence.Expression;
+                    sequenceElement.Tag = reportSequence;
+                    cell.Content = sequenceElement;
                 }
 
                 if (cell.Content == null)
                 {
                     //如果单元格没有内容，添加一个可编辑的文本控件
-                    TextElement textElement = new TextElement();
-                    textElement.Text = string.Empty;
-                    cell.Content = textElement;
+                    EditableElement element = new EditableElement();
+                    element.Text = string.Empty;
+                    cell.Content = element;
                 }
 
                 InitCellElementStyle(cell);
@@ -607,46 +627,48 @@ namespace NetInfo.EMP.Reports.Controls
             if (document == null) { return; }
             var reportCell = cell.Tag as ReportCell;
             if (reportCell == null) { return; }
-            var reportText = reportCell.Element as ReportText;
-            if (reportText == null) { return; }
-            int styleIndex = reportText.Style;
+            var reportElement = reportCell.Element;
+            if (reportElement == null) { return; }
+            int styleIndex = reportElement.Style;
             if (styleIndex < 0 || styleIndex >= document.Styles.Count) { return; }
             var style = document.Styles[styleIndex];
-            var textElemnt = cell.Content as TextElement;
-            if (textElemnt == null) { return; }
-            textElemnt.FontFamily = new FontFamily(style.FontFamily);
-            textElemnt.FontSize = style.FontSize;
-            textElemnt.FontWeight = (style.FontStyle & (int)FontStyle.Bold) > 0
+            cell.FontFamily = new FontFamily(style.FontFamily);
+            cell.FontSize = style.FontSize;
+            cell.FontWeight = (style.FontStyle & (int) FontStyle.Bold) > 0
                 ? FontWeights.Bold
                 : FontWeights.Normal;
-            textElemnt.FontStyle = (style.FontStyle & (int)FontStyle.Italic) > 0
+            cell.FontStyle = (style.FontStyle & (int)FontStyle.Italic) > 0
                 ? FontStyles.Italic
                 : FontStyles.Normal;
-            var textBlock = textElemnt.TextBlock;
-            if (textBlock != null)
+            var textElement = cell.Content as EditableElement;
+            if (textElement != null)
             {
-                textBlock.TextDecorations = (style.FontStyle & (int)FontStyle.Underlined) > 0
-                    ? TextDecorations.Underline
-                    : null;
+                var textBlock = textElement.TextBlock;
+                if (textBlock != null)
+                {
+                    textBlock.TextDecorations = (style.FontStyle & (int) FontStyle.Underlined) > 0
+                        ? TextDecorations.Underline
+                        : null;
+                }
+                textElement.HAlign = (HorizontalAlignment)style.HorizontalAlignment;
+                textElement.VAlign = (VerticalAlignment)style.VerticalAlignment;
             }
-            textElemnt.HorizontalAlignment = (HorizontalAlignment)style.HorizontalAlignment;
-            textElemnt.VerticalAlignment = (VerticalAlignment)style.VerticalAlignment;
             string fontColor = style.Foreground;
             if (!string.IsNullOrEmpty(fontColor))
             {
                 var color = ColorConverter.ConvertFromString(fontColor);
                 if (color != null)
                 {
-                    textElemnt.Foreground = new SolidColorBrush((Color)color);
+                    cell.Foreground = new SolidColorBrush((Color)color);
                 }
             }
             string fillColor = style.Background;
             if (!string.IsNullOrEmpty(fillColor))
             {
-                var color = ColorConverter.ConvertFromString(fontColor);
+                var color = ColorConverter.ConvertFromString(fillColor);
                 if (color != null)
                 {
-                    textElemnt.Background = new SolidColorBrush((Color)color);
+                    cell.Background = new SolidColorBrush((Color)color);
                 }
             }
         }
@@ -1133,7 +1155,7 @@ namespace NetInfo.EMP.Reports.Controls
             newCell.ColSpan = colSpan;
             newCell.Grid = this;
             newCell.DataContext = newCell;
-            newCell.SetBinding(ToolTipProperty, new Binding("Rect"));
+            //newCell.SetBinding(ToolTipProperty, new Binding("Rect"));
             Children.Add(newCell);
             mGridCells.Add(string.Format("{0:D3}{1:D3}", oriRowIndex, oriColIndex), newCell);
             //重绘边框
@@ -1192,10 +1214,10 @@ namespace NetInfo.EMP.Reports.Controls
                     newCell.ColSpan = 1;
                     newCell.Grid = this;
                     newCell.DataContext = newCell;
-                    newCell.SetBinding(ToolTipProperty, new Binding("Rect"));
+                    //newCell.SetBinding(ToolTipProperty, new Binding("Rect"));
 
                     //添加默认可输入单元格内容
-                    TextElement textElement = new TextElement();
+                    EditableElement textElement = new EditableElement();
                     textElement.Text = string.Empty;
                     newCell.Content = textElement;
 

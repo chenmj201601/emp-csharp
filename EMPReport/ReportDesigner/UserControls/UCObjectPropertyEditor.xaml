@@ -9,7 +9,7 @@
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="/Resources/UCObjectPropertyEditor.xaml"></ResourceDictionary>
+                <ResourceDictionary Source="/ReportDesigner;component/Resources/UCObjectPropertyEditor.xaml"></ResourceDictionary>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>

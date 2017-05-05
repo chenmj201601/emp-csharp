@@ -21,6 +21,8 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Data;
+using System.Windows.Media;
+using NetInfo.EMP.Reports;
 using NetInfo.EMP.Reports.Controls;
 using ReportDesigner.Models;
 
@@ -33,6 +35,8 @@ namespace ReportDesigner.UserControls
     {
 
         #region Members
+
+        public ReportDesignPanel Panel;
 
         private bool mIsInited;
 
@@ -49,6 +53,8 @@ namespace ReportDesigner.UserControls
             InitializeComponent();
             Loaded += UCObjectPropertyLister_Loaded;
             TxtElementText.TextChanged += TxtElementText_TextChanged;
+            AddHandler(UCObjectPropertyEditor.PropertyValueChangedEvent,
+                new RoutedPropertyChangedEventHandler<PropertyValueChangedEventArgs>(Editor_PropertyValueChanged));
         }
 
         void UCObjectPropertyLister_Loaded(object sender, RoutedEventArgs e)
@@ -77,15 +83,33 @@ namespace ReportDesigner.UserControls
             {
                 NameWidth = width * 2 / 5;
             }
-            InitPropertyItems();
             InitInfo();
+            InitPropertyItems();
             InitValue();
         }
 
         private void InitPropertyItems()
         {
             mListPropertyItems.Clear();
-            var textElement = DataContext as TextElement;
+            var sequenceElement = DataContext as SequenceElement;
+            if (sequenceElement != null)
+            {
+                var properties = SequenceElementPropertyFactory.GetPropertyList();
+                for (int i = 0; i < properties.Count; i++)
+                {
+                    var info = properties[i];
+                    var item = new ObjectPropertyInfoItem();
+                    item.Info = info;
+                    item.ID = info.ID;
+                    item.PropertyName = info.Name;
+                    item.GroupName = GetGroupName(info.GroupID);
+                    item.ObjectInstance = mCellElement;
+                    item.Panel = Panel;
+                    mListPropertyItems.Add(item);
+                }
+                return;
+            }
+            var textElement = DataContext as EditableElement;
             if (textElement != null)
             {
                 var properties = TextElementPropertyFactory.GetPropertyList();
@@ -97,6 +121,8 @@ namespace ReportDesigner.UserControls
                     item.ID = info.ID;
                     item.PropertyName = info.Name;
                     item.GroupName = GetGroupName(info.GroupID);
+                    item.ObjectInstance = mCellElement;
+                    item.Panel = Panel;
                     mListPropertyItems.Add(item);
                 }
             }
@@ -107,42 +133,127 @@ namespace ReportDesigner.UserControls
             if (DataContext == null) { return; }
             mCellElement = DataContext as ICellElement;
             if (mCellElement == null) { return; }
-            var textElement = mCellElement as TextElement;
+            var sequenceElement = mCellElement as SequenceElement;
+            if (sequenceElement != null)
+            {
+                StrElementType = "数据列";
+                StrElementText = sequenceElement.Text;
+                ElementTextReadOnly = true;
+                return;
+            }
+            var textElement = mCellElement as EditableElement;
             if (textElement != null)
             {
                 StrElementType = "静态文本";
                 StrElementText = textElement.Text;
+                ElementTextReadOnly = false;
             }
         }
 
         private void InitValue()
         {
             if (mCellElement == null) { return; }
-            TextElement textElement = mCellElement as TextElement;
+
+
+            #region TextElement
+
+            EditableElement textElement = mCellElement as EditableElement;
             if (textElement != null)
             {
-                var property = mListPropertyItems.FirstOrDefault(p => p.ID == TextElementPropertyFactory.PRO_FONTFAMILY);
-                if (property != null)
+                ObjectPropertyInfoItem property;
+                var cell = textElement.Parent as GridCell;
+                if (cell != null)
                 {
-                    property.Value = textElement.FontFamily.ToString();
+                    property = mListPropertyItems.FirstOrDefault(p => p.ID == TextElementPropertyFactory.PRO_FONTFAMILY);
+                    if (property != null)
+                    {
+                        property.Value = cell.FontFamily.ToString();
+                    }
+                    property = mListPropertyItems.FirstOrDefault(p => p.ID == TextElementPropertyFactory.PRO_FONTSIZE);
+                    if (property != null)
+                    {
+                        property.Value = cell.FontSize.ToString();
+                    }
+                    property = mListPropertyItems.FirstOrDefault(p => p.ID == TextElementPropertyFactory.PRO_FONTSTYLE);
+                    if (property != null)
+                    {
+                        property.Value = cell.FontStyle.ToString();
+                    }
+                    property = mListPropertyItems.FirstOrDefault(p => p.ID == TextElementPropertyFactory.PRO_FORECOLOR);
+                    if (property != null)
+                    {
+                        var brush = cell.Foreground as SolidColorBrush;
+                        if (brush != null)
+                        {
+                            property.Value = brush.Color.ToString();
+                        }
+                    }
+                    property = mListPropertyItems.FirstOrDefault(p => p.ID == TextElementPropertyFactory.PRO_BACKCOLOR);
+                    if (property != null)
+                    {
+                        var brush = cell.Background as SolidColorBrush;
+                        if (brush != null)
+                        {
+                            property.Value = brush.Color.ToString();
+                        }
+                    }
                 }
-                property = mListPropertyItems.FirstOrDefault(p => p.ID == TextElementPropertyFactory.PRO_FONTSIZE);
+                property = mListPropertyItems.FirstOrDefault(p => p.ID == TextElementPropertyFactory.PRO_HALIGN);
                 if (property != null)
                 {
-                    property.Value = textElement.FontSize.ToString();
+                    property.Value = ((int)textElement.HAlign).ToString();
                 }
-                property = mListPropertyItems.FirstOrDefault(p => p.ID == TextElementPropertyFactory.PRO_FONTSTYLE);
+                property = mListPropertyItems.FirstOrDefault(p => p.ID == TextElementPropertyFactory.PRO_VALIGN);
                 if (property != null)
                 {
-                    property.Value = textElement.FontStyle.ToString();
+                    property.Value = ((int)textElement.VAlign).ToString();
                 }
             }
+
+            #endregion
+
+
+            #region SequenceElement
+
+            var sequenceElement = mCellElement as SequenceElement;
+            if (sequenceElement != null)
+            {
+                var property = mListPropertyItems.FirstOrDefault(p => p.ID == SequenceElementPropertyFactory.PRO_DATASET);
+                if (property != null)
+                {
+                    var dataSet = sequenceElement.DataSet;
+                    if (dataSet != null)
+                    {
+                        property.Value = dataSet.Name;
+                    }
+                    else
+                    {
+                        property.Value = "";
+                    }
+                }
+                property = mListPropertyItems.FirstOrDefault(p => p.ID == SequenceElementPropertyFactory.PRO_DATAFIELD);
+                if (property != null)
+                {
+                    var dataField = sequenceElement.DataField;
+                    if (dataField != null)
+                    {
+                        property.Value = dataField.Name;
+                    }
+                    else
+                    {
+                        property.Value = "";
+                    }
+                }
+            }
+
+            #endregion
+
         }
 
         public void Refresh()
         {
-            InitPropertyItems();
             InitInfo();
+            InitPropertyItems();
             InitValue();
         }
 
@@ -156,6 +267,9 @@ namespace ReportDesigner.UserControls
             string str = string.Empty;
             switch (groupID)
             {
+                case 0:
+                    str = "基本";
+                    break;
                 case 1:
                     str = "外观";
                     break;
@@ -214,6 +328,20 @@ namespace ReportDesigner.UserControls
         #endregion
 
 
+        #region ElementTextReadOnlyProperty
+
+        public static readonly DependencyProperty ElementTextReadOnlyProperty =
+            DependencyProperty.Register("ElementTextReadOnly", typeof(bool), typeof(UCObjectPropertyLister), new PropertyMetadata(default(bool)));
+
+        public bool ElementTextReadOnly
+        {
+            get { return (bool)GetValue(ElementTextReadOnlyProperty); }
+            set { SetValue(ElementTextReadOnlyProperty, value); }
+        }
+
+        #endregion
+
+
         #region EventHandlers
 
         private void Thumb_OnDragDelta(object sender, DragDeltaEventArgs e)
@@ -227,11 +355,150 @@ namespace ReportDesigner.UserControls
 
         private void TxtElementText_TextChanged(object sender, TextChangedEventArgs e)
         {
-            var textElement = mCellElement as TextElement;
+            var textElement = mCellElement as EditableElement;
             if (textElement != null)
             {
                 textElement.Text = TxtElementText.Text;
             }
+        }
+
+        private void Editor_PropertyValueChanged(object sender,
+            RoutedPropertyChangedEventArgs<PropertyValueChangedEventArgs> e)
+        {
+            var args = e.NewValue;
+            if (args == null) { return; }
+            var item = args.PropertyItem;
+            if (item == null) { return; }
+            string strValue = args.Value;
+            int id = item.ID;
+
+
+            #region TextElement
+
+            var textElement = mCellElement as EditableElement;
+            if (textElement != null)
+            {
+                var cell = textElement.Parent as GridCell;
+                if (cell != null)
+                {
+                    if (id == TextElementPropertyFactory.PRO_FONTFAMILY)
+                    {
+                        var valueItem = args.ValueItem;
+                        if (valueItem != null)
+                        {
+                            var fontFamily = valueItem.Info as FontFamily;
+                            if (fontFamily != null)
+                            {
+                                cell.FontFamily = fontFamily;
+                            }
+                        }
+                    }
+                    if (id == TextElementPropertyFactory.PRO_FONTSIZE)
+                    {
+                        int fontSize;
+                        if (int.TryParse(strValue, out fontSize)
+                            && fontSize > 0)
+                        {
+                            cell.FontSize = fontSize;
+                        }
+                    }
+                    if (id == TextElementPropertyFactory.PRO_FONTSTYLE)
+                    {
+
+                    }
+                    if (id == TextElementPropertyFactory.PRO_FORECOLOR)
+                    {
+                        var color = ColorConverter.ConvertFromString(strValue);
+                        if (color != null)
+                        {
+                            cell.Foreground = new SolidColorBrush((Color)color);
+                        }
+                    }
+                    if (id == TextElementPropertyFactory.PRO_BACKCOLOR)
+                    {
+                        var color = ColorConverter.ConvertFromString(strValue);
+                        if (color != null)
+                        {
+                            cell.Background = new SolidColorBrush((Color)color);
+                        }
+                    }
+                }
+                if (id == TextElementPropertyFactory.PRO_HALIGN)
+                {
+                    var valueItem = args.ValueItem;
+                    string value = valueItem.Value;
+                    int intValue;
+                    if (int.TryParse(value, out intValue))
+                    {
+                        textElement.HAlign = (HorizontalAlignment)intValue;
+                    }
+                }
+                if (id == TextElementPropertyFactory.PRO_VALIGN)
+                {
+                    var valueItem = args.ValueItem;
+                    string value = valueItem.Value;
+                    int intValue;
+                    if (int.TryParse(value, out intValue))
+                    {
+                        textElement.VAlign = (VerticalAlignment)intValue;
+                    }
+                }
+            }
+
+            #endregion
+
+
+            #region SequenceElement
+
+            var sequenceElement = mCellElement as SequenceElement;
+            if (sequenceElement != null)
+            {
+                if (id == SequenceElementPropertyFactory.PRO_DATASET)
+                {
+                    var valueItem = args.ValueItem;
+                    if (valueItem != null)
+                    {
+                        var dataSet = valueItem.Info as ReportDataSet;
+                        if (dataSet != null)
+                        {
+                            sequenceElement.DataSet = dataSet;
+                            //关联属性编辑框重新加载
+                            var relativeProperty =
+                                mListPropertyItems.FirstOrDefault(
+                                    p => p.ID == SequenceElementPropertyFactory.PRO_DATAFIELD);
+                            if (relativeProperty != null)
+                            {
+                                var editor = relativeProperty.Editor;
+                                if (editor != null)
+                                {
+                                    editor.Reload();
+                                }
+                            }
+                        }
+                    }
+                }
+                if (id == SequenceElementPropertyFactory.PRO_DATAFIELD)
+                {
+                    var valueItem = args.ValueItem;
+                    if (valueItem != null)
+                    {
+                        var dataField = valueItem.Info as ReportDataField;
+                        if (dataField != null)
+                        {
+                            sequenceElement.DataField = dataField;
+                            //修改Text属性
+                            var dataSet = dataField.DataSet;
+                            if (dataSet != null)
+                            {
+                                sequenceElement.Text = string.Format("={{{0}}}.{{{1}}}", dataSet.Name, dataField.Name);
+                            }
+                        }
+                    }
+                }
+            }
+
+            #endregion
+
         }
 
         #endregion

@@ -16,6 +16,8 @@
 //======================================================================
 
 using System.ComponentModel;
+using NetInfo.EMP.Reports.Controls;
+using ReportDesigner.UserControls;
 
 
 namespace ReportDesigner.Models
@@ -49,6 +51,12 @@ namespace ReportDesigner.Models
         public int ID { get; set; }
 
         public ObjectPropertyInfo Info { get; set; }
+
+        public ICellElement ObjectInstance { get; set; }
+
+        public ReportDesignPanel Panel { get; set; }
+
+        public UCObjectPropertyEditor Editor { get; set; }
 
         public event PropertyChangedEventHandler PropertyChanged;
 

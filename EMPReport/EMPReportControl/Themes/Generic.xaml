@@ -138,10 +138,15 @@
                 <ControlTemplate TargetType="{x:Type local:EditableElement}">
                     <Grid>
                         <TextBlock x:Name="PART_TextBlock" Text="{Binding Text,RelativeSource={RelativeSource TemplatedParent}}"
-                                   Background="{TemplateBinding Background}"></TextBlock>
+                                   Background="{TemplateBinding Background}"
+                                   HorizontalAlignment="{TemplateBinding HAlign}"
+                                   VerticalAlignment="{TemplateBinding VAlign}"></TextBlock>
                         <nic:AutoSelectTextBox x:Name="PART_EditBox" Text="{Binding Text,RelativeSource={RelativeSource TemplatedParent}}"
                                                  IsReadOnly="{Binding IsReadOnly,RelativeSource={RelativeSource TemplatedParent}}"
-                                                 Background="{TemplateBinding Background}"></nic:AutoSelectTextBox>
+                                                 Background="{TemplateBinding Background}"
+                                               HorizontalContentAlignment="{TemplateBinding HAlign}"
+                                               VerticalContentAlignment="{TemplateBinding VAlign}"
+                                               AcceptsReturn="True"></nic:AutoSelectTextBox>
                     </Grid>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsInEditMode" Value="True">

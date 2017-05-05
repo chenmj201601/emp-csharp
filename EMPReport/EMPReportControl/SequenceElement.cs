@@ -15,16 +15,11 @@
 //
 //======================================================================
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-
 namespace NetInfo.EMP.Reports.Controls
 {
     public class SequenceElement : EditableElement
     {
-
+        public ReportDataSet DataSet { get; set; }
+        public ReportDataField DataField { get; set; }
     }
 }

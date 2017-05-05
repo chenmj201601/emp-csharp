@@ -88,7 +88,6 @@
     </Compile>
     <Compile Include="RectUtil.cs" />
     <Compile Include="SequenceElement.cs" />
-    <Compile Include="TextElement.cs" />
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>

@@ -6,6 +6,7 @@
     <Grid>
         <StackPanel Orientation="Vertical">
             <nic:IntegerUpDown Value="11"></nic:IntegerUpDown>
+            <nic:ColorPicker></nic:ColorPicker>
         </StackPanel>
     </Grid>
 </Window>

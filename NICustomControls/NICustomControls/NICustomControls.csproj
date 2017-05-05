@@ -34,6 +34,7 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
@@ -56,6 +57,14 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Themes\ButtonSpinner.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Themes\ColorCanvas.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Themes\ColorPicker.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -87,11 +96,18 @@
     <Compile Include="ButtonSpinner.cs" />
     <Compile Include="ByteUpDown.cs" />
     <Compile Include="Chromes\ButtonChrome.cs" />
+    <Compile Include="ColorCanvas.cs" />
+    <Compile Include="ColorItem.cs" />
+    <Compile Include="ColorPicker.cs" />
+    <Compile Include="ColorSorter.cs" />
+    <Compile Include="ColorSpectrumSlider.cs" />
     <Compile Include="CommonNumericUpDown.cs" />
     <Compile Include="Core\Converters\ColorBlendConverter.cs" />
+    <Compile Include="Core\Converters\ColorToSolidColorBrushConverter.cs" />
     <Compile Include="Core\Converters\InverseBoolConverter.cs" />
     <Compile Include="Core\Input\InputValidationErrorEventArgs.cs" />
     <Compile Include="Core\Input\IValidateInput.cs" />
+    <Compile Include="Core\Utilities\ColorUtilities.cs" />
     <Compile Include="DecimalUpDown.cs" />
     <Compile Include="DoubleUpDown.cs" />
     <Compile Include="EditableTextBlock.cs" />
@@ -100,6 +116,7 @@
     <Compile Include="LongUpDown.cs" />
     <Compile Include="Media\WindowColors.cs" />
     <Compile Include="NumericUpDown.cs" />
+    <Compile Include="Primitives\HsvColor.cs" />
     <Compile Include="Primitives\InputBase.cs" />
     <Compile Include="Primitives\MouseWheelActiveTrigger.cs" />
     <Compile Include="Primitives\UpDownBase.cs" />

@@ -58,5 +58,14 @@ namespace NetInfo.EMP.Reports
         {
             get { return mStyles; }
         }
+
+        public void Init()
+        {
+            for (int i = 0; i < DataSets.Count; i++)
+            {
+                var dataSet = DataSets[i];
+                dataSet.Init();
+            }
+        }
     }
 }

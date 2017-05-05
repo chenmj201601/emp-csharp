@@ -6,7 +6,7 @@
         xmlns:cmd="clr-namespace:ReportDesigner.Commands"
         xmlns:local="clr-namespace:ReportDesigner"
         xmlns:uc="clr-namespace:ReportDesigner.UserControls"
-        Title="报表设计器" Height="500" Width="800" Background="#FFEBEDF0">
+        Title="报表设计器" Height="500" Width="800" Background="#FFEBEDF0" Icon="report.ico">
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>

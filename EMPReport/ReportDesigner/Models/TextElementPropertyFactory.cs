@@ -16,10 +16,14 @@
 //======================================================================
 
 using System.Collections.Generic;
+using System.Linq;
 
 
 namespace ReportDesigner.Models
 {
+    /// <summary>
+    /// 普通文本单元格属性列表
+    /// </summary>
     public class TextElementPropertyFactory
     {
         public static IList<ObjectPropertyInfo> GetPropertyList()
@@ -116,7 +120,7 @@ namespace ReportDesigner.Models
             info.DefaultValue = "0";
             listProperties.Add(info);
 
-            return listProperties;
+            return listProperties.OrderBy(p => p.GroupID).ThenBy(p => p.ID).ToList();
         }
 
         public const int PRO_TEXT = 1;

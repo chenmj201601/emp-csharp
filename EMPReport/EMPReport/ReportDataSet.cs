@@ -16,6 +16,7 @@
 //======================================================================
 
 using System.Collections.Generic;
+using System.Linq;
 using System.Xml.Serialization;
 
 
@@ -45,6 +46,23 @@ namespace NetInfo.EMP.Reports
         public List<ReportDataField> Fields
         {
             get { return mFields; }
+        }
+
+        public void Init()
+        {
+            for (int i = 0; i < Tables.Count; i++)
+            {
+                var table = Tables[i];
+                table.DataSet = this;
+            }
+            for (int i = 0; i < Fields.Count; i++)
+            {
+                var field = Fields[i];
+                string strTable = field.TableName;
+                var table = Tables.FirstOrDefault(t => t.Name == strTable);
+                field.DataSet = this;
+                field.Table = table;
+            }
         }
     }
 }

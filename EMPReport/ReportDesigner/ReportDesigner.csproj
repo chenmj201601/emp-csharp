@@ -124,8 +124,10 @@
     <Compile Include="Models\ObjectPropertyInfo.cs" />
     <Compile Include="Models\ObjectPropertyInfoItem.cs" />
     <Compile Include="Models\PropertyEditFormat.cs" />
+    <Compile Include="Models\PropertyValueChangedEventArgs.cs" />
     <Compile Include="Models\PropertyValueEnumItem.cs" />
     <Compile Include="Models\ReportFileObject.cs" />
+    <Compile Include="Models\SequenceElementPropertyFactory.cs" />
     <Compile Include="Models\TextElementPropertyFactory.cs" />
     <Compile Include="Models\ViewModel.cs" />
     <Compile Include="PopupWindow.xaml.cs">

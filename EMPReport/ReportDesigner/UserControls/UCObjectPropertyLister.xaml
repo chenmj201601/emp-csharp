@@ -12,7 +12,7 @@
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="/Resources/UCObjectPropertyLister.xaml"></ResourceDictionary>
+                <ResourceDictionary Source="/ReportDesigner;component/Resources/UCObjectPropertyLister.xaml"></ResourceDictionary>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>
@@ -45,7 +45,8 @@
                         <TextBlock Name="TxtElementType" Grid.Column="1" Grid.Row="0" Style="{DynamicResource TextBlockElementTypeStyle}"
                        Text="{Binding StrElementType,RelativeSource={RelativeSource FindAncestor,AncestorType={x:Type local:UCObjectPropertyLister}}}"></TextBlock>
                         <TextBox Name="TxtElementText" Grid.Column="1" Grid.Row="1" Style="{DynamicResource TextBoxElementTextStyle}"
-                       Text="{Binding StrElementText,RelativeSource={RelativeSource FindAncestor,AncestorType={x:Type local:UCObjectPropertyLister}}}"></TextBox>
+                       Text="{Binding StrElementText,RelativeSource={RelativeSource FindAncestor,AncestorType={x:Type local:UCObjectPropertyLister}}}"
+                                 IsReadOnly="{Binding ElementTextReadOnly,RelativeSource={RelativeSource FindAncestor,AncestorType={x:Type local:UCObjectPropertyLister}}}"></TextBox>
                     </Grid>
                 </Grid>
             </Border>
