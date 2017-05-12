@@ -29,7 +29,5 @@ namespace NetInfo.EMP.Reports
     {
         [XmlIgnore]
         public ReportDocument Document { get; set; }
-        [XmlAttribute]
-        public int Style { get; set; }
     }
 }

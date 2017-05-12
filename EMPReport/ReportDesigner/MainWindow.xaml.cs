@@ -430,9 +430,9 @@ namespace ReportDesigner
             style.FontFamily = "SimSun";
             style.FontSize = 20;
             style.FontStyle = 1;
-            style.Foreground = "#FFC0504D";
-            style.HorizontalAlignment = 1;
-            style.VerticalAlignment = 1;
+            style.ForeColor = "#FFC0504D";
+            style.HAlign = 1;
+            style.VAlign = 1;
             item.Style = style;
             item.SetStyle();
             mListCellStyles.Add(item);
@@ -443,9 +443,9 @@ namespace ReportDesigner
             style.FontFamily = "SimSun";
             style.FontSize = 15;
             style.FontStyle = 1;
-            style.Foreground = "#FF000000";
-            style.HorizontalAlignment = 1;
-            style.VerticalAlignment = 1;
+            style.ForeColor = "#FF000000";
+            style.HAlign = 1;
+            style.VAlign = 1;
             item.Style = style;
             item.SetStyle();
             mListCellStyles.Add(item);
@@ -456,9 +456,9 @@ namespace ReportDesigner
             style.FontFamily = "SimSun";
             style.FontSize = 12;
             style.FontStyle = 0;
-            style.Foreground = "#FF000000";
-            style.HorizontalAlignment = 0;
-            style.VerticalAlignment = 1;
+            style.ForeColor = "#FF000000";
+            style.HAlign = 0;
+            style.VAlign = 1;
             item.Style = style;
             item.SetStyle();
             mListCellStyles.Add(item);
@@ -957,12 +957,6 @@ namespace ReportDesigner
             InitReportFiles();
         }
 
-        private void SaveReportHtml(ReportDesignPanel panel)
-        {
-            if (panel == null) { return; }
-            panel.SaveReportHtml();
-        }
-
         private void PreviewReport()
         {
             try
@@ -975,10 +969,9 @@ namespace ReportDesigner
                 }
                 var document = panel.Document;
                 if (document == null) { return; }
-                SaveReportHtml(panel);
                 string report = document.Name;
                 System.Diagnostics.Process.Start("explorer.exe",
-                    string.Format("\"http://{0}:{1}/report_server?file_name={2}\"",
+                    string.Format("\"http://{0}:{1}/report_server?report_name={2}\"",
                     mDesignerConfig.PreviewServer,
                     mDesignerConfig.PreviewPort,
                     report));
@@ -1247,20 +1240,20 @@ namespace ReportDesigner
                             ? TextDecorations.Underline
                             : null;
                     }
-                    textElement.HAlign = (HorizontalAlignment)style.HorizontalAlignment;
-                    textElement.VAlign = (VerticalAlignment)style.VerticalAlignment;
+                    textElement.HAlign = (HorizontalAlignment)style.HAlign;
+                    textElement.VAlign = (VerticalAlignment)style.VAlign;
                 }
-                if (!string.IsNullOrEmpty(style.Foreground))
+                if (!string.IsNullOrEmpty(style.ForeColor))
                 {
-                    var color = ColorConverter.ConvertFromString(style.Foreground);
+                    var color = ColorConverter.ConvertFromString(style.ForeColor);
                     if (color != null)
                     {
                         cell.Foreground = new SolidColorBrush((Color)color);
                     }
                 }
-                if (!string.IsNullOrEmpty(style.Background))
+                if (!string.IsNullOrEmpty(style.BackColor))
                 {
-                    var color = ColorConverter.ConvertFromString(style.Background);
+                    var color = ColorConverter.ConvertFromString(style.BackColor);
                     if (color != null)
                     {
                         cell.Background = new SolidColorBrush((Color)color);

@@ -31,8 +31,8 @@ namespace NetInfo.EMP.Reports
         public int RowSpan { get; set; }
         [XmlAttribute]
         public int ColSpan { get; set; }
-        [XmlElement]
-        public ReportBorder Border { get; set; }
+        [XmlAttribute]
+        public int Style { get; set; }
         [XmlElement]
         public ReportElement Element { get; set; }
     }

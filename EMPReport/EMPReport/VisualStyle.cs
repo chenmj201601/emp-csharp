@@ -34,36 +34,39 @@ namespace NetInfo.EMP.Reports
         [XmlAttribute]
         public int FontStyle { get; set; }
         [XmlAttribute]
-        public string Foreground { get; set; }
+        public string ForeColor { get; set; }
         [XmlAttribute]
-        public string Background { get; set; }
+        public string BackColor { get; set; }
         [XmlAttribute]
         public int Width { get; set; }
         [XmlAttribute]
         public int Height { get; set; }
         [XmlAttribute]
-        public int HorizontalAlignment { get; set; }
+        public int HAlign { get; set; }
         [XmlAttribute]
-        public int VerticalAlignment { get; set; }
+        public int VAlign { get; set; }
         [XmlElement]
         public ReportBorder Border { get; set; }
+        [XmlElement]
+        public ReportPadding Padding { get; set; }
 
         [XmlAttribute]
         public string Key
         {
             get
             {
-                return string.Format("{0}_{1}_{2}_{3}_{4}_{5}_{6}_{7}_{8}_{9}",
+                return string.Format("{0}_{1}_{2}_{3}_{4}_{5}_{6}_{7}_{8}_{9}_{10}",
                     FontFamily,
                     FontSize,
                     FontStyle,
-                    Foreground,
-                    Background,
+                    ForeColor,
+                    BackColor,
                     Width,
                     Height,
-                    HorizontalAlignment,
-                    VerticalAlignment,
-                    Border == null ? "" : Border.Key);
+                    HAlign,
+                    VAlign,
+                    Border == null ? "" : Border.Key,
+                    Padding == null ? "" : Padding.Key);
             }
         }
     }

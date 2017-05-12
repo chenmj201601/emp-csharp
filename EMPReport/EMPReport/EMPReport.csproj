@@ -54,6 +54,7 @@
     <Compile Include="ReportElement.cs" />
     <Compile Include="ReportGrid.cs" />
     <Compile Include="ReportImage.cs" />
+    <Compile Include="ReportPadding.cs" />
     <Compile Include="ReportParameter.cs" />
     <Compile Include="ReportQuery.cs" />
     <Compile Include="ReportSequence.cs" />

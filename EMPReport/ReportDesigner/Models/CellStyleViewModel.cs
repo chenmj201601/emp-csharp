@@ -107,24 +107,24 @@ namespace ReportDesigner.Models
             FontStyle = (Style.FontStyle & (int)NetInfo.EMP.Reports.FontStyle.Italic) > 0
                 ? FontStyles.Italic
                 : FontStyles.Normal;
-            if (!string.IsNullOrEmpty(Style.Foreground))
+            if (!string.IsNullOrEmpty(Style.ForeColor))
             {
-                var color = ColorConverter.ConvertFromString(Style.Foreground);
+                var color = ColorConverter.ConvertFromString(Style.ForeColor);
                 if (color != null)
                 {
                     Foreground = new SolidColorBrush((Color)color);
                 }
             }
-            if (!string.IsNullOrEmpty(Style.Background))
+            if (!string.IsNullOrEmpty(Style.BackColor))
             {
-                var color = ColorConverter.ConvertFromString(Style.Background);
+                var color = ColorConverter.ConvertFromString(Style.BackColor);
                 if (color != null)
                 {
                     Background = new SolidColorBrush((Color)color);
                 }
             }
-            HorizontalAlignment = (HorizontalAlignment)Style.HorizontalAlignment;
-            VerticalAlignment = (VerticalAlignment)Style.VerticalAlignment;
+            HorizontalAlignment = (HorizontalAlignment)Style.HAlign;
+            VerticalAlignment = (VerticalAlignment)Style.VAlign;
         }
 
         public VisualStyle Style { get; set; }

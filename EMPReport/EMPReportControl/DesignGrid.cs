@@ -25,10 +25,6 @@ using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
-using Brushes = System.Windows.Media.Brushes;
-using Color = System.Windows.Media.Color;
-using FontFamily = System.Windows.Media.FontFamily;
-using Point = System.Windows.Point;
 
 
 namespace NetInfo.EMP.Reports.Controls
@@ -565,18 +561,6 @@ namespace NetInfo.EMP.Reports.Controls
                 //cell.SetBinding(ToolTipProperty, new Binding("Rect"));
 
 
-                #region Cell Border
-
-                var border = reportCell.Border;
-                if (border != null)
-                {
-                    cell.BorderBrush = Brushes.Gray;
-                    cell.BorderThickness = new Thickness(border.Left, border.Top, border.Right, border.Bottom);
-                }
-
-                #endregion
-
-
                 var reportText = reportCell.Element as ReportText;
                 if (reportText != null)
                 {
@@ -588,7 +572,7 @@ namespace NetInfo.EMP.Reports.Controls
                 var reportSequence = reportCell.Element as ReportSequence;
                 if (reportSequence != null)
                 {
-                    SequenceElement sequenceElement=new SequenceElement();
+                    SequenceElement sequenceElement = new SequenceElement();
                     var dataSet = dataSets.FirstOrDefault(d => d.Name == reportSequence.DataSetName);
                     sequenceElement.DataSet = dataSet;
                     if (dataSet != null)
@@ -613,7 +597,7 @@ namespace NetInfo.EMP.Reports.Controls
                     cell.Content = element;
                 }
 
-                InitCellElementStyle(cell);
+                InitCellStyle(cell);
 
                 Children.Add(cell);
                 mGridCells.Add(
@@ -621,39 +605,30 @@ namespace NetInfo.EMP.Reports.Controls
             }
         }
 
-        private void InitCellElementStyle(GridCell cell)
+        private void InitCellStyle(GridCell cell)
         {
             var document = Document;
             if (document == null) { return; }
             var reportCell = cell.Tag as ReportCell;
             if (reportCell == null) { return; }
-            var reportElement = reportCell.Element;
-            if (reportElement == null) { return; }
-            int styleIndex = reportElement.Style;
+            int styleIndex = reportCell.Style;
             if (styleIndex < 0 || styleIndex >= document.Styles.Count) { return; }
             var style = document.Styles[styleIndex];
+            var border = style.Border;
+            if (border != null)
+            {
+                cell.BorderBrush = Brushes.Gray;
+                cell.BorderThickness = new Thickness(border.Left, border.Top, border.Right, border.Bottom);
+            }
             cell.FontFamily = new FontFamily(style.FontFamily);
             cell.FontSize = style.FontSize;
-            cell.FontWeight = (style.FontStyle & (int) FontStyle.Bold) > 0
+            cell.FontWeight = (style.FontStyle & (int)FontStyle.Bold) > 0
                 ? FontWeights.Bold
                 : FontWeights.Normal;
             cell.FontStyle = (style.FontStyle & (int)FontStyle.Italic) > 0
                 ? FontStyles.Italic
                 : FontStyles.Normal;
-            var textElement = cell.Content as EditableElement;
-            if (textElement != null)
-            {
-                var textBlock = textElement.TextBlock;
-                if (textBlock != null)
-                {
-                    textBlock.TextDecorations = (style.FontStyle & (int) FontStyle.Underlined) > 0
-                        ? TextDecorations.Underline
-                        : null;
-                }
-                textElement.HAlign = (HorizontalAlignment)style.HorizontalAlignment;
-                textElement.VAlign = (VerticalAlignment)style.VerticalAlignment;
-            }
-            string fontColor = style.Foreground;
+            string fontColor = style.ForeColor;
             if (!string.IsNullOrEmpty(fontColor))
             {
                 var color = ColorConverter.ConvertFromString(fontColor);
@@ -662,7 +637,7 @@ namespace NetInfo.EMP.Reports.Controls
                     cell.Foreground = new SolidColorBrush((Color)color);
                 }
             }
-            string fillColor = style.Background;
+            string fillColor = style.BackColor;
             if (!string.IsNullOrEmpty(fillColor))
             {
                 var color = ColorConverter.ConvertFromString(fillColor);
@@ -670,6 +645,21 @@ namespace NetInfo.EMP.Reports.Controls
                 {
                     cell.Background = new SolidColorBrush((Color)color);
                 }
+            }
+            var reportElement = reportCell.Element;
+            if (reportElement == null) { return; }
+            var textElement = cell.Content as EditableElement;
+            if (textElement != null)
+            {
+                var textBlock = textElement.TextBlock;
+                if (textBlock != null)
+                {
+                    textBlock.TextDecorations = (style.FontStyle & (int)FontStyle.Underlined) > 0
+                        ? TextDecorations.Underline
+                        : null;
+                }
+                textElement.HAlign = (HorizontalAlignment)style.HAlign;
+                textElement.VAlign = (VerticalAlignment)style.HAlign;
             }
         }
 

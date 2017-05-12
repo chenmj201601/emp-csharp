@@ -17,13 +17,10 @@
 
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Text;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Xml;
 using Microsoft.Win32;
 using NetInfo.EMP.Reports;
 using NetInfo.EMP.Reports.Controls;
@@ -240,6 +237,7 @@ namespace ReportDesigner
                 {
                     var cell = cells[cellKey];
                     ReportCell reportCell = null;
+                    VisualStyle style = null;
 
 
                     #region 边框
@@ -252,7 +250,8 @@ namespace ReportDesigner
                         border.Top = (int)cell.BorderThickness.Top;
                         border.Right = (int)cell.BorderThickness.Right;
                         border.Bottom = (int)cell.BorderThickness.Bottom;
-                        reportCell.Border = border;
+                        style = new VisualStyle();
+                        style.Border = border;
                     }
 
                     #endregion
@@ -283,7 +282,6 @@ namespace ReportDesigner
                         }
                         reportSequence.Expression = sequenceElement.Text;
                         reportElement = reportSequence;
-                        textElement = sequenceElement;
                     }
                     else
                     {
@@ -312,11 +310,20 @@ namespace ReportDesigner
                     #endregion
 
 
-                    #region 单元格样式
-
-                    if (reportElement != null)
+                    if (reportCell != null)
                     {
-                        VisualStyle style = new VisualStyle();
+                        reportCell.RowIndex = cell.RowIndex - 1;
+                        reportCell.ColIndex = cell.ColumnIndex - 1;
+                        reportCell.RowSpan = cell.RowSpan;
+                        reportCell.ColSpan = cell.ColSpan;
+
+
+                        #region 单元格样式
+
+                        if (style == null)
+                        {
+                            style = new VisualStyle();
+                        }
                         style.FontFamily = cell.FontFamily.ToString();
                         style.FontSize = (int)cell.FontSize;
                         var fontWeight = cell.FontWeight;
@@ -329,26 +336,32 @@ namespace ReportDesigner
                         {
                             style.FontStyle = style.FontStyle | (int)NetInfo.EMP.Reports.FontStyle.Italic;
                         }
-                        var textBlock = textElement.TextBlock;
-                        if (textBlock != null)
-                        {
-                            var textDecorations = textBlock.TextDecorations;
-                            if (textDecorations != null && Equals(textDecorations, TextDecorations.Underline))
-                            {
-                                style.FontStyle = style.FontStyle | (int)NetInfo.EMP.Reports.FontStyle.Underlined;
-                            }
-                        }
-                        style.HorizontalAlignment = (int)textElement.HAlign;
-                        style.VerticalAlignment = (int)textElement.VAlign;
+
                         var fontBrush = cell.Foreground as SolidColorBrush;
                         if (fontBrush != null)
                         {
-                            style.Foreground = fontBrush.Color.ToString();
+                            style.ForeColor = fontBrush.Color.ToString();
                         }
                         var fillBrush = cell.Background as SolidColorBrush;
                         if (fillBrush != null)
                         {
-                            style.Background = fillBrush.Color.ToString();
+                            style.BackColor = fillBrush.Color.ToString();
+                        }
+
+                        textElement = cell.Content as EditableElement;
+                        if (textElement != null)
+                        {
+                            var textBlock = textElement.TextBlock;
+                            if (textBlock != null)
+                            {
+                                var textDecorations = textBlock.TextDecorations;
+                                if (textDecorations != null && Equals(textDecorations, TextDecorations.Underline))
+                                {
+                                    style.FontStyle = style.FontStyle | (int)NetInfo.EMP.Reports.FontStyle.Underlined;
+                                }
+                            }
+                            style.HAlign = (int)textElement.HAlign;
+                            style.VAlign = (int)textElement.VAlign;
                         }
 
                         var temp = listVisualStyles.FirstOrDefault(s => s.Key == style.Key);
@@ -360,19 +373,12 @@ namespace ReportDesigner
                         var index = listVisualStyles.FindIndex(s => s.Key == style.Key);
                         if (index >= 0)
                         {
-                            reportElement.Style = index;
+                            reportCell.Style = index;
                         }
-                    }
 
-                    #endregion
+                        #endregion
 
 
-                    if (reportCell != null)
-                    {
-                        reportCell.RowIndex = cell.RowIndex - 1;
-                        reportCell.ColIndex = cell.ColumnIndex - 1;
-                        reportCell.RowSpan = cell.RowSpan;
-                        reportCell.ColSpan = cell.ColSpan;
                         document.Cells.Add(reportCell);
                     }
                 }
@@ -388,266 +394,6 @@ namespace ReportDesigner
                 XmlUtil.SerializeFile(document, file);
                 //ShowInfomation(string.Format("End.\t{0}", file));
                 IsModified = false;
-            }
-            catch (Exception ex)
-            {
-                ShowException(ex.Message);
-            }
-        }
-
-        public void SaveReportHtml()
-        {
-            try
-            {
-                var document = Document;
-                if (document == null) { return; }
-                if (DesignerConfig == null) { return; }
-                string strName = document.Name;
-                string strPath = DesignerConfig.PublishDir;
-                if (!Directory.Exists(strPath))
-                {
-                    Directory.CreateDirectory(strPath);
-                }
-                strPath = string.Format("{0}/{1}.html", strPath, strName);
-
-                ReportGrid grid = document.Grid;
-                if (grid == null) { return; }
-
-
-                #region 网格行列信息
-
-                int rowCount = grid.RowCount;
-                int colCount = grid.ColCount;
-                int cellWidth = grid.CellWidth / ReportDefine.ENLARGE;
-                int cellHeight = grid.CellHeight / ReportDefine.ENLARGE;
-                string strWidths = grid.Widths;
-                string strHeights = grid.Heights;
-
-                #endregion
-
-
-                #region 单元格宽度，高度列表
-
-                List<int> listWidths = new List<int>();
-                List<int> listHeights = new List<int>();
-                string[] temps = strWidths.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
-                for (int i = 0; i < colCount; i++)
-                {
-                    if (i < temps.Length)
-                    {
-                        string temp = temps[i];
-                        listWidths.Add(int.Parse(temp) / ReportDefine.ENLARGE);
-                    }
-                    else
-                    {
-                        listWidths.Add(0);
-                    }
-                }
-                temps = strHeights.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
-                for (int i = 0; i < rowCount; i++)
-                {
-                    if (i < temps.Length)
-                    {
-                        string temp = temps[i];
-                        listHeights.Add(int.Parse(temp) / ReportDefine.ENLARGE);
-                    }
-                    else
-                    {
-                        listHeights.Add(0);
-                    }
-                }
-
-                #endregion
-
-
-                #region 单元格字典集合
-
-                List<ReportCell> cells = document.Cells;
-                Dictionary<string, ReportCell> cellDictionary = new Dictionary<string, ReportCell>();
-                for (int i = 0; i < cells.Count; i++)
-                {
-                    var cell = cells[i];
-                    string key = string.Format("{0:D3}{1:D3}", cell.RowIndex, cell.ColIndex);
-                    cellDictionary.Add(key, cell);
-                }
-
-                #endregion
-
-
-                #region 输出表格架构
-
-                FileStream fs = File.Open(strPath, FileMode.OpenOrCreate, FileAccess.Write);
-                XmlTextWriter writer = new XmlTextWriter(fs, Encoding.UTF8);
-                writer.Formatting = Formatting.Indented;
-                writer.Indentation = 4;
-                writer.WriteStartElement("table");
-                for (int i = 0; i < colCount; i++)
-                {
-                    //设定列的宽度
-                    int width = cellWidth;
-                    if (i < listWidths.Count)
-                    {
-                        width = listWidths[i];
-                    }
-                    writer.WriteStartElement("col");
-                    writer.WriteAttributeString("width", string.Format("{0}", width));
-                    writer.WriteEndElement();
-                }
-                List<string> listSkipCells = new List<string>();
-                for (int i = 0; i < document.Cells.Count; i++)
-                {
-                    //考虑合并单元格的情况，如果有单元格跨了多行或多列，
-                    //将被跨的行或列的索引记录下来，后面生成每个单元格标签的时候需要跳过
-                    var cell = document.Cells[i];
-                    int rowIndex = cell.RowIndex;
-                    int colIndex = cell.ColIndex;
-                    int rowSpan = cell.RowSpan;
-                    int colSpan = cell.ColSpan;
-                    for (int k = 0; k < rowSpan; k++)
-                    {
-                        for (int l = 0; l < colSpan; l++)
-                        {
-                            if (k == 0 && l == 0)
-                            {
-                                //本身索引跳过
-                                continue;
-                            }
-                            string key = string.Format("{0:D3}{1:D3}", k + rowIndex, l + colIndex);
-                            listSkipCells.Add(key);
-                        }
-                    }
-                }
-                //按行，按列依次生成单元格，注意，listSkipCells 中的需要跳过
-                for (int i = 0; i < rowCount; i++)
-                {
-                    int height = cellHeight;
-                    if (i < listHeights.Count)
-                    {
-                        height = listHeights[i];
-                    }
-                    writer.WriteStartElement("tr");
-                    writer.WriteAttributeString("style", string.Format("height:{0}px", height));
-                    for (int j = 0; j < colCount; j++)
-                    {
-                        string key = string.Format("{0:D3}{1:D3}", i, j);
-                        if (listSkipCells.Contains(key))
-                        {
-                            continue;
-                        }
-                        var cell = document.Cells.FirstOrDefault(c => c.RowIndex == i && c.ColIndex == j);
-                        if (cell == null)
-                        {
-                            writer.WriteStartElement("td");
-                            writer.WriteEndElement();
-                        }
-                        else
-                        {
-
-                            #region 单元格样式
-
-                            writer.WriteStartElement("td");
-                            writer.WriteAttributeString("rowspan", string.Format("{0}", cell.RowSpan));
-                            writer.WriteAttributeString("colspan", string.Format("{0}", cell.ColSpan));
-                            string strStyle = string.Empty;
-                            var border = cell.Border;
-                            if (border != null)
-                            {
-                                strStyle += string.Format("border-style:solid;border-width:0px;");
-                                if (border.Left > 0)
-                                {
-                                    strStyle += string.Format("border-left-width:{0}px;", border.Left);
-                                }
-                                if (border.Top > 0)
-                                {
-                                    strStyle += string.Format("border-top-width:{0}px;", border.Top);
-                                }
-                                if (border.Right > 0)
-                                {
-                                    strStyle += string.Format("border-right-width:{0}px;", border.Right);
-                                }
-                                if (border.Bottom > 0)
-                                {
-                                    strStyle += string.Format("border-bottom-width:{0}px;", border.Bottom);
-                                }
-                            }
-                            if (!string.IsNullOrEmpty(strStyle))
-                            {
-                                writer.WriteAttributeString("style", strStyle);
-                            }
-                            var reportText = cell.Element as ReportText;
-                            if (reportText != null)
-                            {
-                                writer.WriteStartElement("div");
-                                var styleIndex = reportText.Style;
-                                if (styleIndex >= 0 && styleIndex < document.Styles.Count)
-                                {
-                                    var style = document.Styles[styleIndex];
-                                    if (style != null)
-                                    {
-                                        strStyle = string.Empty;
-                                        strStyle += string.Format("font-family:{0};", style.FontFamily);
-                                        strStyle += string.Format("font-size:{0}px;", style.FontSize);
-                                        if (style.FontStyle > 0)
-                                        {
-                                            if ((style.FontStyle & (int)NetInfo.EMP.Reports.FontStyle.Bold) > 0)
-                                            {
-                                                strStyle += string.Format("font-weight:bold;");
-                                            }
-                                            if ((style.FontStyle & (int)NetInfo.EMP.Reports.FontStyle.Italic) > 0)
-                                            {
-                                                strStyle += string.Format("font-style:italic;");
-                                            }
-                                            if ((style.FontStyle & (int)NetInfo.EMP.Reports.FontStyle.Underlined) > 0)
-                                            {
-                                                strStyle += string.Format("text-decoration:underline;");
-                                            }
-                                        }
-                                        if (style.HorizontalAlignment >= 0 && style.HorizontalAlignment < 3)
-                                        {
-                                            if (style.HorizontalAlignment == 0)
-                                            {
-                                                strStyle += string.Format("text-align:left;");
-                                            }
-                                            if (style.HorizontalAlignment == 1)
-                                            {
-                                                strStyle += string.Format("text-align:center;");
-                                            }
-                                            if (style.HorizontalAlignment == 2)
-                                            {
-                                                strStyle += string.Format("text-align:right;");
-                                            }
-                                        }
-                                        var fontColor = style.Foreground;
-                                        if (!string.IsNullOrEmpty(fontColor) && fontColor.Length > 3)
-                                        {
-                                            strStyle += string.Format("color:#{0};", fontColor.Substring(3));
-                                        }
-                                        var fillColor = style.Background;
-                                        if (!string.IsNullOrEmpty(fillColor) && fillColor.Length > 3)
-                                        {
-                                            strStyle += string.Format("background-color:#{0};", fontColor.Substring(3));
-                                        }
-                                        strStyle = strStyle.TrimEnd(';');
-                                        writer.WriteAttributeString("style", strStyle);
-                                    }
-                                }
-                                writer.WriteString(string.Format("{0}", reportText.Text));
-                                writer.WriteEndElement();
-                            }
-                            writer.WriteEndElement();
-
-                            #endregion
-
-                        }
-                    }
-                    writer.WriteEndElement();
-                }
-                writer.WriteEndElement();
-                writer.Flush();
-                writer.Close();
-
-                #endregion
-
             }
             catch (Exception ex)
             {
