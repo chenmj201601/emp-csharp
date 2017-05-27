@@ -99,6 +99,10 @@
       <Project>{98e0a49b-dcb2-4966-b252-eb3e205efa87}</Project>
       <Name>NIAvalonDock</Name>
     </ProjectReference>
+    <ProjectReference Include="..\NIWindowsShells\NIWindowsShells.csproj">
+      <Project>{12fdcc05-2a57-4e45-a7d1-31b7073b8ff8}</Project>
+      <Name>NIWindowsShells</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
