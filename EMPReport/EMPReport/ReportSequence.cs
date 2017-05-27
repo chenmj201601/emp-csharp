@@ -29,6 +29,10 @@ namespace NetInfo.EMP.Reports
         public string DataTableName { get; set; }
         [XmlAttribute]
         public string DataFieldName { get; set; }
+        [XmlAttribute]
+        public int ExtMethod { get; set; }
+        [XmlAttribute]
+        public int IsMerge { get; set; }
         [XmlElement]
         public string Expression { get; set; }
     }

@@ -25,9 +25,12 @@ namespace ReportDesigner.Models
     {
         public const string FILE_NAME = "config.xml";
 
-        public string DataDir { get; set; }
-        public string PublishDir { get; set; }
+        [XmlElement]
+        public string PreviewDir { get; set; }
+        [XmlElement]
         public string PreviewServer { get; set; }
+        [XmlElement]
         public int PreviewPort { get; set; }
+     
     }
 }

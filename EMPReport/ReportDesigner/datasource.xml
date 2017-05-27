@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<DataSourceConfig xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <DataSources>
+        <DataSource Name="test01">
+            <DBInfo TypeID="1" Host="172.16.10.71" Port="3306" DBName="charley0320" LoginName="netinfo" Password="netinfo,123" />
+        </DataSource>
+        <DataSource Name="test02">
+            <DBInfo TypeID="2" Host="172.16.10.71" Port="1433" DBName="eMPDataDB" LoginName="netinfo" Password="netinfo,123" />
+        </DataSource>
+        <DataSource Name="test03">
+            <DBInfo TypeID="3" Host="172.16.10.71" Port="1521" DBName="XE" LoginName="netinfo" Password="netinfo,123" />
+        </DataSource>
+        <DataSource Name="user_data_source">
+            <DBInfo TypeID="1" Host="172.16.10.71" Port="3306" DBName="charley0504" LoginName="netinfo" Password="netinfo,123" />
+        </DataSource>
+    </DataSources>
+</DataSourceConfig>

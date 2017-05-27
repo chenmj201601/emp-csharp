@@ -139,14 +139,14 @@
                     <Grid>
                         <TextBlock x:Name="PART_TextBlock" Text="{Binding Text,RelativeSource={RelativeSource TemplatedParent}}"
                                    Background="{TemplateBinding Background}"
-                                   HorizontalAlignment="{TemplateBinding HAlign}"
-                                   VerticalAlignment="{TemplateBinding VAlign}"></TextBlock>
+                                   HorizontalAlignment="{Binding HAlign,RelativeSource={RelativeSource FindAncestor,AncestorType={x:Type local:GridCell}}}"
+                                   VerticalAlignment="{Binding VAlign,RelativeSource={RelativeSource FindAncestor,AncestorType={x:Type local:GridCell}}}"
+                                   TextDecorations="{Binding TextDecration,RelativeSource={RelativeSource FindAncestor,AncestorType={x:Type local:GridCell}}}"></TextBlock>
                         <nic:AutoSelectTextBox x:Name="PART_EditBox" Text="{Binding Text,RelativeSource={RelativeSource TemplatedParent}}"
                                                  IsReadOnly="{Binding IsReadOnly,RelativeSource={RelativeSource TemplatedParent}}"
                                                  Background="{TemplateBinding Background}"
-                                               HorizontalContentAlignment="{TemplateBinding HAlign}"
-                                               VerticalContentAlignment="{TemplateBinding VAlign}"
-                                               AcceptsReturn="True"></nic:AutoSelectTextBox>
+                                               HorizontalContentAlignment="{Binding HAlign,RelativeSource={RelativeSource FindAncestor,AncestorType={x:Type local:GridCell}}}"
+                                               VerticalContentAlignment="{Binding VAlign,RelativeSource={RelativeSource FindAncestor,AncestorType={x:Type local:GridCell}}}"></nic:AutoSelectTextBox>
                     </Grid>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsInEditMode" Value="True">
@@ -158,6 +158,41 @@
                             <Setter TargetName="PART_EditBox" Property="Visibility" Value="Collapsed"></Setter>
                         </Trigger>
                     </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style TargetType="{x:Type local:SequenceElement}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type local:SequenceElement}">
+                    <Grid>
+                        <TextBlock x:Name="PART_TextBlock" Text="{Binding Text,RelativeSource={RelativeSource TemplatedParent}}"
+                                   Background="{TemplateBinding Background}"
+                                   HorizontalAlignment="{Binding HAlign,RelativeSource={RelativeSource FindAncestor,AncestorType={x:Type local:GridCell}}}"
+                                   VerticalAlignment="{Binding VAlign,RelativeSource={RelativeSource FindAncestor,AncestorType={x:Type local:GridCell}}}"
+                                   TextDecorations="{Binding TextDecration,RelativeSource={RelativeSource FindAncestor,AncestorType={x:Type local:GridCell}}}"></TextBlock>
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style TargetType="{x:Type local:ImageElement}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type local:ImageElement}">
+                    <Border x:Name="Border"
+                            Background="{TemplateBinding Background}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            BorderBrush="{TemplateBinding BorderBrush}">
+                        <Image Source="{TemplateBinding ImageSource}" ToolTip="{TemplateBinding Text}" 
+                               Stretch="{TemplateBinding Stretch}"
+                               Width="{TemplateBinding ImageWidth}" Height="{TemplateBinding ImageHeight}"
+                               HorizontalAlignment="{Binding HAlign,RelativeSource={RelativeSource FindAncestor,AncestorType={x:Type local:GridCell}}}"
+                               VerticalAlignment="{Binding VAlign,RelativeSource={RelativeSource FindAncestor,AncestorType={x:Type local:GridCell}}}"></Image>
+                    </Border>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>

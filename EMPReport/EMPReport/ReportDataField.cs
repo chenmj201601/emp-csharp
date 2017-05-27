@@ -24,6 +24,8 @@ namespace NetInfo.EMP.Reports
     public class ReportDataField
     {
         [XmlAttribute]
+        public string Key { get; set; }
+        [XmlAttribute]
         public string Name { get; set; }
         [XmlAttribute]
         public string Display { get; set; }

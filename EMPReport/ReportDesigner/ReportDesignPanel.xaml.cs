@@ -17,15 +17,20 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Imaging;
 using Microsoft.Win32;
 using NetInfo.EMP.Reports;
 using NetInfo.EMP.Reports.Controls;
 using NetInfo.Wpf.AvalonDock.Layout;
+using ReportDesigner.Commands;
 using ReportDesigner.Models;
+using ReportDesigner.UserControls;
 
 namespace ReportDesigner
 {
@@ -39,6 +44,7 @@ namespace ReportDesigner
 
         private bool mIsInited;
 
+        public MainWindow PageParent;
         public DesignGrid Grid
         {
             get { return GridMain; }
@@ -60,12 +66,14 @@ namespace ReportDesigner
             InitializeComponent();
 
             Loaded += ReportDesignPanel_Loaded;
+            MouseRightButtonDown += ReportDesignPanel_MouseRightButtonDown;
             AddHandler(GridHeader.GridHeaderSizeChangedEvent,
                 new RoutedPropertyChangedEventHandler<GridHeaderSizeChangedEventArgs>(GridHeader_SizeChanged));
-            AddHandler(EditableElement.EditableTextChangedEvent,
-                new RoutedPropertyChangedEventHandler<EditableTextChangedEventArgs>(
-                    EditableElement_EditableTextChanged));
-            AddHandler(KeyDownEvent, new KeyEventHandler(Panel_KeyDown));
+            AddHandler(EditableElement.EditableElementEventEvent,
+                new RoutedPropertyChangedEventHandler<EditableElementEventArgs>(EditableElement_EditableElementEvent));
+            AddHandler(PreviewKeyDownEvent, new KeyEventHandler(Panel_PreviewKeyDown));
+            AddHandler(UCObjectPropertyEditor.PropertyValueChangedEvent,
+                new RoutedPropertyChangedEventHandler<PropertyValueChangedEventArgs>(PropertyEditor_PropertyValueChanged));
         }
 
         void ReportDesignPanel_Loaded(object sender, RoutedEventArgs e)
@@ -124,13 +132,19 @@ namespace ReportDesigner
             IsModified = true;
         }
 
-        void EditableElement_EditableTextChanged(object sender,
-            RoutedPropertyChangedEventArgs<EditableTextChangedEventArgs> e)
+        void EditableElement_EditableElementEvent(object sender,
+            RoutedPropertyChangedEventArgs<EditableElementEventArgs> e)
         {
-            IsModified = true;
+            var args = e.NewValue;
+            if (args == null) { return; }
+            int code = args.Code;
+            if (code == EditableElementEventArgs.EVT_EDIT_END)
+            {
+                IsModified = true;
+            }
         }
 
-        void Panel_KeyDown(object sender, KeyEventArgs e)
+        void Panel_PreviewKeyDown(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.Delete)
             {
@@ -141,8 +155,72 @@ namespace ReportDesigner
                 {
                     var cell = cells[i];
                     cell.Content = null;
+                    //添加一个默认的可编辑文本框
                     EditableElement textElement = new EditableElement();
                     cell.Content = textElement;
+                }
+            }
+            else if (e.Key == Key.Tab
+                || e.Key == Key.Left
+                || e.Key == Key.Right
+                || e.Key == Key.Up
+                || e.Key == Key.Down)
+            {
+                //移动选中的单元格
+                e.Handled = true;   //跳过继续冒泡
+                var grid = GridMain;
+                var cells = grid.SelectedCells;
+                if (cells.Count > 0)
+                {
+                    var cell = cells[0];
+                    var rowIndex = cell.RowIndex;
+                    var colIndex = cell.ColumnIndex;
+                    var allCells = GridMain.GridCells;
+                    GridCell fixCell = null;
+                    if (e.Key == Key.Tab
+                        || e.Key == Key.Right)
+                    {
+                        colIndex = colIndex + cell.ColSpan;
+                    }
+                    if (e.Key == Key.Down)
+                    {
+                        rowIndex = rowIndex + cell.RowSpan;
+                    }
+                    if (e.Key == Key.Left)
+                    {
+                        if (colIndex > 0)
+                        {
+                            colIndex--;
+                        }
+                    }
+                    if (e.Key == Key.Up)
+                    {
+                        if (rowIndex > 0)
+                        {
+                            rowIndex--;
+                        }
+                    }
+                    var keys = allCells.Keys;
+                    foreach (var curKey in keys)
+                    {
+                        GridCell curCell = allCells[curKey] as GridCell;
+                        if (curCell == null) { continue; }
+                        if (curCell.RowIndex <= rowIndex
+                            && curCell.RowIndex + curCell.RowSpan > rowIndex
+                            && curCell.ColumnIndex <= colIndex
+                            && curCell.ColumnIndex + curCell.ColSpan > colIndex)
+                        {
+                            fixCell = curCell;
+                        }
+                    }
+
+                    if (fixCell != null)
+                    {
+                        if (allCells.ContainsValue(fixCell))
+                        {
+                            grid.SetSelection(fixCell, fixCell);
+                        }
+                    }
                 }
             }
             else if ((e.Key >= Key.NumPad0 && e.Key <= Key.NumPad9)
@@ -155,11 +233,24 @@ namespace ReportDesigner
                 if (cells.Count > 0)
                 {
                     var cell = cells[0];
-                    var textElement = cell.Content as EditableElement;
-                    if (textElement != null)
+                    var editableElement = cell.Content as EditableElement;
+                    if (editableElement != null)
                     {
-                        textElement.IsInEditMode = true;
-                        var textbox = textElement.TextBox;
+                        var textElement = editableElement as TextElement;
+                        if (textElement == null)
+                        {
+                            textElement = new TextElement();
+                            textElement.Cell = cell;
+                            textElement.Text = editableElement.Text;
+                            cell.Content = textElement;
+                            editableElement = textElement;
+                            if (PageParent != null)
+                            {
+                                PageParent.SetObjectProperty();
+                            }
+                        }
+                        editableElement.IsInEditMode = true;
+                        var textbox = editableElement.TextBox;
                         if (textbox != null)
                         {
                             textbox.Focus();
@@ -167,6 +258,19 @@ namespace ReportDesigner
                     }
                 }
             }
+        }
+
+        void PropertyEditor_PropertyValueChanged(object sender,
+            RoutedPropertyChangedEventArgs<PropertyValueChangedEventArgs> e)
+        {
+            var args = e.NewValue;
+            if (args == null) { return; }
+            IsModified = true;
+        }
+
+        void ReportDesignPanel_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            CreateContextMenu();
         }
 
         #endregion
@@ -194,12 +298,8 @@ namespace ReportDesigner
                 string strName = strFileName.Substring(0, strFileName.LastIndexOf("."));
                 document.Name = strName;
                 Document = document;
-                var layoutDocument = LayoutPanel;
-                if (layoutDocument != null)
-                {
-                    layoutDocument.Title = document.Name;
-                }
             }
+            document.Title = Title;
             List<VisualStyle> listVisualStyles = new List<VisualStyle>();
             var grid = GridMain;
             if (grid != null)
@@ -235,7 +335,8 @@ namespace ReportDesigner
                 var cellKeys = cells.Keys;
                 foreach (var cellKey in cellKeys)
                 {
-                    var cell = cells[cellKey];
+                    var cell = cells[cellKey] as GridCell;
+                    if (cell == null) { continue; }
                     ReportCell reportCell = null;
                     VisualStyle style = null;
 
@@ -260,43 +361,63 @@ namespace ReportDesigner
                     #region 单元格内容
 
                     ReportElement reportElement = null;
-                    EditableElement textElement;
+                    var textElement = cell.Content as TextElement;
+                    if (textElement != null)
+                    {
+                        ReportText reportText = textElement.ToReport();
+                        reportElement = reportText;
+                    }
                     var sequenceElement = cell.Content as SequenceElement;
                     if (sequenceElement != null)
                     {
-                        ReportSequence reportSequence = new ReportSequence();
-                        var dataSet = sequenceElement.DataSet;
-                        if (dataSet != null)
-                        {
-                            reportSequence.DataSetName = dataSet.Name;
-                        }
-                        var dataField = sequenceElement.DataField;
-                        if (dataField != null)
-                        {
-                            reportSequence.DataFieldName = dataField.Name;
-                            var dataTable = dataField.Table;
-                            if (dataTable != null)
-                            {
-                                reportSequence.DataTableName = dataTable.Name;
-                            }
-                        }
-                        reportSequence.Expression = sequenceElement.Text;
+                        ReportSequence reportSequence =sequenceElement.ToReport();
                         reportElement = reportSequence;
                     }
-                    else
+                    var imageElement = cell.Content as ImageElement;
+                    if (imageElement != null)
                     {
-                        textElement = cell.Content as EditableElement;
-                        if (textElement != null)
+                        ReportImage reportImage = imageElement.ToReport();
+                        var fullName = imageElement.SourceFile;
+                        imageElement.SetExt(fullName);
+                        reportElement = reportImage;
+
+
+                        #region 将图片文件拷贝到报表文件同级目录的images/reportname中
+
+                        if (imageElement.IsSourceUpdated)
                         {
-                            if (!string.IsNullOrEmpty(textElement.Text))
+                            string reportName = document.Name;
+                            string target = document.Path;
+                            target = target.Substring(0, target.LastIndexOf('\\'));
+                            target = Path.Combine(target, "resources");
+                            target = Path.Combine(target, reportName);
+                            if (!Directory.Exists(target))
                             {
-                                ReportText reportText = new ReportText();
-                                reportText.Text = textElement.Text;
-                                textElement.Tag = reportText;
-                                reportElement = reportText;
+                                Directory.CreateDirectory(target);
+                            }
+                            string ext = imageElement.GetExtName();
+                            target = Path.Combine(target, string.Format("{0}{1}", reportImage.ID, ext));
+                            string source = imageElement.SourceFile;
+                            if (!source.Equals(target))
+                            {
+                                try
+                                {
+                                    File.Copy(source, target, true);
+                                }
+                                catch { }
+                                imageElement.IsSourceUpdated = false;
                             }
                         }
+
+                        #endregion
+
                     }
+                    if (reportElement != null)
+                    {
+                        var cellElement = cell.Content as ICellElement;
+                        reportElement.LinkUrl = cellElement.LinkUrl;
+                    }
+
                     if (reportElement != null)
                     {
                         if (reportCell == null)
@@ -304,7 +425,6 @@ namespace ReportDesigner
                             reportCell = new ReportCell();
                         }
                         reportCell.Element = reportElement;
-
                     }
 
                     #endregion
@@ -336,7 +456,12 @@ namespace ReportDesigner
                         {
                             style.FontStyle = style.FontStyle | (int)NetInfo.EMP.Reports.FontStyle.Italic;
                         }
-
+                        var textDecration = cell.TextDecration;
+                        if (textDecration != null
+                            && Equals(textDecration, TextDecorations.Underline))
+                        {
+                            style.FontStyle = style.FontStyle | (int)NetInfo.EMP.Reports.FontStyle.Underlined;
+                        }
                         var fontBrush = cell.Foreground as SolidColorBrush;
                         if (fontBrush != null)
                         {
@@ -347,22 +472,8 @@ namespace ReportDesigner
                         {
                             style.BackColor = fillBrush.Color.ToString();
                         }
-
-                        textElement = cell.Content as EditableElement;
-                        if (textElement != null)
-                        {
-                            var textBlock = textElement.TextBlock;
-                            if (textBlock != null)
-                            {
-                                var textDecorations = textBlock.TextDecorations;
-                                if (textDecorations != null && Equals(textDecorations, TextDecorations.Underline))
-                                {
-                                    style.FontStyle = style.FontStyle | (int)NetInfo.EMP.Reports.FontStyle.Underlined;
-                                }
-                            }
-                            style.HAlign = (int)textElement.HAlign;
-                            style.VAlign = (int)textElement.VAlign;
-                        }
+                        style.HAlign = (int)cell.HAlign;
+                        style.VAlign = (int)cell.VAlign;
 
                         var temp = listVisualStyles.FirstOrDefault(s => s.Key == style.Key);
                         if (temp == null)
@@ -405,6 +516,42 @@ namespace ReportDesigner
 
 
         #region Others
+
+        private void CreateContextMenu()
+        {
+            var grid = GridMain;
+            if (grid == null)
+            {
+                ContextMenu = null;
+                return;
+            }
+            var cells = grid.SelectedCells;
+            if (cells.Count <= 0)
+            {
+                ContextMenu = null;
+                return;
+            }
+            ContextMenu contextMenu = new ContextMenu();
+            MenuItem item = new MenuItem();
+            item.Command = ReportDesignerCommands.SaveAsStyleCommand;
+            item.CommandParameter = cells;
+            item.Header = "存储为样式...";
+            Image icon = new Image();
+            icon.Source =
+                new BitmapImage(new Uri("/ReportDesigner;component/Images/00054.png", UriKind.RelativeOrAbsolute));
+            item.Icon = icon;
+            contextMenu.Items.Add(item);
+            item = new MenuItem();
+            item.Command = ReportDesignerCommands.SaveAsComponentCommand;
+            item.CommandParameter = cells;
+            item.Header = "存储为元件...";
+            icon = new Image();
+            icon.Source =
+                new BitmapImage(new Uri("/ReportDesigner;component/Images/00055.png", UriKind.RelativeOrAbsolute));
+            item.Icon = icon;
+            contextMenu.Items.Add(item);
+            ContextMenu = contextMenu;
+        }
 
         private void ShowException(string msg)
         {

@@ -32,6 +32,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationIcon>report.ico</ApplicationIcon>
@@ -112,8 +113,13 @@
     </Compile>
     <Compile Include="Commands\ReportDesignerCommands.cs" />
     <Compile Include="Models\BorderStyleViewModel.cs" />
+    <Compile Include="Models\CellStyleConfig.cs" />
+    <Compile Include="Models\CellStyleInfo.cs" />
     <Compile Include="Models\CellStyleViewModel.cs" />
     <Compile Include="Models\ColorViewModel.cs" />
+    <Compile Include="Models\ComponentConfig.cs" />
+    <Compile Include="Models\ComponentInfo.cs" />
+    <Compile Include="Models\ComponentItem.cs" />
     <Compile Include="Models\DatabaseInfo.cs" />
     <Compile Include="Models\DataSetItem.cs" />
     <Compile Include="Models\DataSourceConfig.cs" />
@@ -127,8 +133,7 @@
     <Compile Include="Models\PropertyValueChangedEventArgs.cs" />
     <Compile Include="Models\PropertyValueEnumItem.cs" />
     <Compile Include="Models\ReportFileObject.cs" />
-    <Compile Include="Models\SequenceElementPropertyFactory.cs" />
-    <Compile Include="Models\TextElementPropertyFactory.cs" />
+    <Compile Include="Models\ReportPropertyFactory.cs" />
     <Compile Include="Models\ViewModel.cs" />
     <Compile Include="PopupWindow.xaml.cs">
       <DependentUpon>PopupWindow.xaml</DependentUpon>
@@ -136,17 +141,32 @@
     <Compile Include="ReportDesignPanel.xaml.cs">
       <DependentUpon>ReportDesignPanel.xaml</DependentUpon>
     </Compile>
+    <Compile Include="UserControls\UCCellStyleModify.xaml.cs">
+      <DependentUpon>UCCellStyleModify.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UserControls\UCComponentBox.xaml.cs">
+      <DependentUpon>UCComponentBox.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UserControls\UCComponentModify.xaml.cs">
+      <DependentUpon>UCComponentModify.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UserControls\UCDataSetWizard.xaml.cs">
       <DependentUpon>UCDataSetWizard.xaml</DependentUpon>
     </Compile>
     <Compile Include="UserControls\UCDataSourceModify.xaml.cs">
       <DependentUpon>UCDataSourceModify.xaml</DependentUpon>
     </Compile>
+    <Compile Include="UserControls\UCImageSelectEditor.xaml.cs">
+      <DependentUpon>UCImageSelectEditor.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UserControls\UCObjectPropertyEditor.xaml.cs">
       <DependentUpon>UCObjectPropertyEditor.xaml</DependentUpon>
     </Compile>
     <Compile Include="UserControls\UCObjectPropertyLister.xaml.cs">
       <DependentUpon>UCObjectPropertyLister.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UserControls\UCReportImageModify.xaml.cs">
+      <DependentUpon>UCReportImageModify.xaml</DependentUpon>
     </Compile>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -168,11 +188,19 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Resources\AvalonDockStyle.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Resources\Brush.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Resources\MainWindowResource.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Resources\UCComponentBox.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -184,6 +212,18 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="UserControls\UCCellStyleModify.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UserControls\UCComponentBox.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UserControls\UCComponentModify.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="UserControls\UCDataSetWizard.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -192,11 +232,19 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="UserControls\UCImageSelectEditor.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="UserControls\UCObjectPropertyEditor.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="UserControls\UCObjectPropertyLister.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UserControls\UCReportImageModify.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -219,6 +267,7 @@
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -331,6 +380,35 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="report.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\00044.png" />
+    <Resource Include="Images\00045.png" />
+    <Resource Include="Images\00046.png" />
+    <Resource Include="Images\00047.png" />
+    <Resource Include="Images\00048.png" />
+    <Resource Include="Images\00049.png" />
+    <Resource Include="Images\00050.png" />
+    <Resource Include="Images\00051.png" />
+    <Resource Include="Images\00052.png" />
+    <Resource Include="Images\00053.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\00054.png" />
+    <Resource Include="Images\00055.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\00060101.png" />
+    <Resource Include="Images\00060102.png" />
+    <Resource Include="Images\00060103.png" />
+    <Resource Include="Images\00060104.png" />
+    <Resource Include="Images\00060201.png" />
+    <Resource Include="Images\00060202.png" />
+    <Resource Include="Images\00060203.png" />
+    <Resource Include="Images\00060204.png" />
+    <Resource Include="Images\00060301.png" />
+    <Resource Include="Images\00060302.png" />
+    <Resource Include="Images\00060303.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

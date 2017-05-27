@@ -1,0 +1,30 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ComponentConfig xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:r="http://netinfo.com/emp/reports">
+    <Components>
+        <Component ID="1001" Name="报表标题" GroupID="1">
+            <Style FontFamily="SimSun" FontSize="20" FontStyle="1" ForeColor="#FFC0504D" Width="0" Height="0" HAlign="1" VAlign="1" />
+            <Element xsi:type="r:ReportText">
+                <r:Text>标题</r:Text>
+            </Element>
+        </Component>
+        <Component ID="1002" Name="列标题" GroupID="1">
+            <Style FontFamily="SimSun" FontSize="15" FontStyle="1" ForeColor="#FF000000" Width="0" Height="0" HAlign="1" VAlign="1" />
+			<Element xsi:type="r:ReportText">
+                <r:Text>列标题</r:Text>
+            </Element>
+        </Component>
+        <Component ID="1003" Name="超链接" GroupID="1">
+			<Element xsi:type="r:ReportText" LinkUrl="#">
+                <r:Text>url</r:Text>
+            </Element>
+        </Component>
+        <Component ID="1004" Name="图片" GroupID="1" />
+		<Component ID="2001" Name="直线" GroupID="2" />
+		<Component ID="2002" Name="矩形" GroupID="2" />
+		<Component ID="2003" Name="椭圆" GroupID="2" />
+		<Component ID="2004" Name="路径" GroupID="2" />
+		<Component ID="3001" Name="折现图" GroupID="3" />
+		<Component ID="3002" Name="柱状图" GroupID="3" />
+		<Component ID="3003" Name="饼图" GroupID="3" />
+    </Components>
+</ComponentConfig>

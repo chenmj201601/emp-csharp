@@ -29,5 +29,8 @@ namespace NetInfo.EMP.Reports
     {
         [XmlIgnore]
         public ReportDocument Document { get; set; }
+
+        [XmlAttribute]
+        public string LinkUrl { get; set; }
     }
 }

@@ -18,7 +18,7 @@
     </UserControl.Resources>
     
     <Grid>
-        <Border Background="LightGray" Opacity="0.2"></Border>
+        <Border Opacity="0.2"></Border>
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="50"></RowDefinition>

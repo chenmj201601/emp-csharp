@@ -37,6 +37,7 @@ namespace NetInfo.EMP.Reports.Controls
         public GridCell()
         {
             MouseLeftButtonDown += GridCell_MouseLeftButtonDown;
+            MouseRightButtonDown += GridCell_MouseLeftButtonDown;
             MouseMove += GridCell_MouseMove;
         }
 
@@ -67,6 +68,49 @@ namespace NetInfo.EMP.Reports.Controls
             set { SetValue(SelectedProperty, value); }
         }
 
+
+        #region HAlign
+
+        public static readonly DependencyProperty HAlignProperty =
+            DependencyProperty.Register("HAlign", typeof(HorizontalAlignment), typeof(GridCell), new PropertyMetadata(HorizontalAlignment.Stretch));
+
+        public HorizontalAlignment HAlign
+        {
+            get { return (HorizontalAlignment)GetValue(HAlignProperty); }
+            set { SetValue(HAlignProperty, value); }
+        }
+
+        #endregion
+
+
+        #region VAlign
+
+        public static readonly DependencyProperty VAlignProperty =
+            DependencyProperty.Register("VAlign", typeof(VerticalAlignment), typeof(GridCell), new PropertyMetadata(VerticalAlignment.Stretch));
+
+        public VerticalAlignment VAlign
+        {
+            get { return (VerticalAlignment)GetValue(VAlignProperty); }
+            set { SetValue(VAlignProperty, value); }
+        }
+
+        #endregion
+
+
+        #region TextDecration
+
+        public static readonly DependencyProperty TextDecrationProperty =
+            DependencyProperty.Register("TextDecration", typeof (TextDecorationCollection), typeof (GridCell), new PropertyMetadata(default(TextDecorationCollection)));
+
+        public TextDecorationCollection TextDecration
+        {
+            get { return (TextDecorationCollection) GetValue(TextDecrationProperty); }
+            set { SetValue(TextDecrationProperty, value); }
+        }
+
+        #endregion
+
+
         /// <summary>
         /// 单元格的鼠标事件，可以将鼠标事件报告给网格，其中附带当前单元格信息
         /// </summary>
@@ -89,6 +133,12 @@ namespace NetInfo.EMP.Reports.Controls
                 cell.RaiseEvent(args);
             }
         }
+
+        public VisualStyle CellStyle { get; set; }
+        /// <summary>
+        /// 附加数据，预定义样式
+        /// </summary>
+        public object AddedData1 { get; set; }
 
     }
 }

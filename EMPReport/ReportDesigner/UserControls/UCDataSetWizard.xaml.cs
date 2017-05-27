@@ -473,6 +473,7 @@ namespace ReportDesigner.UserControls
             if (tableItem == null) { return; }
             ReportDataTable reportTable = new ReportDataTable();
             reportTable.DataSet = dataSet;
+            reportTable.Key = string.Format("{0}.{1}", dataSet.Name, tableItem.Name);
             reportTable.Name = tableItem.StrValue;
             reportTable.Display = reportTable.Name;
             dataSet.Tables.Clear();
@@ -501,6 +502,7 @@ namespace ReportDesigner.UserControls
                 reportField.DataSet = dataSet;
                 reportField.Table = reportTable;
                 reportField.TableName = reportTable.Name;
+                reportField.Key = string.Format("{0}.{1}", dataSet.Name, fieldItem.StrValue);
                 reportField.Name = fieldItem.StrValue;
                 reportField.Display = reportField.Name;
                 dataSet.Fields.Add(reportField);

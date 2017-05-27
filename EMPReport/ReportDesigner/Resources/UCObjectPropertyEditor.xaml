@@ -1,6 +1,7 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                    xmlns:nic="http://www.voicecyber.com/wpf/controls"
+                    xmlns:nic="http://www.netinfo.com/wpf/controls"
+                    xmlns:uc="clr-namespace:ReportDesigner.UserControls"
                     xmlns:local="clr-namespace:ReportDesigner.UserControls">
 
     <ResourceDictionary.MergedDictionaries>
@@ -271,7 +272,17 @@
                            DisplayDefaultValueOnEmptyText="True"></nic:IntegerUpDown>
         </Border>
     </ControlTemplate>
-    
+
+    <ControlTemplate x:Key="Editor200Template" TargetType="{x:Type local:UCObjectPropertyEditor}">
+        <Border Name="PART_Panel"
+                Background="{TemplateBinding Background}">
+            <CheckBox Name="PART_CheckBox" HorizontalAlignment="Left" VerticalAlignment="Center"
+                      HorizontalContentAlignment="Center"
+                      VerticalContentAlignment="Center"
+                      IsChecked="{Binding BoolValue,RelativeSource={RelativeSource TemplatedParent}}"></CheckBox>
+        </Border>
+    </ControlTemplate>
+
     <ControlTemplate x:Key="Editor300Template" TargetType="{x:Type local:UCObjectPropertyEditor}">
         <Border Name="PART_Panel"
                 Background="{TemplateBinding Background}">
@@ -286,7 +297,7 @@
             </ComboBox>
         </Border>
     </ControlTemplate>
-    
+
     <ControlTemplate x:Key="Editor301Template" TargetType="{x:Type local:UCObjectPropertyEditor}">
         <Border Name="PART_Panel"
                 Background="{TemplateBinding Background}">
@@ -311,6 +322,14 @@
             </nic:ColorPicker>
         </Border>
     </ControlTemplate>
+    
+    <ControlTemplate x:Key="Editor401Template" TargetType="{x:Type local:UCObjectPropertyEditor}">
+        <Border Name="PART_Panel"
+                Background="{TemplateBinding Background}">
+            <uc:UCImageSelectEditor PropertyInfoItem="{Binding PropertyInfoItem,
+                RelativeSource={RelativeSource FindAncestor,AncestorType={x:Type local:UCObjectPropertyEditor}}}"></uc:UCImageSelectEditor>
+        </Border>
+    </ControlTemplate>
 
     <Style x:Key="UCObjectPropertyEditorStyle" TargetType="{x:Type local:UCObjectPropertyEditor}">
         <Setter Property="Margin" Value="2"></Setter>
@@ -324,11 +343,17 @@
             <Trigger Property="EditFormat" Value="Int">
                 <Setter Property="Template" Value="{StaticResource Editor101Template}"></Setter>
             </Trigger>
+            <Trigger Property="EditFormat" Value="YesNo">
+                <Setter Property="Template" Value="{StaticResource Editor200Template}"></Setter>
+            </Trigger>
             <Trigger Property="EditFormat" Value="SingleSelect">
                 <Setter Property="Template" Value="{StaticResource Editor300Template}"></Setter>
             </Trigger>
             <Trigger Property="EditFormat" Value="ColorSelect">
                 <Setter Property="Template" Value="{StaticResource Editor301Template}"></Setter>
+            </Trigger>
+            <Trigger Property="EditFormat" Value="ImageSelect">
+                <Setter Property="Template" Value="{StaticResource Editor401Template}"></Setter>
             </Trigger>
         </Style.Triggers>
     </Style>

@@ -1,0 +1,8 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<CellStyleConfig xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <CellStyles>
+        <CellStyle Name="新样式" IsBuiltIn="false">
+            <Style FontFamily="SimSun" FontSize="15" FontStyle="1" ForeColor="#FFFFFFFF" BackColor="#FF00B050" Width="0" Height="0" HAlign="1" VAlign="1" />
+        </CellStyle>
+    </CellStyles>
+</CellStyleConfig>

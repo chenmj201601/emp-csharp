@@ -11,7 +11,40 @@
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="/Resources/MainWindowResource.xaml"></ResourceDictionary>
+                <ResourceDictionary Source="/Resources/AvalonDockStyle.xaml"></ResourceDictionary>
             </ResourceDictionary.MergedDictionaries>
+
+            <DataTemplate x:Key="CellStyleTemplate">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition></RowDefinition>
+                        <RowDefinition Height="20"></RowDefinition>
+                    </Grid.RowDefinitions>
+                    <Border Grid.Row="0" Margin="2,1" Background="{Binding Background}">
+                        <TextBlock Text="ABC"
+                           FontFamily="{Binding FontFamily}"
+                           FontSize="{Binding FontSize}"
+                           FontWeight="{Binding FontWeight}"
+                           FontStyle="{Binding FontStyle}"
+                           Foreground="{Binding Foreground}"
+                           Background="{Binding Background}"
+                           HorizontalAlignment="{Binding HorizontalAlignment}"
+                           VerticalAlignment="{Binding VerticalAlignment}"></TextBlock>
+                    </Border>
+                    <TextBlock Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center" 
+                       Text="{Binding Name}"></TextBlock>
+                </Grid>
+            </DataTemplate>
+
+            <ContextMenu x:Key="CellStyleContextMenu">
+                <MenuItem Header="Delete" Command="cmd:ReportDesignerCommands.CellStyleDeleteCommand"
+                          CommandParameter="{Binding}">
+                    <MenuItem.Icon>
+                        <Image Source="/ReportDesigner;component/Images/00041.png"></Image>
+                    </MenuItem.Icon>
+                </MenuItem>
+            </ContextMenu>
+
         </ResourceDictionary>
     </Window.Resources>
     <Grid>
@@ -217,7 +250,14 @@
                     <r:RibbonGroupBox Header="样式">
                         <r:InRibbonGallery x:Name="GalleryStyles" MinItemsInRow="1" MaxItemsInRow="5"
                                            ItemWidth="60" ItemHeight="55"
-                                           ItemTemplate="{DynamicResource CellStyleTemplate}"></r:InRibbonGallery>
+                                           ItemTemplate="{DynamicResource CellStyleTemplate}">
+                            <r:InRibbonGallery.ItemContainerStyle>
+                                <Style TargetType="{x:Type Control}">
+                                    <Setter Property="ToolTip" Value="{Binding Name}"></Setter>
+                                    <Setter Property="ContextMenu" Value="{StaticResource CellStyleContextMenu}"></Setter>
+                                </Style>
+                            </r:InRibbonGallery.ItemContainerStyle>
+                        </r:InRibbonGallery>
                     </r:RibbonGroupBox>
                 </r:RibbonTabItem>
                 <r:RibbonTabItem Header="数据">
@@ -246,10 +286,10 @@
                                     Command="cmd:ReportDesignerCommands.ViewPanelCheckCommand" CommandParameter="PanelDataSource"></r:CheckBox>
                         <r:CheckBox x:Name="CheckBoxDataSet" Header="数据集"
                                     Command="cmd:ReportDesignerCommands.ViewPanelCheckCommand" CommandParameter="PanelDataSet"></r:CheckBox>
+                        <r:CheckBox x:Name="CheckBoxComponentBox" Header="元件库"
+                                    Command="cmd:ReportDesignerCommands.ViewPanelCheckCommand" CommandParameter="PanelComponentBox"></r:CheckBox>
                         <r:CheckBox x:Name="CheckBoxObjectProperty" Header="属性编辑器"
                                     Command="cmd:ReportDesignerCommands.ViewPanelCheckCommand" CommandParameter="PanelObjectProperty"></r:CheckBox>
-                        <r:CheckBox x:Name="CheckBoxCellExtension" Header="单元格扩展"
-                                    Command="cmd:ReportDesignerCommands.ViewPanelCheckCommand" CommandParameter="PanelCellExtension"></r:CheckBox>
                     </r:RibbonGroupBox>
                     <r:RibbonGroupBox Header="布局" State="Middle">
                         <r:Button x:Name="BtnLayoutSave" Header="保存布局" Icon="/Images/00003.png"
@@ -333,19 +373,21 @@
                             </d:LayoutDocumentPane>
                             <d:LayoutAnchorablePaneGroup Orientation="Vertical" DockWidth="300">
                                 <d:LayoutAnchorablePane>
-                                    <d:LayoutAnchorable x:Name="PanelObjectProperty" Title="属性编辑框" ContentId="PanelObjectProperty">
-                                        <uc:UCObjectPropertyLister x:Name="ObjectPropertyLister"></uc:UCObjectPropertyLister>
+                                    <d:LayoutAnchorable x:Name="PanelComponentBox" Title="元件库" ContentId="PanelComponentBox">
+                                        <!--<uc:UCComponentBox x:Name="ComponentBox"></uc:UCComponentBox>-->
                                     </d:LayoutAnchorable>
                                 </d:LayoutAnchorablePane>
                                 <d:LayoutAnchorablePane>
-                                    <d:LayoutAnchorable x:Name="PanelCellExtension" Title="单元格扩展属性" ContentId="PanelCellExtension"></d:LayoutAnchorable>
+                                    <d:LayoutAnchorable x:Name="PanelObjectProperty" Title="属性编辑框" ContentId="PanelObjectProperty">
+                                        <uc:UCObjectPropertyLister x:Name="ObjectPropertyLister"></uc:UCObjectPropertyLister>
+                                    </d:LayoutAnchorable>
                                 </d:LayoutAnchorablePane>
                             </d:LayoutAnchorablePaneGroup>
                         </d:LayoutPanel>
                     </d:LayoutRoot>
                 </d:DockingManager>
             </Grid>
-            
+
         </DockPanel>
     </Grid>
 </r:RibbonWindow>

@@ -88,161 +88,199 @@ namespace ReportDesigner.UserControls
             InitValue();
         }
 
-        private void InitPropertyItems()
-        {
-            mListPropertyItems.Clear();
-            var sequenceElement = DataContext as SequenceElement;
-            if (sequenceElement != null)
-            {
-                var properties = SequenceElementPropertyFactory.GetPropertyList();
-                for (int i = 0; i < properties.Count; i++)
-                {
-                    var info = properties[i];
-                    var item = new ObjectPropertyInfoItem();
-                    item.Info = info;
-                    item.ID = info.ID;
-                    item.PropertyName = info.Name;
-                    item.GroupName = GetGroupName(info.GroupID);
-                    item.ObjectInstance = mCellElement;
-                    item.Panel = Panel;
-                    mListPropertyItems.Add(item);
-                }
-                return;
-            }
-            var textElement = DataContext as EditableElement;
-            if (textElement != null)
-            {
-                var properties = TextElementPropertyFactory.GetPropertyList();
-                for (int i = 0; i < properties.Count; i++)
-                {
-                    var info = properties[i];
-                    var item = new ObjectPropertyInfoItem();
-                    item.Info = info;
-                    item.ID = info.ID;
-                    item.PropertyName = info.Name;
-                    item.GroupName = GetGroupName(info.GroupID);
-                    item.ObjectInstance = mCellElement;
-                    item.Panel = Panel;
-                    mListPropertyItems.Add(item);
-                }
-            }
-        }
-
         private void InitInfo()
         {
+            StrElementType = string.Empty;
             if (DataContext == null) { return; }
             mCellElement = DataContext as ICellElement;
             if (mCellElement == null) { return; }
-            var sequenceElement = mCellElement as SequenceElement;
-            if (sequenceElement != null)
-            {
-                StrElementType = "数据列";
-                StrElementText = sequenceElement.Text;
-                ElementTextReadOnly = true;
-                return;
-            }
-            var textElement = mCellElement as EditableElement;
+            var textElement = mCellElement as TextElement;
             if (textElement != null)
             {
                 StrElementType = "静态文本";
                 StrElementText = textElement.Text;
                 ElementTextReadOnly = false;
             }
+            var sequenceElement = mCellElement as SequenceElement;
+            if (sequenceElement != null)
+            {
+                StrElementType = "数据列";
+                StrElementText = sequenceElement.Text;
+                ElementTextReadOnly = true;
+            }
+            var imageElement = mCellElement as ImageElement;
+            if (imageElement != null)
+            {
+                StrElementType = "图片";
+                StrElementText = imageElement.Text;
+                ElementTextReadOnly = false;
+            }
+        }
+
+        private void InitPropertyItems()
+        {
+            mListPropertyItems.Clear();
+            if (mCellElement == null) { return; }
+            var properties = ReportPropertyFactory.GetProperties(mCellElement);
+            for (int i = 0; i < properties.Count; i++)
+            {
+                var info = properties[i];
+                ObjectPropertyInfoItem item = new ObjectPropertyInfoItem();
+                item.Info = info;
+                item.ID = info.ID;
+                item.PropertyName = info.Name;
+                item.GroupName = GetGroupName(info.GroupID);
+                item.Value = info.DefaultValue;
+                item.ObjectInstance = mCellElement;
+                item.Panel = Panel;
+                mListPropertyItems.Add(item);
+            }
         }
 
         private void InitValue()
         {
             if (mCellElement == null) { return; }
+            if (mCellElement == null) { return; }
+            ObjectPropertyInfoItem item;
 
 
-            #region TextElement
+            #region Cell
 
-            EditableElement textElement = mCellElement as EditableElement;
-            if (textElement != null)
+            var cell = mCellElement.Cell;
+            if (cell != null)
             {
-                ObjectPropertyInfoItem property;
-                var cell = textElement.Parent as GridCell;
-                if (cell != null)
+                item = mListPropertyItems.FirstOrDefault(p => p.ID == ReportPropertyFactory.PRO_FONTFAMILY);
+                if (item != null)
                 {
-                    property = mListPropertyItems.FirstOrDefault(p => p.ID == TextElementPropertyFactory.PRO_FONTFAMILY);
-                    if (property != null)
+                    item.Value = cell.FontFamily.ToString();
+                }
+                item = mListPropertyItems.FirstOrDefault(p => p.ID == ReportPropertyFactory.PRO_FONTSIZE);
+                if (item != null)
+                {
+                    item.Value = ((int)cell.FontSize).ToString();
+                }
+                item = mListPropertyItems.FirstOrDefault(p => p.ID == ReportPropertyFactory.PRO_FONTSTYLE_BOLD);
+                if (item != null)
+                {
+                    item.Value = cell.FontWeight == FontWeights.Bold ? "1" : "0";
+                }
+                item = mListPropertyItems.FirstOrDefault(p => p.ID == ReportPropertyFactory.PRO_FONTSTYLE_ITALIC);
+                if (item != null)
+                {
+                    item.Value = cell.FontStyle == FontStyles.Italic ? "1" : "0";
+                }
+                item = mListPropertyItems.FirstOrDefault(p => p.ID == ReportPropertyFactory.PRO_FONTSTYLE_UNDERLINE);
+                if (item != null)
+                {
+                    item.Value = Equals(cell.TextDecration, TextDecorations.Underline) ? "1" : "0";
+                }
+                item = mListPropertyItems.FirstOrDefault(p => p.ID == ReportPropertyFactory.PRO_FORECOLOR);
+                if (item != null)
+                {
+                    var brush = cell.Foreground as SolidColorBrush;
+                    if (brush != null)
                     {
-                        property.Value = cell.FontFamily.ToString();
-                    }
-                    property = mListPropertyItems.FirstOrDefault(p => p.ID == TextElementPropertyFactory.PRO_FONTSIZE);
-                    if (property != null)
-                    {
-                        property.Value = cell.FontSize.ToString();
-                    }
-                    property = mListPropertyItems.FirstOrDefault(p => p.ID == TextElementPropertyFactory.PRO_FONTSTYLE);
-                    if (property != null)
-                    {
-                        property.Value = cell.FontStyle.ToString();
-                    }
-                    property = mListPropertyItems.FirstOrDefault(p => p.ID == TextElementPropertyFactory.PRO_FORECOLOR);
-                    if (property != null)
-                    {
-                        var brush = cell.Foreground as SolidColorBrush;
-                        if (brush != null)
-                        {
-                            property.Value = brush.Color.ToString();
-                        }
-                    }
-                    property = mListPropertyItems.FirstOrDefault(p => p.ID == TextElementPropertyFactory.PRO_BACKCOLOR);
-                    if (property != null)
-                    {
-                        var brush = cell.Background as SolidColorBrush;
-                        if (brush != null)
-                        {
-                            property.Value = brush.Color.ToString();
-                        }
+                        item.Value = brush.Color.ToString();
                     }
                 }
-                property = mListPropertyItems.FirstOrDefault(p => p.ID == TextElementPropertyFactory.PRO_HALIGN);
-                if (property != null)
+                item = mListPropertyItems.FirstOrDefault(p => p.ID == ReportPropertyFactory.PRO_BACKCOLOR);
+                if (item != null)
                 {
-                    property.Value = ((int)textElement.HAlign).ToString();
+                    var brush = cell.Background as SolidColorBrush;
+                    if (brush != null)
+                    {
+                        item.Value = brush.Color.ToString();
+                    }
                 }
-                property = mListPropertyItems.FirstOrDefault(p => p.ID == TextElementPropertyFactory.PRO_VALIGN);
-                if (property != null)
+                item = mListPropertyItems.FirstOrDefault(p => p.ID == ReportPropertyFactory.PRO_HALIGN);
+                if (item != null)
                 {
-                    property.Value = ((int)textElement.VAlign).ToString();
+                    item.Value = ((int)cell.HAlign).ToString();
+                }
+                item = mListPropertyItems.FirstOrDefault(p => p.ID == ReportPropertyFactory.PRO_VALIGN);
+                if (item != null)
+                {
+                    item.Value = ((int)cell.VAlign).ToString();
                 }
             }
 
             #endregion
 
 
-            #region SequenceElement
+            #region CellElment
+
+            var cellElement = mCellElement;
+            if (cellElement != null)
+            {
+                item = mListPropertyItems.FirstOrDefault(p => p.ID == ReportPropertyFactory.PRO_LINK_URL);
+                if (item != null)
+                {
+                    item.Value = cellElement.LinkUrl;
+                }
+            }
+
+            #endregion
+
+
+            #region Sequence
 
             var sequenceElement = mCellElement as SequenceElement;
             if (sequenceElement != null)
             {
-                var property = mListPropertyItems.FirstOrDefault(p => p.ID == SequenceElementPropertyFactory.PRO_DATASET);
-                if (property != null)
+                item = mListPropertyItems.FirstOrDefault(p => p.ID == ReportPropertyFactory.PRO_DATASET);
+                if (item != null)
                 {
                     var dataSet = sequenceElement.DataSet;
                     if (dataSet != null)
                     {
-                        property.Value = dataSet.Name;
-                    }
-                    else
-                    {
-                        property.Value = "";
+                        item.Value = dataSet.Name;
                     }
                 }
-                property = mListPropertyItems.FirstOrDefault(p => p.ID == SequenceElementPropertyFactory.PRO_DATAFIELD);
-                if (property != null)
+                item = mListPropertyItems.FirstOrDefault(p => p.ID == ReportPropertyFactory.PRO_DATAFIELD);
+                if (item != null)
                 {
-                    var dataField = sequenceElement.DataField;
-                    if (dataField != null)
+                    var field = sequenceElement.DataField;
+                    if (field != null)
                     {
-                        property.Value = dataField.Name;
+                        item.Value = field.Name;
                     }
-                    else
-                    {
-                        property.Value = "";
-                    }
+                }
+
+                item = mListPropertyItems.FirstOrDefault(p => p.ID == ReportPropertyFactory.PRO_SEQUENCE_EXT_METHOHD);
+                if (item != null)
+                {
+                    item.Value = sequenceElement.ExtMethod.ToString();
+                }
+
+                item = mListPropertyItems.FirstOrDefault(p => p.ID == ReportPropertyFactory.PRO_SEQUENCE_MERGE);
+                if (item != null)
+                {
+                    item.Value = sequenceElement.IsMerge ? "1" : "0";
+                }
+            }
+
+            #endregion
+
+
+            #region Image
+
+            var imageElement = mCellElement as ImageElement;
+            if (imageElement != null)
+            {
+                item = mListPropertyItems.FirstOrDefault(p => p.ID == ReportPropertyFactory.PRO_IMAGE_WIDTH);
+                if (item != null)
+                {
+                    item.Value = imageElement.ImageWidth.ToString();
+                }
+                item = mListPropertyItems.FirstOrDefault(p => p.ID == ReportPropertyFactory.PRO_IMAGE_HEIGHT);
+                if (item != null)
+                {
+                    item.Value = imageElement.ImageHeight.ToString();
+                }
+                item = mListPropertyItems.FirstOrDefault(p => p.ID == ReportPropertyFactory.PRO_IMAGE_STRETCH);
+                if (item != null)
+                {
+                    item.Value = ((int)imageElement.Stretch).ToString();
                 }
             }
 
@@ -267,17 +305,26 @@ namespace ReportDesigner.UserControls
             string str = string.Empty;
             switch (groupID)
             {
-                case 0:
+                case ReportPropertyFactory.GP_BASIC:
                     str = "基本";
                     break;
-                case 1:
+                case ReportPropertyFactory.GP_FONT:
                     str = "外观";
                     break;
-                case 2:
+                case ReportPropertyFactory.GP_LAYOUT:
                     str = "布局";
                     break;
-                case 3:
+                case ReportPropertyFactory.GP_BORDER:
                     str = "边框";
+                    break;
+                case ReportPropertyFactory.GP_LINK:
+                    str = "超链接";
+                    break;
+                case ReportPropertyFactory.GP_SEQUENCE:
+                    str = "数据列";
+                    break;
+                case ReportPropertyFactory.GP_IMAGE:
+                    str = "图片";
                     break;
             }
             return str;
@@ -355,10 +402,19 @@ namespace ReportDesigner.UserControls
 
         private void TxtElementText_TextChanged(object sender, TextChangedEventArgs e)
         {
-            var textElement = mCellElement as EditableElement;
+            var textElement = mCellElement as TextElement;
             if (textElement != null)
             {
                 textElement.Text = TxtElementText.Text;
+            }
+            var imageElement = mCellElement as ImageElement;
+            if (imageElement != null)
+            {
+                imageElement.Text = TxtElementText.Text;
+            }
+            if (Panel != null)
+            {
+                Panel.IsModified = true;
             }
         }
 
@@ -369,78 +425,95 @@ namespace ReportDesigner.UserControls
             if (args == null) { return; }
             var item = args.PropertyItem;
             if (item == null) { return; }
-            string strValue = args.Value;
+            if (mCellElement == null) { return; }
             int id = item.ID;
+            string strValue = args.Value;
 
 
-            #region TextElement
+            #region Cell
 
-            var textElement = mCellElement as EditableElement;
-            if (textElement != null)
+            var cell = mCellElement.Cell;
+            if (cell != null)
             {
-                var cell = textElement.Parent as GridCell;
-                if (cell != null)
+                if (id == ReportPropertyFactory.PRO_FONTFAMILY)
                 {
-                    if (id == TextElementPropertyFactory.PRO_FONTFAMILY)
+                    var valueItem = args.ValueItem;
+                    if (valueItem != null)
                     {
-                        var valueItem = args.ValueItem;
-                        if (valueItem != null)
+                        var fontFamily = valueItem.Info as FontFamily;
+                        if (fontFamily != null)
                         {
-                            var fontFamily = valueItem.Info as FontFamily;
-                            if (fontFamily != null)
-                            {
-                                cell.FontFamily = fontFamily;
-                            }
-                        }
-                    }
-                    if (id == TextElementPropertyFactory.PRO_FONTSIZE)
-                    {
-                        int fontSize;
-                        if (int.TryParse(strValue, out fontSize)
-                            && fontSize > 0)
-                        {
-                            cell.FontSize = fontSize;
-                        }
-                    }
-                    if (id == TextElementPropertyFactory.PRO_FONTSTYLE)
-                    {
-
-                    }
-                    if (id == TextElementPropertyFactory.PRO_FORECOLOR)
-                    {
-                        var color = ColorConverter.ConvertFromString(strValue);
-                        if (color != null)
-                        {
-                            cell.Foreground = new SolidColorBrush((Color)color);
-                        }
-                    }
-                    if (id == TextElementPropertyFactory.PRO_BACKCOLOR)
-                    {
-                        var color = ColorConverter.ConvertFromString(strValue);
-                        if (color != null)
-                        {
-                            cell.Background = new SolidColorBrush((Color)color);
+                            cell.FontFamily = fontFamily;
                         }
                     }
                 }
-                if (id == TextElementPropertyFactory.PRO_HALIGN)
+                if (id == ReportPropertyFactory.PRO_FONTSIZE)
                 {
-                    var valueItem = args.ValueItem;
-                    string value = valueItem.Value;
                     int intValue;
-                    if (int.TryParse(value, out intValue))
+                    if (int.TryParse(strValue, out intValue))
                     {
-                        textElement.HAlign = (HorizontalAlignment)intValue;
+                        if (intValue > 0)
+                        {
+                            cell.FontSize = intValue;
+                        }
                     }
                 }
-                if (id == TextElementPropertyFactory.PRO_VALIGN)
+                if (id == ReportPropertyFactory.PRO_FONTSTYLE_BOLD)
+                {
+                    cell.FontWeight = strValue == "1" ? FontWeights.Bold : FontWeights.Normal;
+                }
+                if (id == ReportPropertyFactory.PRO_FONTSTYLE_ITALIC)
+                {
+                    cell.FontStyle = strValue == "1" ? FontStyles.Italic : FontStyles.Normal;
+                }
+                if (id == ReportPropertyFactory.PRO_FONTSTYLE_UNDERLINE)
+                {
+                    cell.TextDecration = strValue == "1" ? TextDecorations.Underline : null;
+                }
+                if (id == ReportPropertyFactory.PRO_FORECOLOR)
+                {
+                    var color = ColorConverter.ConvertFromString(strValue);
+                    if (color != null)
+                    {
+                        cell.Foreground = new SolidColorBrush((Color)color);
+                    }
+                }
+                if (id == ReportPropertyFactory.PRO_BACKCOLOR)
+                {
+                    var color = ColorConverter.ConvertFromString(strValue);
+                    if (color != null)
+                    {
+                        cell.Background = new SolidColorBrush((Color)color);
+                    }
+                }
+                if (id == ReportPropertyFactory.PRO_HALIGN)
                 {
                     var valueItem = args.ValueItem;
-                    string value = valueItem.Value;
-                    int intValue;
-                    if (int.TryParse(value, out intValue))
+                    if (valueItem != null)
                     {
-                        textElement.VAlign = (VerticalAlignment)intValue;
+                        string str = valueItem.Value;
+                        int intValue;
+                        if (int.TryParse(str, out intValue)
+                            && intValue >= 0
+                            && intValue <= 3)
+                        {
+                            cell.HAlign = (HorizontalAlignment)intValue;
+                        }
+                    }
+                }
+                if (id == ReportPropertyFactory.PRO_VALIGN)
+                {
+                    var valueItem = args.ValueItem;
+                    if (valueItem != null)
+                    {
+                        string str = valueItem.Value;
+                        int intValue;
+                        if (int.TryParse(str, out intValue)
+                            && intValue >= 0
+                            && intValue <= 3)
+                        {
+                            cell.VAlign = (VerticalAlignment)intValue;
+                        }
                     }
                 }
             }
@@ -448,27 +521,40 @@ namespace ReportDesigner.UserControls
             #endregion
 
 
-            #region SequenceElement
+            #region CellElement
+
+            var cellElement = mCellElement;
+            if (cellElement != null)
+            {
+                if (id == ReportPropertyFactory.PRO_LINK_URL)
+                {
+                    cellElement.LinkUrl = strValue;
+                }
+            }
+
+            #endregion
+
+
+            #region Sequence
 
             var sequenceElement = mCellElement as SequenceElement;
             if (sequenceElement != null)
             {
-                if (id == SequenceElementPropertyFactory.PRO_DATASET)
+                if (id == ReportPropertyFactory.PRO_DATASET)
                 {
                     var valueItem = args.ValueItem;
                     if (valueItem != null)
                     {
                         var dataSet = valueItem.Info as ReportDataSet;
+                        sequenceElement.DataSet = dataSet;
                         if (dataSet != null)
                         {
-                            sequenceElement.DataSet = dataSet;
-                            //关联属性编辑框重新加载
-                            var relativeProperty =
-                                mListPropertyItems.FirstOrDefault(
-                                    p => p.ID == SequenceElementPropertyFactory.PRO_DATAFIELD);
-                            if (relativeProperty != null)
+                            //刷新数据列
+                            var fieldItem =
+                                mListPropertyItems.FirstOrDefault(i => i.ID == ReportPropertyFactory.PRO_DATAFIELD);
+                            if (fieldItem != null)
                             {
-                                var editor = relativeProperty.Editor;
+                                var editor = fieldItem.Editor;
                                 if (editor != null)
                                 {
                                     editor.Reload();
@@ -477,21 +563,83 @@ namespace ReportDesigner.UserControls
                         }
                     }
                 }
-                if (id == SequenceElementPropertyFactory.PRO_DATAFIELD)
+                if (id == ReportPropertyFactory.PRO_DATAFIELD)
                 {
                     var valueItem = args.ValueItem;
                     if (valueItem != null)
                     {
                         var dataField = valueItem.Info as ReportDataField;
+                        sequenceElement.DataField = dataField;
                         if (dataField != null)
                         {
-                            sequenceElement.DataField = dataField;
-                            //修改Text属性
-                            var dataSet = dataField.DataSet;
+                            var dataSet = sequenceElement.DataSet;
                             if (dataSet != null)
                             {
-                                sequenceElement.Text = string.Format("={{{0}}}.{{{1}}}", dataSet.Name, dataField.Name);
+                                sequenceElement.Text = string.Format("={{{0}.{1}}}", dataSet.Name, dataField.Name);
                             }
+                        }
+                    }
+                }
+
+                if (id == ReportPropertyFactory.PRO_SEQUENCE_EXT_METHOHD)
+                {
+                    var valueItem = args.ValueItem;
+                    if (valueItem != null)
+                    {
+                        string str = valueItem.Value;
+                        int intValue;
+                        if (int.TryParse(str, out intValue))
+                        {
+                            sequenceElement.ExtMethod = intValue;
+                        }
+                    }
+                }
+
+                if (id == ReportPropertyFactory.PRO_SEQUENCE_MERGE)
+                {
+                    sequenceElement.IsMerge = strValue == "1";
+                }
+            }
+
+            #endregion
+
+
+            #region Image
+
+            var imageElement = mCellElement as ImageElement;
+            if (imageElement != null)
+            {
+                if (id == ReportPropertyFactory.PRO_IMAGE_WIDTH)
+                {
+                    int intValue;
+                    if (int.TryParse(strValue, out intValue)
+                        && intValue > 0
+                        && intValue < 1000)
+                    {
+                        imageElement.ImageWidth = intValue;
+                    }
+                }
+                if (id == ReportPropertyFactory.PRO_IMAGE_HEIGHT)
+                {
+                    int intValue;
+                    if (int.TryParse(strValue, out intValue)
+                        && intValue > 0
+                        && intValue < 1000)
+                    {
+                        imageElement.ImageHeight = intValue;
+                    }
+                }
+                if (id == ReportPropertyFactory.PRO_IMAGE_STRETCH)
+                {
+                    var valueItem = args.ValueItem;
+                    if (valueItem != null)
+                    {
+                        int intValue;
+                        if (int.TryParse(valueItem.Value, out intValue)
+                            && intValue >= 0
+                            && intValue <= 3)
+                        {
+                            imageElement.Stretch = (Stretch)intValue;
                         }
                     }
                 }

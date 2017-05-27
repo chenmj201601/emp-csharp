@@ -1,0 +1,6 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<DesignerConfig xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <PreviewDir>C:\Users\Charley\Documents\emp-report\emp-report-server</PreviewDir>
+    <PreviewServer>localhost</PreviewServer>
+    <PreviewPort>8060</PreviewPort>
+</DesignerConfig>

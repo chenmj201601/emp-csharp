@@ -19,9 +19,19 @@ namespace NetInfo.EMP.Reports.Controls
 {
     public interface ICellElement
     {
-        /// <summary>
-        /// 附加数据，预定义样式
-        /// </summary>
-        object AddedData1 { get; set; }
+
+        #region 公共属性
+
+        string LinkUrl { get; set; }
+
+        #endregion
+
+
+        #region 其他
+
+        GridCell Cell { get; set; }
+
+        #endregion
+      
     }
 }

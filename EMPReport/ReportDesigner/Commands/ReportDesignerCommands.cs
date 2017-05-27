@@ -48,6 +48,12 @@ namespace ReportDesigner.Commands
         private static readonly RoutedUICommand mLayoutSaveCommand = new RoutedUICommand();
         private static readonly RoutedUICommand mLayoutRestoreCommand = new RoutedUICommand();
 
+        private static readonly RoutedUICommand mSaveAsStyleCommand = new RoutedUICommand();
+        private static readonly RoutedUICommand mSaveAsComponentCommand = new RoutedUICommand();
+
+        private static readonly RoutedUICommand mCellStyleDeleteCommand = new RoutedUICommand();
+        private static readonly RoutedUICommand mComponentDeleteCommand = new RoutedUICommand();
+
         public static RoutedUICommand AppAboutCommand
         {
             get { return mAppAboutCommand; }
@@ -141,6 +147,26 @@ namespace ReportDesigner.Commands
         public static RoutedUICommand LayoutRestoreCommand
         {
             get { return mLayoutRestoreCommand; }
+        }
+
+        public static RoutedUICommand SaveAsStyleCommand
+        {
+            get { return mSaveAsStyleCommand; }
+        }
+
+        public static RoutedUICommand SaveAsComponentCommand
+        {
+            get { return mSaveAsComponentCommand; }
+        }
+
+        public static RoutedUICommand CellStyleDeleteCommand
+        {
+            get { return mCellStyleDeleteCommand; }
+        }
+
+        public static RoutedUICommand ComponentDeleteCommand
+        {
+            get { return mComponentDeleteCommand; }
         }
     }
 }

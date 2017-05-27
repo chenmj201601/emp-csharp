@@ -54,5 +54,9 @@ namespace ReportDesigner.Models
         /// 选择颜色
         /// </summary>
         ColorSelect = 301,
+        /// <summary>
+        /// 选择图片
+        /// </summary>
+        ImageSelect = 401,
     }
 }

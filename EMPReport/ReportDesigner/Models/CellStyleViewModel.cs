@@ -98,35 +98,37 @@ namespace ReportDesigner.Models
 
         public void SetStyle()
         {
-            if (Style == null) { return; }
-            FontFamily = new FontFamily(Style.FontFamily);
-            FontSize = Style.FontSize;
-            FontWeight = (Style.FontStyle & (int)NetInfo.EMP.Reports.FontStyle.Bold) > 0
+            if (CellStyle == null) { return;}
+            var style = CellStyle.Style;
+            if (style == null) { return; }
+            FontFamily = new FontFamily(style.FontFamily);
+            FontSize = style.FontSize;
+            FontWeight = (style.FontStyle & (int)NetInfo.EMP.Reports.FontStyle.Bold) > 0
                 ? FontWeights.Bold
                 : FontWeights.Normal;
-            FontStyle = (Style.FontStyle & (int)NetInfo.EMP.Reports.FontStyle.Italic) > 0
+            FontStyle = (style.FontStyle & (int)NetInfo.EMP.Reports.FontStyle.Italic) > 0
                 ? FontStyles.Italic
                 : FontStyles.Normal;
-            if (!string.IsNullOrEmpty(Style.ForeColor))
+            if (!string.IsNullOrEmpty(style.ForeColor))
             {
-                var color = ColorConverter.ConvertFromString(Style.ForeColor);
+                var color = ColorConverter.ConvertFromString(style.ForeColor);
                 if (color != null)
                 {
                     Foreground = new SolidColorBrush((Color)color);
                 }
             }
-            if (!string.IsNullOrEmpty(Style.BackColor))
+            if (!string.IsNullOrEmpty(style.BackColor))
             {
-                var color = ColorConverter.ConvertFromString(Style.BackColor);
+                var color = ColorConverter.ConvertFromString(style.BackColor);
                 if (color != null)
                 {
                     Background = new SolidColorBrush((Color)color);
                 }
             }
-            HorizontalAlignment = (HorizontalAlignment)Style.HAlign;
-            VerticalAlignment = (VerticalAlignment)Style.VAlign;
+            HorizontalAlignment = (HorizontalAlignment)style.HAlign;
+            VerticalAlignment = (VerticalAlignment)style.VAlign;
         }
 
-        public VisualStyle Style { get; set; }
+        public CellStyleInfo CellStyle { get; set; }
     }
 }

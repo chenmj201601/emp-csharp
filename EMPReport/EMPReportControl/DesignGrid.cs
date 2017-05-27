@@ -18,6 +18,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
@@ -25,6 +26,7 @@ using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Imaging;
 
 
 namespace NetInfo.EMP.Reports.Controls
@@ -50,8 +52,10 @@ namespace NetInfo.EMP.Reports.Controls
             AddHandler(GridHeader.GridHeaderSizeChangedEvent,
                 new RoutedPropertyChangedEventHandler<GridHeaderSizeChangedEventArgs>(GridHeader_GridHeaderSizeChanged));
             MouseLeftButtonDown += ReportGrid_MouseLeftButtonDown;
-            MouseMove += ReportGrid_MouseMove;
+            MouseRightButtonDown += ReportGrid_MouseLeftButtonDown;
             MouseLeftButtonUp += ReportGrid_MouseLeftButtonUp;
+            MouseRightButtonUp += ReportGrid_MouseLeftButtonUp;
+            MouseMove += ReportGrid_MouseMove;
 
             BindCommands();
         }
@@ -561,33 +565,87 @@ namespace NetInfo.EMP.Reports.Controls
                 //cell.SetBinding(ToolTipProperty, new Binding("Rect"));
 
 
+                #region 报表内容
+
+
+                #region 静态文本
+
                 var reportText = reportCell.Element as ReportText;
                 if (reportText != null)
                 {
-                    EditableElement textElement = new EditableElement();
-                    textElement.Text = reportText.Text;
-                    textElement.Tag = reportText;
+                    TextElement textElement = TextElement.FromReport(reportText);
+                    textElement.Cell = cell;
                     cell.Content = textElement;
                 }
+
+                #endregion
+
+
+                #region 数据列
+
                 var reportSequence = reportCell.Element as ReportSequence;
                 if (reportSequence != null)
                 {
-                    SequenceElement sequenceElement = new SequenceElement();
+                    SequenceElement sequenceElement = SequenceElement.FromReport(reportSequence);
                     var dataSet = dataSets.FirstOrDefault(d => d.Name == reportSequence.DataSetName);
                     sequenceElement.DataSet = dataSet;
                     if (dataSet != null)
                     {
-                        var field =
-                            dataSet.Fields.FirstOrDefault(
-                                f =>
-                                    f.DataSet == dataSet && f.TableName == reportSequence.DataTableName &&
-                                    f.Name == reportSequence.DataFieldName);
-                        sequenceElement.DataField = field;
+                        var dataField = dataSet.Fields.FirstOrDefault(f => f.Name == reportSequence.DataFieldName);
+                        sequenceElement.DataField = dataField;
                     }
-                    sequenceElement.Text = reportSequence.Expression;
-                    sequenceElement.Tag = reportSequence;
+                    sequenceElement.Cell = cell;
                     cell.Content = sequenceElement;
                 }
+
+                #endregion
+
+
+                #region 报表插图
+
+                var reportImage = reportCell.Element as ReportImage;
+                if (reportImage != null)
+                {
+                    ImageElement imageElement = ImageElement.FromReport(reportImage);
+                    string strId = imageElement.ID;
+                    string strExt = imageElement.GetExtName();
+                    string reportName = Document.Name;
+                    string source = Document.Path;
+                    source = source.Substring(0, source.LastIndexOf('\\'));
+                    source = Path.Combine(source, "resources");
+                    source = Path.Combine(source, reportName);
+                    source = Path.Combine(source, string.Format("{0}{1}", strId, strExt));
+                    if (File.Exists(source))
+                    {
+                        BitmapImage bitmap = new BitmapImage(new Uri(source, UriKind.RelativeOrAbsolute));
+                        imageElement.ImageSource = bitmap.Clone();
+                        imageElement.SourceFile = source;
+                        imageElement.IsSourceUpdated = false;
+                    }
+                    imageElement.Cell = cell;
+                    cell.Content = imageElement;
+                }
+
+                #endregion
+
+
+                #region 链接等报表元素公有属性
+
+                var cellElement = cell.Content as ICellElement;
+                if (cellElement != null)
+                {
+                    var reportElement = reportCell.Element;
+                    if (reportElement != null)
+                    {
+                        cellElement.LinkUrl = reportElement.LinkUrl;
+                    }
+                }
+
+                #endregion
+
+
+                #endregion
+
 
                 if (cell.Content == null)
                 {
@@ -614,6 +672,7 @@ namespace NetInfo.EMP.Reports.Controls
             int styleIndex = reportCell.Style;
             if (styleIndex < 0 || styleIndex >= document.Styles.Count) { return; }
             var style = document.Styles[styleIndex];
+            cell.CellStyle = style;
             var border = style.Border;
             if (border != null)
             {
@@ -628,6 +687,7 @@ namespace NetInfo.EMP.Reports.Controls
             cell.FontStyle = (style.FontStyle & (int)FontStyle.Italic) > 0
                 ? FontStyles.Italic
                 : FontStyles.Normal;
+            cell.TextDecration = (style.FontStyle & (int)FontStyle.Underlined) > 0 ? TextDecorations.Underline : null;
             string fontColor = style.ForeColor;
             if (!string.IsNullOrEmpty(fontColor))
             {
@@ -646,21 +706,8 @@ namespace NetInfo.EMP.Reports.Controls
                     cell.Background = new SolidColorBrush((Color)color);
                 }
             }
-            var reportElement = reportCell.Element;
-            if (reportElement == null) { return; }
-            var textElement = cell.Content as EditableElement;
-            if (textElement != null)
-            {
-                var textBlock = textElement.TextBlock;
-                if (textBlock != null)
-                {
-                    textBlock.TextDecorations = (style.FontStyle & (int)FontStyle.Underlined) > 0
-                        ? TextDecorations.Underline
-                        : null;
-                }
-                textElement.HAlign = (HorizontalAlignment)style.HAlign;
-                textElement.VAlign = (VerticalAlignment)style.HAlign;
-            }
+            cell.HAlign = (HorizontalAlignment)style.HAlign;
+            cell.VAlign = (VerticalAlignment)style.VAlign;
         }
 
         #endregion
@@ -682,6 +729,11 @@ namespace NetInfo.EMP.Reports.Controls
         public GridSelection Selection
         {
             get { return mSelection; }
+        }
+
+        public GridCell CurrentCell
+        {
+            get { return mCurrentCell; }
         }
 
         void ReportGrid_MouseMove(object sender, MouseEventArgs e)
@@ -830,6 +882,15 @@ namespace NetInfo.EMP.Reports.Controls
                 adornerLayer.Add(mSelectionAdorner);
             }
             mSelectionAdorner.InvalidateVisual();       //重新绘制遮罩层
+        }
+
+        public void SetSelection(GridCell originalCell, GridCell currentCell)
+        {
+            mOriginalCell = originalCell;
+            mCurrentCell = currentCell;
+            SetSelection();
+            SetCellRect();
+            SetHeaderSelection();
         }
 
         private void SetCellRect()
@@ -1002,22 +1063,7 @@ namespace NetInfo.EMP.Reports.Controls
             if (args == null) { return; }
             var cell = args.Source;
             if (cell == null) { return; }
-            int code = args.Code;
-            if (code == GridCellMouseEventArgs.EVT_MOUSE_LEFT_BUTTON_DOWN)
-            {
-                mCurrentCell = cell;
-            }
-            if (code == GridCellMouseEventArgs.EVT_MOUSE_MOVE)
-            {
-                var data = args.Data as MouseEventArgs;
-                if (data != null)
-                {
-                    if (data.LeftButton == MouseButtonState.Pressed)
-                    {
-                        mCurrentCell = cell;
-                    }
-                }
-            }
+            mCurrentCell = cell;
         }
 
         private void GridHeader_GridHeaderSizeChanged(object sender,

@@ -24,8 +24,19 @@ namespace NetInfo.EMP.Reports
     [XmlRoot(Namespace = "http://netinfo.com/emp/reports")]
     public class ReportDocument
     {
+        /// <summary>
+        /// 报表名称（文件名）
+        /// </summary>
         [XmlAttribute]
         public string Name { get; set; }
+        /// <summary>
+        /// 报表标题
+        /// </summary>
+        [XmlAttribute]
+        public string Title { get; set; }
+        /// <summary>
+        /// 文件路径
+        /// </summary>
         [XmlIgnore]
         public string Path { get; set; }
 

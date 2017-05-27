@@ -16,9 +16,7 @@
 //======================================================================
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.IO;
 using System.Xml.Serialization;
 
 
@@ -27,6 +25,46 @@ namespace NetInfo.EMP.Reports
     [XmlRoot(Namespace = "http://netinfo.com/emp/reports")]
     public class ReportImage : ReportElement
     {
+        /// <summary>
+        /// ID，GUID串
+        /// </summary>
+        [XmlAttribute]
+        public string ID { get; set; }
+        /// <summary>
+        /// 宽度
+        /// </summary>
+        [XmlAttribute]
+        public int Width { get; set; }
+        /// <summary>
+        /// 高度
+        /// </summary>
+        [XmlAttribute]
+        public int Height { get; set; }
+        /// <summary>
+        /// 拉伸模式
+        /// </summary>
+        [XmlAttribute]
+        public int Stretch { get; set; }
+        /// <summary>
+        /// 扩展名
+        /// </summary>
+        [XmlAttribute]
+        public int Extension { get; set; }
+        /// <summary>
+        /// 替换文本
+        /// </summary>
+        [XmlElement]
+        public string Alt { get; set; }
+
+
+        #region 扩展名
+
+        public const int EXT_PNG = 1;
+        public const int EXT_BMP = 2;
+        public const int EXT_JPG = 3;
+        public const int EXT_JPEG = 4;
+
+        #endregion
 
     }
 }

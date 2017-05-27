@@ -67,6 +67,8 @@ namespace ReportDesigner
 
             AddHandler(DesignGrid.GridSelectedEvent,
                 new RoutedPropertyChangedEventHandler<GridSelectedEventArgs>(DesignGrid_GridSelected));
+            AddHandler(EditableElement.EditableElementEventEvent,
+                new RoutedPropertyChangedEventHandler<EditableElementEventArgs>(EditableElement_EditableElementEvent));
             AddHandler(UCObjectPropertyEditor.PropertyValueChangedEvent,
                 new RoutedPropertyChangedEventHandler<PropertyValueChangedEventArgs>(PropertyEditor_PropertyValueChanged));
 
@@ -100,7 +102,7 @@ namespace ReportDesigner
             PanelDataSource.IsVisibleChanged += (s, e) => SetViewPanelCheck();
             PanelDataSet.IsVisibleChanged += (s, e) => SetViewPanelCheck();
             PanelObjectProperty.IsVisibleChanged += (s, e) => SetViewPanelCheck();
-            PanelCellExtension.IsVisibleChanged += (s, e) => SetViewPanelCheck();
+            PanelComponentBox.IsVisibleChanged += (s, e) => SetViewPanelCheck();
         }
 
 
@@ -154,10 +156,11 @@ namespace ReportDesigner
             InitDesignerConfig();
             InitFontFamilies();
             InitFontSizes();
-            InitCellStyles();
             InitBorderWidths();
             InitBorderStyles();
             LoadDesignerConfig();
+            InitCellStyles();
+            CreateComponentBox();
             InitReportFiles();
             LoadDataSources();
             //InitReportPanels();
@@ -169,21 +172,14 @@ namespace ReportDesigner
         private void InitDesignerConfig()
         {
             mDesignerConfig = new DesignerConfig();
-            string path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "NetInfoReport");
-            if (!Directory.Exists(path))
-            {
-                Directory.CreateDirectory(path);
-            }
-            mDesignerConfig.DataDir = path;
-            path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "emp-report-server");
-            path = Path.Combine(path, "reports");
-            if (!Directory.Exists(path))
-            {
-                Directory.CreateDirectory(path);
-            }
-            mDesignerConfig.PublishDir = path;
             string server = "localhost";
             int port = 8060;
+            string path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "emp-report\\emp-report-server");
+            if (!Directory.Exists(path))
+            {
+                Directory.CreateDirectory(path);
+            }
+            mDesignerConfig.PreviewDir = path;
             mDesignerConfig.PreviewServer = server;
             mDesignerConfig.PreviewPort = port;
         }
@@ -278,13 +274,14 @@ namespace ReportDesigner
             {
                 mRootFileObject.Children.Clear();
                 if (mDesignerConfig == null) { return; }
-                string dataDir = mDesignerConfig.DataDir;
-                if (!Directory.Exists(dataDir))
+                string serverDir = mDesignerConfig.PreviewDir;
+                if (string.IsNullOrEmpty(serverDir)) { return; }
+                string fileDir = Path.Combine(serverDir, "reports");
+                if (!Directory.Exists(fileDir))
                 {
-                    WriteLog(string.Format("Data directory not exist.\t{0}", dataDir));
-                    return;
+                    Directory.CreateDirectory(fileDir);
                 }
-                DirectoryInfo rootDir = new DirectoryInfo(dataDir);
+                DirectoryInfo rootDir = new DirectoryInfo(fileDir);
                 ReportFileObject rootObj = new ReportFileObject();
                 rootObj.Name = rootDir.Name;
                 rootObj.Type = 0;
@@ -424,44 +421,35 @@ namespace ReportDesigner
         private void InitCellStyles()
         {
             mListCellStyles.Clear();
-            CellStyleViewModel item = new CellStyleViewModel();
-            item.Name = "标题 1";
-            VisualStyle style = new VisualStyle();
-            style.FontFamily = "SimSun";
-            style.FontSize = 20;
-            style.FontStyle = 1;
-            style.ForeColor = "#FFC0504D";
-            style.HAlign = 1;
-            style.VAlign = 1;
-            item.Style = style;
-            item.SetStyle();
-            mListCellStyles.Add(item);
+            //内置样式
+            IList<CellStyleInfo> cellStyles = CellStyleInfo.InitCellStyles();
+            //加载外部的自定义样式
+            string path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, CellStyleConfig.FILE_NAME);
+            if (File.Exists(path))
+            {
+                OperationReturn optReturn = XMLHelper.DeserializeFile<CellStyleConfig>(path);
+                if (optReturn.Result)
+                {
+                    var config = optReturn.Data as CellStyleConfig;
+                    if (config != null)
+                    {
+                        for (int i = 0; i < config.CellStyles.Count; i++)
+                        {
+                            cellStyles.Add(config.CellStyles[i]);
+                        }
+                    }
+                }
+            }
+            for (int i = 0; i < cellStyles.Count; i++)
+            {
+                var cellStyle = cellStyles[i];
+                CellStyleViewModel item = new CellStyleViewModel();
+                item.CellStyle = cellStyle;
+                item.Name = cellStyle.Name;
+                item.SetStyle();
+                mListCellStyles.Add(item);
+            }
 
-            item = new CellStyleViewModel();
-            item.Name = "列头 1";
-            style = new VisualStyle();
-            style.FontFamily = "SimSun";
-            style.FontSize = 15;
-            style.FontStyle = 1;
-            style.ForeColor = "#FF000000";
-            style.HAlign = 1;
-            style.VAlign = 1;
-            item.Style = style;
-            item.SetStyle();
-            mListCellStyles.Add(item);
-
-            item = new CellStyleViewModel();
-            item.Name = "正文 1";
-            style = new VisualStyle();
-            style.FontFamily = "SimSun";
-            style.FontSize = 12;
-            style.FontStyle = 0;
-            style.ForeColor = "#FF000000";
-            style.HAlign = 0;
-            style.VAlign = 1;
-            item.Style = style;
-            item.SetStyle();
-            mListCellStyles.Add(item);
         }
 
         #endregion
@@ -517,9 +505,35 @@ namespace ReportDesigner
             SetStatus();
         }
 
+        void EditableElement_EditableElementEvent(object sender,
+           RoutedPropertyChangedEventArgs<EditableElementEventArgs> e)
+        {
+            var args = e.NewValue;
+            if (args == null) { return; }
+            int code = args.Code;
+            if (code == EditableElementEventArgs.EVT_EDIT_END)
+            {
+                var panel = GetCurrentDesignPanel();
+                if (panel != null)
+                {
+                    var layout = panel.LayoutPanel;
+                    if (layout != null)
+                    {
+                        panel.SetValue(ReportDesignPanel.TitleProperty, layout.Title);
+                    }
+                    panel.IsModified = true;
+                }
+            }
+        }
+
         void PropertyEditor_PropertyValueChanged(object sender,
             RoutedPropertyChangedEventArgs<PropertyValueChangedEventArgs> e)
         {
+            var panel = GetCurrentDesignPanel();
+            if (panel != null)
+            {
+                panel.IsModified = true;
+            }
             SetToolBarStatus();
         }
 
@@ -528,20 +542,14 @@ namespace ReportDesigner
             var ischecked = BtnFontUnderlined.IsChecked == true;
             var panel = GetCurrentDesignPanel();
             if (panel == null) { return; }
-            var grid = GetCurrentDesignGrid();
+            var grid = panel.Grid;
             if (grid == null) { return; }
             var cells = grid.SelectedCells;
             if (cells.Count <= 0) { return; }
             for (int i = 0; i < cells.Count; i++)
             {
                 var cell = cells[i];
-                var textElement = cell.Content as EditableElement;
-                if (textElement == null) { continue; }
-                var textBlock = textElement.TextBlock;
-                if (textBlock != null)
-                {
-                    textBlock.TextDecorations = ischecked ? TextDecorations.Underline : null;
-                }
+                cell.TextDecration = ischecked ? TextDecorations.Underline : null;
             }
             panel.IsModified = true;
         }
@@ -551,7 +559,7 @@ namespace ReportDesigner
             var ischecked = BtnFontItalic.IsChecked == true;
             var panel = GetCurrentDesignPanel();
             if (panel == null) { return; }
-            var grid = GetCurrentDesignGrid();
+            var grid = panel.Grid;
             if (grid == null) { return; }
             var cells = grid.SelectedCells;
             if (cells.Count <= 0) { return; }
@@ -568,7 +576,7 @@ namespace ReportDesigner
             var ischecked = BtnFontBold.IsChecked == true;
             var panel = GetCurrentDesignPanel();
             if (panel == null) { return; }
-            var grid = GetCurrentDesignGrid();
+            var grid = panel.Grid;
             if (grid == null) { return; }
             var cells = grid.SelectedCells;
             if (cells.Count <= 0) { return; }
@@ -585,22 +593,20 @@ namespace ReportDesigner
             var ischecked = BtnFontBottom.IsChecked == true;
             var panel = GetCurrentDesignPanel();
             if (panel == null) { return; }
-            var grid = GetCurrentDesignGrid();
+            var grid = panel.Grid;
             if (grid == null) { return; }
             var cells = grid.SelectedCells;
             if (cells.Count <= 0) { return; }
             for (int i = 0; i < cells.Count; i++)
             {
                 var cell = cells[i];
-                var textElement = cell.Content as EditableElement;
-                if (textElement == null) { continue; }
                 if (ischecked)
                 {
-                    textElement.VAlign = VerticalAlignment.Bottom;
+                    cell.VAlign = VerticalAlignment.Bottom;
                 }
                 else
                 {
-                    textElement.VAlign = VerticalAlignment.Stretch;
+                    cell.VAlign = VerticalAlignment.Stretch;
                 }
             }
             if (ischecked)
@@ -616,22 +622,20 @@ namespace ReportDesigner
             var ischecked = BtnFontMiddle.IsChecked == true;
             var panel = GetCurrentDesignPanel();
             if (panel == null) { return; }
-            var grid = GetCurrentDesignGrid();
+            var grid = panel.Grid;
             if (grid == null) { return; }
             var cells = grid.SelectedCells;
             if (cells.Count <= 0) { return; }
             for (int i = 0; i < cells.Count; i++)
             {
                 var cell = cells[i];
-                var textElement = cell.Content as EditableElement;
-                if (textElement == null) { continue; }
                 if (ischecked)
                 {
-                    textElement.VAlign = VerticalAlignment.Center;
+                    cell.VAlign = VerticalAlignment.Center;
                 }
                 else
                 {
-                    textElement.VAlign = VerticalAlignment.Stretch;
+                    cell.VAlign = VerticalAlignment.Stretch;
                 }
             }
             if (ischecked)
@@ -647,22 +651,20 @@ namespace ReportDesigner
             var ischecked = BtnFontTop.IsChecked == true;
             var panel = GetCurrentDesignPanel();
             if (panel == null) { return; }
-            var grid = GetCurrentDesignGrid();
+            var grid = panel.Grid;
             if (grid == null) { return; }
             var cells = grid.SelectedCells;
             if (cells.Count <= 0) { return; }
             for (int i = 0; i < cells.Count; i++)
             {
                 var cell = cells[i];
-                var textElement = cell.Content as EditableElement;
-                if (textElement == null) { continue; }
                 if (ischecked)
                 {
-                    textElement.VAlign = VerticalAlignment.Top;
+                    cell.VAlign = VerticalAlignment.Top;
                 }
                 else
                 {
-                    textElement.VAlign = VerticalAlignment.Stretch;
+                    cell.VAlign = VerticalAlignment.Stretch;
                 }
             }
             if (ischecked)
@@ -678,22 +680,20 @@ namespace ReportDesigner
             var ischecked = BtnFontRight.IsChecked == true;
             var panel = GetCurrentDesignPanel();
             if (panel == null) { return; }
-            var grid = GetCurrentDesignGrid();
+            var grid = panel.Grid;
             if (grid == null) { return; }
             var cells = grid.SelectedCells;
             if (cells.Count <= 0) { return; }
             for (int i = 0; i < cells.Count; i++)
             {
                 var cell = cells[i];
-                var textElement = cell.Content as EditableElement;
-                if (textElement == null) { continue; }
                 if (ischecked)
                 {
-                    textElement.HAlign = HorizontalAlignment.Right;
+                    cell.HAlign = HorizontalAlignment.Right;
                 }
                 else
                 {
-                    textElement.HAlign = HorizontalAlignment.Stretch;
+                    cell.HAlign = HorizontalAlignment.Stretch;
                 }
             }
             if (ischecked)
@@ -709,22 +709,20 @@ namespace ReportDesigner
             var ischecked = BtnFontCenter.IsChecked == true;
             var panel = GetCurrentDesignPanel();
             if (panel == null) { return; }
-            var grid = GetCurrentDesignGrid();
+            var grid = panel.Grid;
             if (grid == null) { return; }
             var cells = grid.SelectedCells;
             if (cells.Count <= 0) { return; }
             for (int i = 0; i < cells.Count; i++)
             {
                 var cell = cells[i];
-                var textElement = cell.Content as EditableElement;
-                if (textElement == null) { continue; }
                 if (ischecked)
                 {
-                    textElement.HAlign = HorizontalAlignment.Center;
+                    cell.HAlign = HorizontalAlignment.Center;
                 }
                 else
                 {
-                    textElement.HAlign = HorizontalAlignment.Stretch;
+                    cell.HAlign = HorizontalAlignment.Stretch;
                 }
             }
             if (ischecked)
@@ -740,22 +738,20 @@ namespace ReportDesigner
             var ischecked = BtnFontLeft.IsChecked == true;
             var panel = GetCurrentDesignPanel();
             if (panel == null) { return; }
-            var grid = GetCurrentDesignGrid();
+            var grid = panel.Grid;
             if (grid == null) { return; }
             var cells = grid.SelectedCells;
             if (cells.Count <= 0) { return; }
             for (int i = 0; i < cells.Count; i++)
             {
                 var cell = cells[i];
-                var textElement = cell.Content as EditableElement;
-                if (textElement == null) { continue; }
                 if (ischecked)
                 {
-                    textElement.HAlign = HorizontalAlignment.Left;
+                    cell.HAlign = HorizontalAlignment.Left;
                 }
                 else
                 {
-                    textElement.HAlign = HorizontalAlignment.Stretch;
+                    cell.HAlign = HorizontalAlignment.Stretch;
                 }
             }
             if (ischecked)
@@ -817,7 +813,7 @@ namespace ReportDesigner
             int size = int.Parse(fontSizeItem.Name);
             var panel = GetCurrentDesignPanel();
             if (panel == null) { return; }
-            var grid = GetCurrentDesignGrid();
+            var grid = panel.Grid;
             if (grid == null) { return; }
             var cells = grid.SelectedCells;
             if (cells.Count <= 0) { return; }
@@ -838,7 +834,7 @@ namespace ReportDesigner
             string strName = fontFamilyItem.Name;
             var panel = GetCurrentDesignPanel();
             if (panel == null) { return; }
-            var grid = GetCurrentDesignGrid();
+            var grid = panel.Grid;
             if (grid == null) { return; }
             var cells = grid.SelectedCells;
             if (cells.Count <= 0) { return; }
@@ -984,16 +980,18 @@ namespace ReportDesigner
 
         private void NewReport()
         {
+            string strTitle = string.Format("NewReport");
             ReportDesignPanel panel = new ReportDesignPanel();
+            panel.PageParent = this;
             panel.DesignerConfig = mDesignerConfig;
-            panel.Title = string.Format("NewReport");
             LayoutDocument layout = new LayoutDocument();
             layout.Closing += LayoutReport_Closing;
             layout.IsSelectedChanged += LayoutReport_IsSelectedChanged;
             layout.CanFloat = false;
+            layout.Title = strTitle;
             layout.Content = panel;
             panel.LayoutPanel = layout;
-            layout.Title = panel.Title;
+            panel.SetValue(ReportDesignPanel.TitleProperty, layout.Title);
             DocumentList.Children.Add(layout);
             mListReportPanels.Add(panel);
             layout.IsSelected = true;
@@ -1033,8 +1031,13 @@ namespace ReportDesigner
             if (reportPanel == null)
             {
                 reportPanel = new ReportDesignPanel();
+                reportPanel.PageParent = this;
                 reportPanel.DesignerConfig = mDesignerConfig;
-                reportPanel.Title = reportDocument.Name;
+                reportPanel.Title = reportDocument.Title;
+                if (string.IsNullOrEmpty(reportPanel.Title))
+                {
+                    reportPanel.Title = reportDocument.Name;
+                }
                 reportPanel.Document = reportDocument;
                 reportPanel.ReportFile = reportFile;
                 LayoutDocument layout = new LayoutDocument();
@@ -1042,8 +1045,8 @@ namespace ReportDesigner
                 layout.IsSelectedChanged += LayoutReport_IsSelectedChanged;
                 layout.CanFloat = false;
                 layout.Content = reportPanel;
+                layout.SetValue(LayoutDocument.TitleProperty, reportPanel.Title);
                 reportPanel.LayoutPanel = layout;
-                layout.Title = reportPanel.Title;
                 DocumentList.Children.Add(layout);
                 mListReportPanels.Add(reportPanel);
                 layout.IsSelected = true;
@@ -1112,7 +1115,9 @@ namespace ReportDesigner
                 var borderStyle = BtnBorderStyle.Tag as BorderStyleViewModel;
                 if (borderStyle == null) { return; }
                 int type = borderStyle.Type;
-                var grid = GetCurrentDesignGrid();
+                var panel = GetCurrentDesignPanel();
+                if (panel == null) { return; }
+                var grid = panel.Grid;
                 if (grid == null) { return; }
                 var cells = grid.SelectedCells;
                 if (type == 1)
@@ -1212,7 +1217,9 @@ namespace ReportDesigner
         {
             var item = GalleryStyles.SelectedItem as CellStyleViewModel;
             if (item == null) { return; }
-            var style = item.Style;
+            var cellStyle = item.CellStyle;
+            if (cellStyle == null) { return; }
+            var style = cellStyle.Style;
             if (style == null) { return; }
             var panel = GetCurrentDesignPanel();
             if (panel == null) { return; }
@@ -1222,111 +1229,68 @@ namespace ReportDesigner
             for (int i = 0; i < cells.Count; i++)
             {
                 var cell = cells[i];
+                SetCellStyle(cell, style);
+                cell.AddedData1 = item;
+            }
+        }
+
+        private void SetCellStyle(GridCell cell, VisualStyle style)
+        {
+            if (!string.IsNullOrEmpty(style.FontFamily))
+            {
                 cell.FontFamily = new FontFamily(style.FontFamily);
+            }
+            if (style.FontSize > 0)
+            {
                 cell.FontSize = style.FontSize;
-                cell.FontWeight = (style.FontStyle & (int)NetInfo.EMP.Reports.FontStyle.Bold) > 0
-                    ? FontWeights.Bold
-                    : FontWeights.Normal;
-                cell.FontStyle = (style.FontStyle & (int)NetInfo.EMP.Reports.FontStyle.Italic) > 0
-                    ? FontStyles.Italic
-                    : FontStyles.Normal;
-                var textElement = cell.Content as EditableElement;
-                if (textElement != null)
+            }
+            cell.FontWeight = (style.FontStyle & (int)NetInfo.EMP.Reports.FontStyle.Bold) > 0
+                ? FontWeights.Bold
+                : FontWeights.Normal;
+            cell.FontStyle = (style.FontStyle & (int)NetInfo.EMP.Reports.FontStyle.Italic) > 0
+                ? FontStyles.Italic
+                : FontStyles.Normal;
+            cell.TextDecration = (style.FontStyle & (int)NetInfo.EMP.Reports.FontStyle.Underlined) > 0
+                ? TextDecorations.Underline
+                : null;
+            cell.HAlign = (HorizontalAlignment)style.HAlign;
+            cell.VAlign = (VerticalAlignment)style.VAlign;
+            if (!string.IsNullOrEmpty(style.ForeColor))
+            {
+                var color = ColorConverter.ConvertFromString(style.ForeColor);
+                if (color != null)
                 {
-                    var textBlock = textElement.TextBlock;
-                    if (textBlock != null)
-                    {
-                        textBlock.TextDecorations = (style.FontStyle & (int)NetInfo.EMP.Reports.FontStyle.Underlined) > 0
-                            ? TextDecorations.Underline
-                            : null;
-                    }
-                    textElement.HAlign = (HorizontalAlignment)style.HAlign;
-                    textElement.VAlign = (VerticalAlignment)style.VAlign;
+                    cell.Foreground = new SolidColorBrush((Color)color);
                 }
-                if (!string.IsNullOrEmpty(style.ForeColor))
+            }
+            if (!string.IsNullOrEmpty(style.BackColor))
+            {
+                var color = ColorConverter.ConvertFromString(style.BackColor);
+                if (color != null)
                 {
-                    var color = ColorConverter.ConvertFromString(style.ForeColor);
-                    if (color != null)
-                    {
-                        cell.Foreground = new SolidColorBrush((Color)color);
-                    }
-                }
-                if (!string.IsNullOrEmpty(style.BackColor))
-                {
-                    var color = ColorConverter.ConvertFromString(style.BackColor);
-                    if (color != null)
-                    {
-                        cell.Background = new SolidColorBrush((Color)color);
-                    }
-                }
-                var ele = cell.Content as ICellElement;
-                if (ele != null)
-                {
-                    ele.AddedData1 = item;
+                    cell.Background = new SolidColorBrush((Color)color);
                 }
             }
         }
 
         private void MergeCells()
         {
-            var grid = GetCurrentDesignGrid();
+            var panel = GetCurrentDesignPanel();
+            if (panel == null) { return; }
+            var grid = panel.Grid;
             if (grid == null) { return; }
             grid.MergeCells();
-            var panel = GetCurrentDesignPanel();
-            if (panel != null)
-            {
-                panel.IsModified = true;
-            }
+            panel.IsModified = true;
         }
 
         private void UnmergeCell()
-        {
-            var grid = GetCurrentDesignGrid();
-            if (grid == null) { return; }
-            grid.UnmergeCells();
-            var panel = GetCurrentDesignPanel();
-            if (panel != null)
-            {
-                panel.IsModified = true;
-            }
-        }
-
-        private void InsertText()
-        {
-            var cells = GetSelectedCells();
-            if (cells.Count != 1) { return; }
-            var cell = cells[0];
-            var textBlock = cell.Content as EditableElement;
-            if (textBlock != null)
-            {
-                textBlock.IsInEditMode = true;
-            }
-            var panel = GetCurrentDesignPanel();
-            if (panel != null)
-            {
-                panel.IsModified = true;
-            }
-        }
-
-        private void InsertSequence()
         {
             var panel = GetCurrentDesignPanel();
             if (panel == null) { return; }
             var grid = panel.Grid;
             if (grid == null) { return; }
-            var cells = grid.SelectedCells;
-            if (cells.Count != 1) { return; }
-            var cell = cells[0];
-            var textElement = cell.Content as EditableElement;
-            if (textElement == null) { return; }
-            //将文本元素转成序列元素
-            SequenceElement sequenceElement = new SequenceElement();
-            sequenceElement.HAlign = textElement.HAlign;
-            sequenceElement.VAlign = textElement.VAlign;
-            sequenceElement.Text = textElement.Text;
-            cell.Content = sequenceElement;
+            grid.UnmergeCells();
             panel.IsModified = true;
-            SetObjectProperty();
         }
 
         private void AppClose()
@@ -1505,10 +1469,10 @@ namespace ReportDesigner
             {
                 CheckBoxObjectProperty.IsChecked = panel.IsVisible;
             }
-            panel = GetPanlByContentID("PanelCellExtension");
+            panel = GetPanlByContentID("PanelComponentBox");
             if (panel != null)
             {
-                CheckBoxCellExtension.IsChecked = panel.IsVisible;
+                CheckBoxComponentBox.IsChecked = panel.IsVisible;
             }
         }
 
@@ -1534,6 +1498,145 @@ namespace ReportDesigner
             }
             SetViewPanelCheck();
         }
+
+        public void SaveConfig()
+        {
+            if (mDesignerConfig == null) { return; }
+            string path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, DesignerConfig.FILE_NAME);
+            OperationReturn optReturn = XMLHelper.SerializeFile(mDesignerConfig, path);
+            if (!optReturn.Result)
+            {
+                ShowException(string.Format("Fail.\t{0}\t{1}", optReturn.Code, optReturn.Message));
+                return;
+            }
+            ShowInfomation(string.Format("保存配置文件成功！"));
+        }
+
+        private void SaveCellStyleConfig()
+        {
+            CellStyleConfig config = new CellStyleConfig();
+            for (int i = 0; i < mListCellStyles.Count; i++)
+            {
+                var item = mListCellStyles[i];
+                var cellStyle = item.CellStyle;
+                if (cellStyle != null)
+                {
+                    if (!cellStyle.IsBuiltIn)
+                    {
+                        config.CellStyles.Add(cellStyle);
+                    }
+                }
+            }
+            if (config.CellStyles.Count > 0)
+            {
+                string path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, CellStyleConfig.FILE_NAME);
+                OperationReturn optReturn = XMLHelper.SerializeFile(config, path);
+                if (!optReturn.Result)
+                {
+                    ShowException(string.Format("Fail.\t{0}\t{1}", optReturn.Code, optReturn.Message));
+                    return;
+                }
+                ShowInfomation(string.Format("存储样式成功！"));
+            }
+        }
+
+
+        #region Insert Report Element
+
+        private void InsertText()
+        {
+            var panel = GetCurrentDesignPanel();
+            if (panel == null) { return; }
+            var grid = panel.Grid;
+            if (grid == null) { return; }
+            var cells = grid.SelectedCells;
+            if (cells.Count <= 0) { return; }
+            var cell = cells[0];
+            TextElement textElement = new TextElement();
+            textElement.Text = string.Empty;
+            textElement.Cell = cell;
+            cell.Content = textElement;
+            SetObjectProperty();
+            var textBox = textElement.TextBox;
+            if (textBox != null)
+            {
+                textBox.Focus();
+            }
+            textElement.IsInEditMode = true;
+            panel.IsModified = true;
+        }
+
+        private void InsertSequence()
+        {
+            var panel = GetCurrentDesignPanel();
+            if (panel == null) { return; }
+            var grid = panel.Grid;
+            if (grid == null) { return; }
+            var cells = grid.SelectedCells;
+            if (cells.Count <= 0) { return; }
+            var cell = cells[0];
+            SequenceElement sequenceElement = new SequenceElement();
+            sequenceElement.Text = string.Empty;
+            sequenceElement.Cell = cell;
+            cell.Content = sequenceElement;
+            SetObjectProperty();
+            panel.IsModified = true;
+        }
+
+        private void InsertImage()
+        {
+            var panel = GetCurrentDesignPanel();
+            if (panel == null) { return; }
+            var grid = panel.Grid;
+            if (grid == null) { return; }
+            var cells = grid.SelectedCells;
+            if (cells.Count <= 0) { return; }
+            var cell = cells[0];
+            UCReportImageModify uc = new UCReportImageModify();
+            uc.IsModify = false;
+            uc.GridCell = cell;
+            PopupWindow popup = new PopupWindow();
+            popup.Title = "插入图片";
+            popup.Content = uc;
+            var result = popup.ShowDialog();
+            if (result != true) { return; }
+            var imageElement = uc.ImageElement;
+            if (imageElement != null)
+            {
+                cell.Content = imageElement;
+            }
+            panel.IsModified = true;
+        }
+
+        public void InsertComponent(ComponentItem componentItem)
+        {
+            var panel = GetCurrentDesignPanel();
+            if (panel == null) { return; }
+            var grid = panel.Grid;
+            if (grid == null) { return; }
+            var cells = grid.SelectedCells;
+            if (cells.Count <= 0) { return; }
+            var cell = cells[0];
+            if (componentItem == null) { return; }
+            var componentInfo = componentItem.Info;
+            if (componentInfo == null) { return; }
+            var style = componentInfo.Style;
+            if (style != null)
+            {
+                SetCellStyle(cell, style);
+            }
+            var reportElement = componentItem.CreateCellElement();
+            if (reportElement != null)
+            {
+                reportElement.Cell = cell;
+            }
+            cell.Content = reportElement;
+            SetObjectProperty();
+            panel.IsModified = true;
+        }
+
+        #endregion
+
 
         #endregion
 
@@ -1593,6 +1696,14 @@ namespace ReportDesigner
                 LayoutSave_CanExecute));
             CommandBindings.Add(new CommandBinding(ReportDesignerCommands.LayoutRestoreCommand, LayoutRestore_Executed,
                 LayoutRestore_CanExecute));
+
+            CommandBindings.Add(new CommandBinding(ReportDesignerCommands.SaveAsStyleCommand, SaveAsStyle_Executed,
+                SaveAsStyle_CanExecute));
+            CommandBindings.Add(new CommandBinding(ReportDesignerCommands.SaveAsComponentCommand, SaveAsComponent_Executed,
+                SaveAsComponent_CanExecute));
+
+            CommandBindings.Add(new CommandBinding(ReportDesignerCommands.CellStyleDeleteCommand, CellStyleDeleteComponent_Executed,
+               CellStyleDeleteComponent_CanExecute));
         }
 
 
@@ -1610,7 +1721,15 @@ namespace ReportDesigner
 
         private void ApplicationAbout_Executed(object sender, ExecutedRoutedEventArgs e)
         {
-
+            //if (mDesignerConfig == null) { return; }
+            //string path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, DesignerConfig.FILE_NAME);
+            //OperationReturn optReturn = XMLHelper.SerializeFile(mDesignerConfig, path);
+            //if (!optReturn.Result)
+            //{
+            //    ShowException(string.Format("Fail.\t{0}\t{1}", optReturn.Code, optReturn.Message));
+            //    return;
+            //}
+            //ShowInfomation(string.Format("End.\t{0}", path));
         }
 
         private void ApplicationNew_Executed(object sender, ExecutedRoutedEventArgs e)
@@ -1665,7 +1784,7 @@ namespace ReportDesigner
 
         private void InsertImage_Executed(object sender, ExecutedRoutedEventArgs e)
         {
-
+            InsertImage();
         }
 
         private void InsertChart_Executed(object sender, ExecutedRoutedEventArgs e)
@@ -1723,6 +1842,66 @@ namespace ReportDesigner
             RestoreLayout();
         }
 
+        private void SaveAsStyle_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            var cells = e.Parameter as List<GridCell>;
+            if (cells == null) { return; }
+            if (cells.Count <= 0) { return; }
+            var cell = cells[0];
+            UCCellStyleModify uc = new UCCellStyleModify();
+            uc.GridCell = cell;
+            PopupWindow popup = new PopupWindow();
+            popup.Title = "存储样式";
+            popup.Content = uc;
+            var result = popup.ShowDialog();
+            if (result != true) { return; }
+            var item = uc.Item;
+            if (item == null) { return; }
+            mListCellStyles.Add(item);
+            var cellStyle = item.CellStyle;
+            if (cellStyle != null)
+            {
+                SaveCellStyleConfig();
+            }
+        }
+
+        private void SaveAsComponent_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            var cells = e.Parameter as List<GridCell>;
+            if (cells == null) { return; }
+            if (cells.Count <= 0) { return; }
+            var cell = cells[0];
+            UCComponentModify uc = new UCComponentModify();
+            uc.GridCell = cell;
+            var box = PanelComponentBox.Content as UCComponentBox;
+            if (box == null) { return; }
+            uc.ListComponentItems = box.GetAllComponentItems();
+            PopupWindow popup = new PopupWindow();
+            popup.Title = "存储元件";
+            popup.Content = uc;
+            var result = popup.ShowDialog();
+            if (result != true) { return; }
+            var item = uc.Item;
+            if (item == null) { return; }
+            box.AddComponent(item);
+        }
+
+        private void CellStyleDeleteComponent_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            var item = e.Parameter as CellStyleViewModel;
+            if (item == null) { return; }
+            string strName = item.Name;
+            var result = MessageBox.Show(string.Format("确定删除样式 {0}？", strName), App.AppTitle, MessageBoxButton.YesNoCancel,
+                MessageBoxImage.Question);
+            if (result != MessageBoxResult.Yes) { return; }
+            mListCellStyles.Remove(item);
+            var cellStyle = item.CellStyle;
+            if (cellStyle != null)
+            {
+                SaveCellStyleConfig();
+            }
+        }
+
         #endregion
 
 
@@ -1778,10 +1957,11 @@ namespace ReportDesigner
 
         private void ReportPreview_CanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
-            if (GetCurrentDesignGrid() != null)
-            {
-                e.CanExecute = true;
-            }
+            var panel = GetCurrentDesignPanel();
+            if (panel == null) { return; }
+            var grid = panel.Grid;
+            if (grid == null) { return; }
+            e.CanExecute = true;
         }
 
         private void DirCreate_CanExecute(object sender, CanExecuteRoutedEventArgs e)
@@ -1796,7 +1976,11 @@ namespace ReportDesigner
 
         private void CellMerge_CanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
-            var cells = GetSelectedCells();
+            var panel = GetCurrentDesignPanel();
+            if (panel == null) { return; }
+            var grid = panel.Grid;
+            if (grid == null) { return; }
+            var cells = grid.SelectedCells;
             if (cells.Count > 1)
             {
                 e.CanExecute = true;
@@ -1805,7 +1989,11 @@ namespace ReportDesigner
 
         private void CellUnmerge_CanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
-            var cells = GetSelectedCells();
+            var panel = GetCurrentDesignPanel();
+            if (panel == null) { return; }
+            var grid = panel.Grid;
+            if (grid == null) { return; }
+            var cells = grid.SelectedCells;
             if (cells.Count > 0)
             {
                 for (int i = 0; i < cells.Count; i++)
@@ -1823,7 +2011,11 @@ namespace ReportDesigner
 
         private void InsertText_CanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
-            var cells = GetSelectedCells();
+            var panel = GetCurrentDesignPanel();
+            if (panel == null) { return; }
+            var grid = panel.Grid;
+            if (grid == null) { return; }
+            var cells = grid.SelectedCells;
             if (cells.Count == 1)
             {
                 e.CanExecute = true;
@@ -1832,7 +2024,11 @@ namespace ReportDesigner
 
         private void InsertSequence_CanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
-            var cells = GetSelectedCells();
+            var panel = GetCurrentDesignPanel();
+            if (panel == null) { return; }
+            var grid = panel.Grid;
+            if (grid == null) { return; }
+            var cells = grid.SelectedCells;
             if (cells.Count == 1)
             {
                 e.CanExecute = true;
@@ -1841,11 +2037,15 @@ namespace ReportDesigner
 
         private void InsertImage_CanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
-            //var cells = GetSelectedCells();
-            //if (cells.Count == 1)
-            //{
-            //    e.CanExecute = true;
-            //}
+            var panel = GetCurrentDesignPanel();
+            if (panel == null) { return; }
+            var grid = panel.Grid;
+            if (grid == null) { return; }
+            var cells = grid.SelectedCells;
+            if (cells.Count == 1)
+            {
+                e.CanExecute = true;
+            }
         }
 
         private void InsertChart_CanExecute(object sender, CanExecuteRoutedEventArgs e)
@@ -1912,6 +2112,33 @@ namespace ReportDesigner
             e.CanExecute = true;
         }
 
+        private void SaveAsStyle_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            var panel = GetCurrentDesignPanel();
+            if (panel == null) { return; }
+            var grid = panel.Grid;
+            if (grid == null) { return; }
+            var cells = grid.SelectedCells;
+            if (cells.Count <= 0) { return; }
+            e.CanExecute = true;
+        }
+
+        private void SaveAsComponent_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            var panel = GetCurrentDesignPanel();
+            if (panel == null) { return; }
+            var grid = panel.Grid;
+            if (grid == null) { return; }
+            var cells = grid.SelectedCells;
+            if (cells.Count <= 0) { return; }
+            e.CanExecute = true;
+        }
+
+        private void CellStyleDeleteComponent_CanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute = true;
+        }
+
         #endregion
 
 
@@ -1928,25 +2155,6 @@ namespace ReportDesigner
             return panel;
         }
 
-        private DesignGrid GetCurrentDesignGrid()
-        {
-            var panel = GetCurrentDesignPanel();
-            if (panel == null) { return null; }
-            var grid = panel.Grid;
-            return grid;
-        }
-
-        private List<GridCell> GetSelectedCells()
-        {
-            var cells = new List<GridCell>();
-            var grid = GetCurrentDesignGrid();
-            if (grid == null)
-            {
-                return cells;
-            }
-            return grid.SelectedCells;
-        }
-
         private LayoutAnchorable GetPanlByContentID(string contentID)
         {
             var panel =
@@ -1958,7 +2166,9 @@ namespace ReportDesigner
 
         public void SetToolBarStatus()
         {
-            var grid = GetCurrentDesignGrid();
+            var panel = GetCurrentDesignPanel();
+            if (panel == null) { return; }
+            var grid = panel.Grid;
             if (grid == null) { return; }
             var cells = grid.SelectedCells;
             if (cells.Count <= 0) { return; }
@@ -1981,37 +2191,16 @@ namespace ReportDesigner
             BtnFontBold.IsChecked = fontWeight == FontWeights.Bold;
             var fontStyle = cell.FontStyle;
             BtnFontItalic.IsChecked = fontStyle == FontStyles.Italic;
-            var textElement = cell.Content as EditableElement;
-            if (textElement != null)
-            {
-                var textBlock = textElement.TextBlock;
-                BtnFontUnderlined.IsChecked = textBlock != null
-                                              && textBlock.TextDecorations != null
-                                              && textBlock.TextDecorations.Equals(TextDecorations.Underline);
-                BtnFontLeft.IsChecked = textElement.HAlign == HorizontalAlignment.Left;
-                BtnFontCenter.IsChecked = textElement.HAlign == HorizontalAlignment.Center;
-                BtnFontRight.IsChecked = textElement.HAlign == HorizontalAlignment.Right;
-                BtnFontTop.IsChecked = textElement.VAlign == VerticalAlignment.Top;
-                BtnFontMiddle.IsChecked = textElement.VAlign == VerticalAlignment.Center;
-                BtnFontBottom.IsChecked = textElement.VAlign == VerticalAlignment.Bottom;
-            }
-            else
-            {
-                BtnFontUnderlined.IsChecked = false;
-                BtnFontLeft.IsChecked = false;
-                BtnFontCenter.IsChecked = false;
-                BtnFontRight.IsChecked = false;
-                BtnFontTop.IsChecked = false;
-                BtnFontMiddle.IsChecked = false;
-                BtnFontBottom.IsChecked = false;
-            }
+            var textDecration = cell.TextDecration;
+            BtnFontUnderlined.IsChecked = textDecration != null && Equals(textDecration, TextDecorations.Underline);
+            BtnFontLeft.IsChecked = cell.HAlign == HorizontalAlignment.Left;
+            BtnFontCenter.IsChecked = cell.HAlign == HorizontalAlignment.Center;
+            BtnFontRight.IsChecked = cell.HAlign == HorizontalAlignment.Right;
+            BtnFontTop.IsChecked = cell.VAlign == VerticalAlignment.Top;
+            BtnFontMiddle.IsChecked = cell.VAlign == VerticalAlignment.Center;
+            BtnFontBottom.IsChecked = cell.VAlign == VerticalAlignment.Bottom;
 
-            CellStyleViewModel preStyle = null;
-            var ele = cell.Content as ICellElement;
-            if (ele != null)
-            {
-                preStyle = ele.AddedData1 as CellStyleViewModel;
-            }
+            CellStyleViewModel preStyle = cell.AddedData1 as CellStyleViewModel;
             GalleryStyles.Tag = true;       //切换样式的时候禁止触发SelectionChanged事件
             GalleryStyles.SelectedItem = preStyle;
             GalleryStyles.Tag = false;
@@ -2019,7 +2208,9 @@ namespace ReportDesigner
 
         public void SetStatus()
         {
-            var grid = GetCurrentDesignGrid();
+            var panel = GetCurrentDesignPanel();
+            if (panel == null) { return; }
+            var grid = panel.Grid;
             if (grid == null) { return; }
             var selection = grid.Selection;
             if (selection != null)
@@ -2038,7 +2229,7 @@ namespace ReportDesigner
             }
         }
 
-        private void SetObjectProperty()
+        public void SetObjectProperty()
         {
             var panel = GetCurrentDesignPanel();
             if (panel == null) { return; }
@@ -2053,6 +2244,14 @@ namespace ReportDesigner
                 ObjectPropertyLister.Panel = panel;
                 ObjectPropertyLister.Refresh();
             }
+        }
+
+        public void CreateComponentBox()
+        {
+            UCComponentBox uc = new UCComponentBox();
+            uc.PageParent = this;
+            uc.DesignerConfig = mDesignerConfig;
+            PanelComponentBox.Content = uc;
         }
 
         private void ShowException(string msg)

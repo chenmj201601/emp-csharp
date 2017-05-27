@@ -16,20 +16,12 @@
 //======================================================================
 
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using NetInfo.EMP.Reports.Controls;
 using NetInfo.Wpf.Controls;
 using ReportDesigner.Models;
@@ -93,6 +85,7 @@ namespace ReportDesigner.UserControls
                 EditFormat = mPropertyInfo.EditFormat;
             }
             Value = PropertyInfoItem.Value;
+            BoolValue = Value == "1";
             InitEnumItems();
             InitValue();
         }
@@ -114,23 +107,26 @@ namespace ReportDesigner.UserControls
             int id = mPropertyInfo.ID;
             switch (id)
             {
-                case TextElementPropertyFactory.PRO_FONTFAMILY:
+                case ReportPropertyFactory.PRO_FONTFAMILY:
                     InitEnumFontFamilies();
                     break;
-                case TextElementPropertyFactory.PRO_FONTSTYLE:
-                    InitEnumFontStyles();
-                    break;
-                case TextElementPropertyFactory.PRO_HALIGN:
+                case ReportPropertyFactory.PRO_HALIGN:
                     InitEnumHAligns();
                     break;
-                case TextElementPropertyFactory.PRO_VALIGN:
+                case ReportPropertyFactory.PRO_VALIGN:
                     InitEnumVAligns();
                     break;
-                case SequenceElementPropertyFactory.PRO_DATASET:
+                case ReportPropertyFactory.PRO_DATASET:
                     InitEnumDataSets();
                     break;
-                case SequenceElementPropertyFactory.PRO_DATAFIELD:
+                case ReportPropertyFactory.PRO_DATAFIELD:
                     InitEnumDataFields();
+                    break;
+                case ReportPropertyFactory.PRO_SEQUENCE_EXT_METHOHD:
+                    InitEnumExtMethod();
+                    break;
+                case ReportPropertyFactory.PRO_IMAGE_STRETCH:
+                    InitEnumStretchMode();
                     break;
             }
         }
@@ -143,20 +139,6 @@ namespace ReportDesigner.UserControls
                 PropertyValueEnumItem item = new PropertyValueEnumItem();
                 item.Info = font;
                 item.Display = font.ToString();
-                item.Description = item.Display;
-                item.Value = item.Display;
-                mListEnumValueItems.Add(item);
-            }
-        }
-
-        private void InitEnumFontStyles()
-        {
-            var styles = Enum.GetValues(typeof(NetInfo.EMP.Reports.FontStyle));
-            foreach (var style in styles)
-            {
-                PropertyValueEnumItem item = new PropertyValueEnumItem();
-                item.Info = style;
-                item.Display = style.ToString();
                 item.Description = item.Display;
                 item.Value = item.Display;
                 mListEnumValueItems.Add(item);
@@ -250,6 +232,49 @@ namespace ReportDesigner.UserControls
             }
         }
 
+        private void InitEnumExtMethod()
+        {
+            PropertyValueEnumItem item = new PropertyValueEnumItem();
+            item.Value = "0";
+            item.Display = "不扩展";
+            item.Description = item.Display;
+            mListEnumValueItems.Add(item);
+            item = new PropertyValueEnumItem();
+            item.Value = "1";
+            item.Display = "纵向扩展";
+            item.Description = item.Display;
+            mListEnumValueItems.Add(item);
+            item = new PropertyValueEnumItem();
+            item.Value = "2";
+            item.Display = "横向扩展";
+            item.Description = item.Display;
+            mListEnumValueItems.Add(item);
+        }
+
+        private void InitEnumStretchMode()
+        {
+            PropertyValueEnumItem item = new PropertyValueEnumItem();
+            item.Value = "0";
+            item.Display = "无";
+            item.Description = item.Display;
+            mListEnumValueItems.Add(item);
+            item = new PropertyValueEnumItem();
+            item.Value = "1";
+            item.Display = "铺满";
+            item.Description = item.Display;
+            mListEnumValueItems.Add(item);
+            item = new PropertyValueEnumItem();
+            item.Value = "2";
+            item.Display = "保持宽高比";
+            item.Description = item.Display;
+            mListEnumValueItems.Add(item);
+            item = new PropertyValueEnumItem();
+            item.Value = "3";
+            item.Display = "保持宽高比铺满";
+            item.Description = item.Display;
+            mListEnumValueItems.Add(item);
+        }
+
         private void InitValue()
         {
             switch (EditFormat)
@@ -265,10 +290,13 @@ namespace ReportDesigner.UserControls
                     break;
                 case PropertyEditFormat.ColorSelect:
                     string strValue = Value;
-                    var color = ColorConverter.ConvertFromString(strValue);
-                    if (color != null)
+                    if (!string.IsNullOrEmpty(strValue))
                     {
-                        ColorValue = (Color)color;
+                        var color = ColorConverter.ConvertFromString(strValue);
+                        if (color != null)
+                        {
+                            ColorValue = (Color)color;
+                        }
                     }
                     break;
             }
@@ -285,6 +313,7 @@ namespace ReportDesigner.UserControls
         private const string PART_IntTextBox = "PART_IntTextBox";
         private const string PART_ItemsSelectControl = "PART_ItemsSelectControl";
         private const string PART_ColorTextBox = "PART_ColorTextBox";
+        private const string PART_CheckBox = "PART_CheckBox";
 
         private Border mBorderPanel;
         private TextBlock mTextBlockValue;
@@ -292,6 +321,7 @@ namespace ReportDesigner.UserControls
         private IntegerUpDown mIntTextBoxValue;
         private Selector mItemsSelectControlValue;
         private ColorPicker mColorTextBox;
+        private CheckBox mCheckBox;
 
         public override void OnApplyTemplate()
         {
@@ -314,17 +344,17 @@ namespace ReportDesigner.UserControls
             mTextBoxValue = GetTemplateChild(PART_TextBox) as AutoSelectTextBox;
             if (mTextBoxValue != null)
             {
-                mTextBoxValue.TextChanged += mTextBoxValue_TextChanged;
+                mTextBoxValue.TextChanged += TextBoxValue_TextChanged;
             }
             mIntTextBoxValue = GetTemplateChild(PART_IntTextBox) as IntegerUpDown;
             if (mIntTextBoxValue != null)
             {
-                mIntTextBoxValue.ValueChanged += mIntTextBoxValue_ValueChanged;
+                mIntTextBoxValue.ValueChanged += IntTextBoxValue_ValueChanged;
             }
             mItemsSelectControlValue = GetTemplateChild(PART_ItemsSelectControl) as Selector;
             if (mItemsSelectControlValue != null)
             {
-                mItemsSelectControlValue.SelectionChanged += mItemsSelectControlValue_SelectionChanged;
+                mItemsSelectControlValue.SelectionChanged += ItemsSelectControlValue_SelectionChanged;
                 //var combo = mItemsSelectControlValue as ComboBox;
                 //if (combo != null)
                 //{
@@ -339,6 +369,11 @@ namespace ReportDesigner.UserControls
             {
                 mColorTextBox.SelectedColorChanged += ColorTextBox_SelectedColorChanged;
             }
+            mCheckBox = GetTemplateChild(PART_CheckBox) as CheckBox;
+            if (mCheckBox != null)
+            {
+                mCheckBox.Click += CheckBox_Click;
+            }
         }
 
         #endregion
@@ -346,9 +381,10 @@ namespace ReportDesigner.UserControls
 
         #region Event Handlers
 
-        void mTextBoxValue_TextChanged(object sender, TextChangedEventArgs e)
+        void TextBoxValue_TextChanged(object sender, TextChangedEventArgs e)
         {
             if (PropertyInfoItem == null) { return; }
+            if (mTextBoxValue == null) { return; }
             string strValue = mTextBoxValue.Text;
             PropertyInfoItem.Value = strValue;
             PropertyValueChangedEventArgs args = new PropertyValueChangedEventArgs();
@@ -358,9 +394,10 @@ namespace ReportDesigner.UserControls
             OnPropertyValueChanged(this, args);
         }
 
-        void mIntTextBoxValue_ValueChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
+        void IntTextBoxValue_ValueChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
         {
             if (PropertyInfoItem == null) { return; }
+            if (mIntTextBoxValue == null) { return; }
             var value = mIntTextBoxValue.Value;
             if (value == null) { return; }
             int intValue = (int)value;
@@ -373,8 +410,9 @@ namespace ReportDesigner.UserControls
             OnPropertyValueChanged(this, args);
         }
 
-        void mItemsSelectControlValue_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        void ItemsSelectControlValue_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            if (mItemsSelectControlValue == null) { return; }
             var tag = mItemsSelectControlValue.Tag;
             if (tag != null && (bool)tag) { return; }
             if (PropertyInfoItem == null) { return; }
@@ -403,6 +441,20 @@ namespace ReportDesigner.UserControls
             OnPropertyValueChanged(this, args);
         }
 
+        void CheckBox_Click(object sender, RoutedEventArgs e)
+        {
+            if (PropertyInfoItem == null) { return; }
+            if (mCheckBox == null) { return; }
+            bool isChecked = mCheckBox.IsChecked == true;
+            string strValue = isChecked ? "1" : "0";
+            PropertyInfoItem.Value = strValue;
+            PropertyValueChangedEventArgs args = new PropertyValueChangedEventArgs();
+            args.PropertyItem = PropertyInfoItem;
+            args.ObjectInstance = mObjectInstance;
+            args.Value = strValue;
+            OnPropertyValueChanged(this, args);
+        }
+
         #endregion
 
 
@@ -412,6 +464,7 @@ namespace ReportDesigner.UserControls
         {
             if (PropertyInfoItem == null) { return; }
             Value = PropertyInfoItem.Value;
+            BoolValue = Value == "1";
             InitEnumItems();
             InitValue();
         }
@@ -442,6 +495,20 @@ namespace ReportDesigner.UserControls
         {
             get { return (string)GetValue(ValueProperty); }
             set { SetValue(ValueProperty, value); }
+        }
+
+        #endregion
+
+
+        #region BoolValueProperty
+
+        public static readonly DependencyProperty BoolValueProperty =
+            DependencyProperty.Register("BoolValue", typeof(bool), typeof(UCObjectPropertyEditor), new PropertyMetadata(default(bool)));
+
+        public bool BoolValue
+        {
+            get { return (bool)GetValue(BoolValueProperty); }
+            set { SetValue(BoolValueProperty, value); }
         }
 
         #endregion

@@ -22,7 +22,7 @@ using System.Windows.Input;
 
 namespace NetInfo.EMP.Reports.Controls
 {
-    public class EditableElement : Control, ICellElement
+    public class EditableElement : Control
     {
         private bool mCanEditable;
 
@@ -31,8 +31,8 @@ namespace NetInfo.EMP.Reports.Controls
             DefaultStyleKeyProperty.OverrideMetadata(typeof(EditableElement),
                 new FrameworkPropertyMetadata(typeof(EditableElement)));
 
-            EditableTextChangedEvent = EventManager.RegisterRoutedEvent("EditableTextChanged", RoutingStrategy.Bubble,
-                typeof(RoutedPropertyChangedEventHandler<EditableTextChangedEventArgs>), typeof(EditableElement));
+            EditableElementEventEvent = EventManager.RegisterRoutedEvent("EditableElementEvent", RoutingStrategy.Bubble,
+                typeof(RoutedPropertyChangedEventHandler<EditableElementEventArgs>), typeof(EditableElement));
         }
 
         public EditableElement()
@@ -78,34 +78,6 @@ namespace NetInfo.EMP.Reports.Controls
         {
             get { return (string)GetValue(TextProperty); }
             set { SetValue(TextProperty, value); }
-        }
-
-        #endregion
-
-
-        #region HAlign
-
-        public static readonly DependencyProperty HAlignProperty =
-            DependencyProperty.Register("HAlign", typeof(HorizontalAlignment), typeof(EditableElement), new PropertyMetadata(HorizontalAlignment.Stretch));
-
-        public HorizontalAlignment HAlign
-        {
-            get { return (HorizontalAlignment)GetValue(HAlignProperty); }
-            set { SetValue(HAlignProperty, value); }
-        }
-
-        #endregion
-
-
-        #region VAlign
-
-        public static readonly DependencyProperty VAlignProperty =
-            DependencyProperty.Register("VAlign", typeof(VerticalAlignment), typeof(EditableElement), new PropertyMetadata(VerticalAlignment.Stretch));
-
-        public VerticalAlignment VAlign
-        {
-            get { return (VerticalAlignment)GetValue(VAlignProperty); }
-            set { SetValue(VAlignProperty, value); }
         }
 
         #endregion
@@ -165,6 +137,12 @@ namespace NetInfo.EMP.Reports.Controls
             {
                 mCanEditable = false;
                 IsInEditMode = false;
+
+                EditableElementEventArgs args = new EditableElementEventArgs();
+                args.Code = EditableElementEventArgs.EVT_EDIT_END;
+                args.Element = this;
+                args.Data = e;
+                OnEditableElementEvent(this, args);
             }
         }
 
@@ -172,6 +150,12 @@ namespace NetInfo.EMP.Reports.Controls
         {
             mCanEditable = false;
             IsInEditMode = false;
+
+            EditableElementEventArgs args = new EditableElementEventArgs();
+            args.Code = EditableElementEventArgs.EVT_EDIT_END;
+            args.Element = this;
+            args.Data = e;
+            OnEditableElementEvent(this, args);
         }
 
         void TextBlock_MouseLeave(object sender, MouseEventArgs e)
@@ -198,48 +182,40 @@ namespace NetInfo.EMP.Reports.Controls
 
         void EditBox_TextChanged(object sender, TextChangedEventArgs e)
         {
-            EditableTextChangedEventArgs args = new EditableTextChangedEventArgs();
-            args.EditableTextBlock = this;
-            args.EditableTextBox = mEditBox;
-            args.Text = mEditBox.Text;
+            EditableElementEventArgs args = new EditableElementEventArgs();
+            args.Code = EditableElementEventArgs.EVT_TEXT_CHANGED;
+            args.Element = this;
             args.Data = e;
-            OnEditableTextChanged(this, args);
+            OnEditableElementEvent(this, args);
         }
 
         #endregion
 
 
-        #region EditableTextChanged Event
+        #region EditableElementEvent
 
-        public static readonly RoutedEvent EditableTextChangedEvent;
+        public static readonly RoutedEvent EditableElementEventEvent;
 
-        public event RoutedPropertyChangedEventHandler<EditableTextChangedEventArgs> EditableTextChanged
+        public event RoutedPropertyChangedEventHandler<EditableElementEventArgs> EditableElementEvent
         {
-            add { AddHandler(EditableTextChangedEvent, value); }
-            remove { RemoveHandler(EditableTextChangedEvent, value); }
+            add { AddHandler(EditableElementEventEvent, value); }
+            remove { RemoveHandler(EditableElementEventEvent, value); }
         }
 
-        protected void OnEditableTextChanged(object sender, EditableTextChangedEventArgs e)
+        protected void OnEditableElementEvent(object sender, EditableElementEventArgs e)
         {
-            var textBlock = sender as EditableElement;
-            if (textBlock != null)
+            var element = sender as EditableElement;
+            if (element != null)
             {
-                RoutedPropertyChangedEventArgs<EditableTextChangedEventArgs> args =
-                    new RoutedPropertyChangedEventArgs<EditableTextChangedEventArgs>(
-                        default(EditableTextChangedEventArgs), e);
-                args.RoutedEvent = EditableTextChangedEvent;
-                textBlock.RaiseEvent(args);
+                RoutedPropertyChangedEventArgs<EditableElementEventArgs> args =
+                    new RoutedPropertyChangedEventArgs<EditableElementEventArgs>(default(EditableElementEventArgs), e);
+                args.RoutedEvent = EditableElementEventEvent;
+                element.RaiseEvent(args);
             }
         }
 
         #endregion
 
-
-        #region AddedData
-
-        public object AddedData1 { get; set; }
-
-        #endregion
 
     }
 }
