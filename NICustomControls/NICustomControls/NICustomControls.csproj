@@ -80,6 +80,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Themes\ListItem.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Themes\NumericUpDown.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -112,7 +116,10 @@
     <Compile Include="DoubleUpDown.cs" />
     <Compile Include="EditableTextBlock.cs" />
     <Compile Include="EditableTextChangedEventArgs.cs" />
+    <Compile Include="IListItemObject.cs" />
     <Compile Include="IntegerUpDown.cs" />
+    <Compile Include="ListItemEventArgs.cs" />
+    <Compile Include="ListItemPanel.cs" />
     <Compile Include="LongUpDown.cs" />
     <Compile Include="Media\WindowColors.cs" />
     <Compile Include="NumericUpDown.cs" />

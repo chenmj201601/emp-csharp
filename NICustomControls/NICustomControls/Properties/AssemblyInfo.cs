@@ -56,4 +56,4 @@ using System.Windows.Markup;
 [assembly: AssemblyFileVersion("1.0.0.0")]
 
 [assembly: XmlnsPrefix("http://www.netinfo.com/wpf/controls", "nic")]
-[assembly: XmlnsDefinition("http://www.voicecyber.com/wpf/controls", "NetInfo.Wpf.Controls")]
+[assembly: XmlnsDefinition("http://www.netinfo.com/wpf/controls", "NetInfo.Wpf.Controls")]

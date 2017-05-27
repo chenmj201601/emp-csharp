@@ -12,6 +12,7 @@
         <ResourceDictionary Source="/NICustomControls;component/Themes/NumericUpDown.xaml"></ResourceDictionary>
         <ResourceDictionary Source="/NICustomControls;component/Themes/ColorCanvas.xaml"></ResourceDictionary>
         <ResourceDictionary Source="/NICustomControls;component/Themes/ColorPicker.xaml"></ResourceDictionary>
+        <ResourceDictionary Source="/NICustomControls;component/Themes/ListItem.xaml"></ResourceDictionary>
     </ResourceDictionary.MergedDictionaries>
 
 </ResourceDictionary>
