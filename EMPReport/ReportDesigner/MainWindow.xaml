@@ -5,8 +5,8 @@
         xmlns:d="http://www.netinfo.com/wpf/avalondock"
         xmlns:cmd="clr-namespace:ReportDesigner.Commands"
         xmlns:local="clr-namespace:ReportDesigner"
-        xmlns:uc="clr-namespace:ReportDesigner.UserControls"
         Title="报表设计器" Height="500" Width="800" Background="#FFEBEDF0" Icon="report.ico">
+    
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -47,6 +47,7 @@
 
         </ResourceDictionary>
     </Window.Resources>
+    
     <Grid>
         <DockPanel LastChildFill="True">
 
@@ -288,8 +289,10 @@
                                     Command="cmd:ReportDesignerCommands.ViewPanelCheckCommand" CommandParameter="PanelDataSet"></r:CheckBox>
                         <r:CheckBox x:Name="CheckBoxComponentBox" Header="元件库"
                                     Command="cmd:ReportDesignerCommands.ViewPanelCheckCommand" CommandParameter="PanelComponentBox"></r:CheckBox>
-                        <r:CheckBox x:Name="CheckBoxObjectProperty" Header="属性编辑器"
-                                    Command="cmd:ReportDesignerCommands.ViewPanelCheckCommand" CommandParameter="PanelObjectProperty"></r:CheckBox>
+                        <r:CheckBox x:Name="CheckBoxCellPropertyBox" Header="单元格属性"
+                                    Command="cmd:ReportDesignerCommands.ViewPanelCheckCommand" CommandParameter="PanelCellPropertyBox"></r:CheckBox>
+                        <r:CheckBox x:Name="CheckBoxElementPropertyBox" Header="控件属性"
+                                    Command="cmd:ReportDesignerCommands.ViewPanelCheckCommand" CommandParameter="PanelElementPropertyBox"></r:CheckBox>
                     </r:RibbonGroupBox>
                     <r:RibbonGroupBox Header="布局" State="Middle">
                         <r:Button x:Name="BtnLayoutSave" Header="保存布局" Icon="/Images/00003.png"
@@ -374,12 +377,12 @@
                             <d:LayoutAnchorablePaneGroup Orientation="Vertical" DockWidth="300">
                                 <d:LayoutAnchorablePane>
                                     <d:LayoutAnchorable x:Name="PanelComponentBox" Title="元件库" ContentId="PanelComponentBox">
-                                        <!--<uc:UCComponentBox x:Name="ComponentBox"></uc:UCComponentBox>-->
                                     </d:LayoutAnchorable>
                                 </d:LayoutAnchorablePane>
                                 <d:LayoutAnchorablePane>
-                                    <d:LayoutAnchorable x:Name="PanelObjectProperty" Title="属性编辑框" ContentId="PanelObjectProperty">
-                                        <uc:UCObjectPropertyLister x:Name="ObjectPropertyLister"></uc:UCObjectPropertyLister>
+                                    <d:LayoutAnchorable x:Name="PanelElementPropertyBox" Title="控件属性" ContentId="PanelElementPropertyBox">
+                                    </d:LayoutAnchorable>
+                                    <d:LayoutAnchorable x:Name="PanelCellPropertyBox" Title="单元格属性" ContentId="PanelCellPropertyBox">
                                     </d:LayoutAnchorable>
                                 </d:LayoutAnchorablePane>
                             </d:LayoutAnchorablePaneGroup>

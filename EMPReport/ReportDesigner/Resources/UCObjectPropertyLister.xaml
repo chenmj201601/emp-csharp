@@ -5,7 +5,7 @@
         <ResourceDictionary Source="Brush.xaml"></ResourceDictionary>
     </ResourceDictionary.MergedDictionaries>
     
-    <Style x:Key="TextBlockElementTypeStyle" TargetType="{x:Type TextBlock}">
+    <Style x:Key="TextBlockTitleStyle" TargetType="{x:Type TextBlock}">
         <Setter Property="Margin" Value="5,0,2,0"></Setter>
         <Setter Property="HorizontalAlignment" Value="Left"></Setter>
         <Setter Property="VerticalAlignment" Value="Center"></Setter>
@@ -13,7 +13,7 @@
         <Setter Property="Foreground" Value="{DynamicResource SystemBrush7}"></Setter>
     </Style>
     
-    <Style x:Key="TextBoxElementTextStyle" TargetType="{x:Type TextBox}">
+    <Style x:Key="TextBoxContentStyle" TargetType="{x:Type TextBox}">
         <Setter Property="Margin" Value="5,0,2,0"></Setter>
         <Setter Property="HorizontalAlignment" Value="Stretch"></Setter>
         <Setter Property="VerticalAlignment" Value="Center"></Setter>

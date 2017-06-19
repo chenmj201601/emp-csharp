@@ -118,8 +118,6 @@ namespace NetInfo.EMP.Reports.Controls
 
         #region CellElement
 
-        public string LinkUrl { get; set; }
-
         public GridCell Cell { get; set; }
 
         #endregion

@@ -29,6 +29,17 @@ namespace NetInfo.EMP.Reports
         public string Name { get; set; }
         [XmlAttribute]
         public string DataSourceName { get; set; }
+        /// <summary>
+        /// 查询语句，可以自定义查询语句
+        /// 如果Sql不为空，报表引擎将直接使用此sql语句查询数据
+        /// </summary>
+        [XmlElement]
+        public string Sql { get; set; }
+        /// <summary>
+        /// 是否自定义Sql查询语句
+        /// </summary>
+        [XmlAttribute]
+        public int IsSqlCustomized { get; set; }
 
         private readonly List<ReportDataTable> mTables = new List<ReportDataTable>();
 
@@ -48,6 +59,24 @@ namespace NetInfo.EMP.Reports
             get { return mFields; }
         }
 
+        private readonly List<ReportCondition> mConditions = new List<ReportCondition>();
+
+        [XmlArray(ElementName = "Conditions")]
+        [XmlArrayItem(ElementName = "Condition")]
+        public List<ReportCondition> Conditions
+        {
+            get { return mConditions; }
+        }
+
+        private readonly List<ReportOrder> mOrders = new List<ReportOrder>();
+
+        [XmlArray(ElementName = "Orders")]
+        [XmlArrayItem(ElementName = "Order")]
+        public List<ReportOrder> Orders
+        {
+            get { return mOrders; }
+        } 
+
         public void Init()
         {
             for (int i = 0; i < Tables.Count; i++)
@@ -62,6 +91,11 @@ namespace NetInfo.EMP.Reports
                 var table = Tables.FirstOrDefault(t => t.Name == strTable);
                 field.DataSet = this;
                 field.Table = table;
+            }
+            for (int i = 0; i < Conditions.Count; i++)
+            {
+                var condition = Conditions[i];
+                condition.DataSet = this;
             }
         }
     }

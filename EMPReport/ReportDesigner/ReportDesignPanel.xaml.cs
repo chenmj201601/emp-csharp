@@ -246,7 +246,8 @@ namespace ReportDesigner
                             editableElement = textElement;
                             if (PageParent != null)
                             {
-                                PageParent.SetObjectProperty();
+                                PageParent.CreateCellPropertyBox();
+                                PageParent.CreateElementPropertyBox();
                             }
                         }
                         editableElement.IsInEditMode = true;
@@ -412,12 +413,7 @@ namespace ReportDesigner
                         #endregion
 
                     }
-                    if (reportElement != null)
-                    {
-                        var cellElement = cell.Content as ICellElement;
-                        reportElement.LinkUrl = cellElement.LinkUrl;
-                    }
-
+                   
                     if (reportElement != null)
                     {
                         if (reportCell == null)
@@ -436,6 +432,18 @@ namespace ReportDesigner
                         reportCell.ColIndex = cell.ColumnIndex - 1;
                         reportCell.RowSpan = cell.RowSpan;
                         reportCell.ColSpan = cell.ColSpan;
+
+
+                        #region 单元格属性
+
+                        reportCell.LinkUrl = cell.LinkUrl;
+                        reportCell.ExtDirection = cell.ExtDirection;
+                        reportCell.LeftParent = cell.LeftParent;
+                        reportCell.TopParent = cell.TopParent;
+                        reportCell.FormatType = cell.FormatType;
+                        reportCell.FormatString = cell.FormatString;
+
+                        #endregion
 
 
                         #region 单元格样式

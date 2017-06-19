@@ -57,6 +57,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CellBase.cs" />
+    <Compile Include="CellUtil.cs" />
     <Compile Include="DesignGrid.cs" />
     <Compile Include="EditableElement.cs" />
     <Compile Include="EditableElementEventArgs.cs" />

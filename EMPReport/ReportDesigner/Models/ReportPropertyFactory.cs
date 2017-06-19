@@ -24,7 +24,101 @@ namespace ReportDesigner.Models
 {
     public class ReportPropertyFactory
     {
-        public static IList<ObjectPropertyInfo> GetProperties(ICellElement cellElement)
+        public static IList<ObjectPropertyInfo> GetElementProperties(ICellElement cellElement)
+        {
+            IList<ObjectPropertyInfo> listProperties = new List<ObjectPropertyInfo>();
+            ObjectPropertyInfo info;
+
+            var sequenceElement = cellElement as SequenceElement;
+            if (sequenceElement != null)
+            {
+                info = new ObjectPropertyInfo();
+                info.ID = PRO_SEQUENCE_DATASET;
+                info.Name = "数据集";
+                info.GroupID = GP_BASIC;
+                info.SortID = 1;
+                info.EditFormat = PropertyEditFormat.SingleSelect;
+                info.DefaultValue = "";
+                listProperties.Add(info);
+                info = new ObjectPropertyInfo();
+                info.ID = PRO_SEQUENCE_DATAFIELD;
+                info.Name = "字段";
+                info.GroupID = GP_BASIC;
+                info.SortID = 2;
+                info.EditFormat = PropertyEditFormat.SingleSelect;
+                info.DefaultValue = "";
+                listProperties.Add(info);
+
+                info = new ObjectPropertyInfo();
+                info.ID = PRO_SEQUENCE_OPT_METHOD;
+                info.Name = "数据操作";
+                info.GroupID = GP_SEQUENCE_DATA_OPERATION;
+                info.SortID = 1;
+                info.EditFormat = PropertyEditFormat.SingleSelect;
+                info.DefaultValue = "0";
+                listProperties.Add(info);
+                info = new ObjectPropertyInfo();
+                info.ID = PRO_SEQUENCE_GROUP_MODE;
+                info.Name = "分组模式";
+                info.GroupID = GP_SEQUENCE_DATA_OPERATION;
+                info.SortID = 2;
+                info.EditFormat = PropertyEditFormat.SingleSelect;
+                info.DefaultValue = "0";
+                listProperties.Add(info);
+                info = new ObjectPropertyInfo();
+                info.ID = PRO_SEQUENCE_COLLECT_MODE;
+                info.Name = "汇总模式";
+                info.GroupID = GP_SEQUENCE_DATA_OPERATION;
+                info.SortID = 3;
+                info.EditFormat = PropertyEditFormat.SingleSelect;
+                info.DefaultValue = "0";
+                listProperties.Add(info);
+              
+            }
+
+            var imageElement = cellElement as ImageElement;
+            if (imageElement != null)
+            {
+                info = new ObjectPropertyInfo();
+                info.ID = PRO_IMAGE_SOURCE;
+                info.Name = "图片源";
+                info.GroupID = GP_BASIC;
+                info.SortID = 1;
+                info.EditFormat = PropertyEditFormat.ImageSelect;
+                info.DefaultValue = "";
+                listProperties.Add(info);
+
+                info = new ObjectPropertyInfo();
+                info.ID = PRO_IMAGE_WIDTH;
+                info.Name = "宽";
+                info.GroupID = GP_IMAGE_STRETCH;
+                info.SortID = 1;
+                info.EditFormat = PropertyEditFormat.Int;
+                info.DefaultValue = "0";
+                listProperties.Add(info);
+                info = new ObjectPropertyInfo();
+                info.ID = PRO_IMAGE_HEIGHT;
+                info.Name = "高";
+                info.GroupID = GP_IMAGE_STRETCH;
+                info.SortID = 2;
+                info.EditFormat = PropertyEditFormat.Int;
+                info.DefaultValue = "0";
+                listProperties.Add(info);
+                info = new ObjectPropertyInfo();
+                info.ID = PRO_IMAGE_STRETCH;
+                info.Name = "拉伸";
+                info.GroupID = GP_IMAGE_STRETCH;
+                info.SortID = 3;
+                info.EditFormat = PropertyEditFormat.SingleSelect;
+                info.DefaultValue = "1";
+                listProperties.Add(info);
+            }
+
+            return listProperties.OrderBy(p => p.GroupID).ThenBy(p => p.ID).ToList();
+        }
+
+
+        public static IList<ObjectPropertyInfo> GetCellProperties()
         {
             IList<ObjectPropertyInfo> listProperties = new List<ObjectPropertyInfo>();
             ObjectPropertyInfo info = new ObjectPropertyInfo();
@@ -143,90 +237,52 @@ namespace ReportDesigner.Models
             info.DefaultValue = "";
             listProperties.Add(info);
 
-            var sequenceElement = cellElement as SequenceElement;
-            if (sequenceElement != null)
-            {
-                info = new ObjectPropertyInfo();
-                info.ID = PRO_DATASET;
-                info.Name = "数据集";
-                info.GroupID = GP_BASIC;
-                info.SortID = 1;
-                info.EditFormat = PropertyEditFormat.SingleSelect;
-                info.DefaultValue = "";
-                listProperties.Add(info);
-                info = new ObjectPropertyInfo();
-                info.ID = PRO_DATAFIELD;
-                info.Name = "字段";
-                info.GroupID = GP_BASIC;
-                info.SortID = 2;
-                info.EditFormat = PropertyEditFormat.SingleSelect;
-                info.DefaultValue = "";
-                listProperties.Add(info);
+            info = new ObjectPropertyInfo();
+            info.ID = PRO_EXT_DIRECTION;
+            info.Name = "扩展方向";
+            info.GroupID = GP_EXTENSION;
+            info.SortID = 1;
+            info.EditFormat = PropertyEditFormat.SingleSelect;
+            info.DefaultValue = "0";
+            listProperties.Add(info);
 
-                info = new ObjectPropertyInfo();
-                info.ID = PRO_SEQUENCE_EXT_METHOHD;
-                info.Name = "扩展方式";
-                info.GroupID = GP_SEQUENCE;
-                info.SortID = 1;
-                info.EditFormat = PropertyEditFormat.SingleSelect;
-                info.DefaultValue = "1";
-                listProperties.Add(info);
-                info = new ObjectPropertyInfo();
-                info.ID = PRO_SEQUENCE_MERGE;
-                info.Name = "合并相同单元格";
-                info.GroupID = GP_SEQUENCE;
-                info.SortID = 2;
-                info.EditFormat = PropertyEditFormat.YesNo;
-                info.DefaultValue = "1";
-                listProperties.Add(info);
-            }
+            info = new ObjectPropertyInfo();
+            info.ID = PRO_CELL_PARENT_LEFT;
+            info.Name = "左父格";
+            info.GroupID = GP_CELL_PARENT;
+            info.SortID = 1;
+            info.EditFormat = PropertyEditFormat.String;
+            info.DefaultValue = "";
+            listProperties.Add(info);
+            info = new ObjectPropertyInfo();
+            info.ID = PRO_CELL_PARENT_TOP;
+            info.Name = "上父格";
+            info.GroupID = GP_CELL_PARENT;
+            info.SortID = 2;
+            info.EditFormat = PropertyEditFormat.String;
+            info.DefaultValue = "";
+            listProperties.Add(info);
 
-            var imageElement = cellElement as ImageElement;
-            if (imageElement != null)
-            {
-                info = new ObjectPropertyInfo();
-                info.ID = PRO_IMAGE_SOURCE;
-                info.Name = "图片源";
-                info.GroupID = GP_BASIC;
-                info.SortID = 1;
-                info.EditFormat = PropertyEditFormat.ImageSelect;
-                info.DefaultValue = "";
-                listProperties.Add(info);
-
-                info = new ObjectPropertyInfo();
-                info.ID = PRO_IMAGE_WIDTH;
-                info.Name = "宽";
-                info.GroupID = GP_IMAGE;
-                info.SortID = 1;
-                info.EditFormat = PropertyEditFormat.Int;
-                info.DefaultValue = "0";
-                listProperties.Add(info);
-                info = new ObjectPropertyInfo();
-                info.ID = PRO_IMAGE_HEIGHT;
-                info.Name = "高";
-                info.GroupID = GP_IMAGE;
-                info.SortID = 2;
-                info.EditFormat = PropertyEditFormat.Int;
-                info.DefaultValue = "0";
-                listProperties.Add(info);
-                info = new ObjectPropertyInfo();
-                info.ID = PRO_IMAGE_STRETCH;
-                info.Name = "拉伸";
-                info.GroupID = GP_IMAGE;
-                info.SortID = 3;
-                info.EditFormat = PropertyEditFormat.SingleSelect;
-                info.DefaultValue = "1";
-                listProperties.Add(info);
-            }
+            info = new ObjectPropertyInfo();
+            info.ID = PRO_FORMAT_TYPE;
+            info.Name = "格式类型";
+            info.GroupID = GP_FORMAT;
+            info.SortID = 1;
+            info.EditFormat = PropertyEditFormat.SingleSelect;
+            info.DefaultValue = "0";
+            listProperties.Add(info);
+            info = new ObjectPropertyInfo();
+            info.ID = PRO_FORMAT_EXPRESSION;
+            info.Name = "格式串";
+            info.GroupID = GP_FORMAT;
+            info.SortID = 2;
+            info.EditFormat = PropertyEditFormat.String;
+            info.DefaultValue = "";
+            listProperties.Add(info);
 
             return listProperties.OrderBy(p => p.GroupID).ThenBy(p => p.ID).ToList();
-        }
+        } 
 
-        //基本
-        //数据列
-        public const int PRO_DATASET = 101;
-        public const int PRO_DATAFIELD = 102;
-        public const int PRO_IMAGE_SOURCE = 111;
 
         //外观
         public const int PRO_TEXT = 1;
@@ -248,18 +304,33 @@ namespace ReportDesigner.Models
         public const int PRO_BORDER_RIGHT = 23;
         public const int PRO_BORDER_BOTTOM = 24;
 
-
         //超链接
-        public const int PRO_LINK_URL = 201;
+        public const int PRO_LINK_URL = 51;
+
+        //扩展性
+        public const int PRO_EXT_DIRECTION = 61;
+
+        //父格
+        public const int PRO_CELL_PARENT_LEFT = 71;
+        public const int PRO_CELL_PARENT_TOP = 72;
+
+        //格式
+        public const int PRO_FORMAT_TYPE = 81;
+        public const int PRO_FORMAT_EXPRESSION = 82;
+
 
         //数据列
-        public const int PRO_SEQUENCE_EXT_METHOHD = 301;
-        public const int PRO_SEQUENCE_MERGE = 302;
+        public const int PRO_SEQUENCE_DATASET = 101;
+        public const int PRO_SEQUENCE_DATAFIELD = 102;
+        public const int PRO_SEQUENCE_OPT_METHOD = 111;
+        public const int PRO_SEQUENCE_GROUP_MODE = 112;
+        public const int PRO_SEQUENCE_COLLECT_MODE = 113;
 
         //图片
-        public const int PRO_IMAGE_WIDTH = 311;
-        public const int PRO_IMAGE_HEIGHT = 312;
-        public const int PRO_IMAGE_STRETCH = 313;
+        public const int PRO_IMAGE_SOURCE = 201;
+        public const int PRO_IMAGE_WIDTH = 211;
+        public const int PRO_IMAGE_HEIGHT = 212;
+        public const int PRO_IMAGE_STRETCH = 213;
 
         //组编号
         public const int GP_BASIC = 0;
@@ -267,8 +338,14 @@ namespace ReportDesigner.Models
         public const int GP_LAYOUT = 2;
         public const int GP_BORDER = 3;
         public const int GP_LINK = 10;
-        public const int GP_SEQUENCE = 101;
-        public const int GP_IMAGE = 102;
+
+        public const int GP_EXTENSION = 20;
+        public const int GP_CELL_PARENT = 21;
+        public const int GP_FORMAT = 30;
+
+        public const int GP_SEQUENCE_DATA_OPERATION = 101;
+
+        public const int GP_IMAGE_STRETCH = 201;
 
     }
 }

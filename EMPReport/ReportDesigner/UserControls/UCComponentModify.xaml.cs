@@ -265,11 +265,6 @@ namespace ReportDesigner.UserControls
 
                         reportElement = reportImage;
                     }
-
-                    if (reportElement != null)
-                    {
-                        reportElement.LinkUrl = element.LinkUrl;
-                    }
                 }
                 if (reportElement != null)
                 {

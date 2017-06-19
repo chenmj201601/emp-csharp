@@ -8,7 +8,7 @@
              mc:Ignorable="d"
              BorderThickness="1"
              BorderBrush="Gray"
-             d:DesignHeight="300" d:DesignWidth="300">
+             d:DesignHeight="300" d:DesignWidth="300" Background="White">
 
     <UserControl.Resources>
         <ResourceDictionary>

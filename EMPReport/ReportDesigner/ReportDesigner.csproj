@@ -121,6 +121,7 @@
     <Compile Include="Models\ComponentInfo.cs" />
     <Compile Include="Models\ComponentItem.cs" />
     <Compile Include="Models\DatabaseInfo.cs" />
+    <Compile Include="Models\DataFieldItem.cs" />
     <Compile Include="Models\DataSetItem.cs" />
     <Compile Include="Models\DataSourceConfig.cs" />
     <Compile Include="Models\DataSourceInfo.cs" />
@@ -132,7 +133,9 @@
     <Compile Include="Models\PropertyEditFormat.cs" />
     <Compile Include="Models\PropertyValueChangedEventArgs.cs" />
     <Compile Include="Models\PropertyValueEnumItem.cs" />
+    <Compile Include="Models\ReportConditionItem.cs" />
     <Compile Include="Models\ReportFileObject.cs" />
+    <Compile Include="Models\ReportOrderItem.cs" />
     <Compile Include="Models\ReportPropertyFactory.cs" />
     <Compile Include="Models\ViewModel.cs" />
     <Compile Include="PopupWindow.xaml.cs">
@@ -140,6 +143,9 @@
     </Compile>
     <Compile Include="ReportDesignPanel.xaml.cs">
       <DependentUpon>ReportDesignPanel.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UserControls\UCCellPropertyLister.xaml.cs">
+      <DependentUpon>UCCellPropertyLister.xaml</DependentUpon>
     </Compile>
     <Compile Include="UserControls\UCCellStyleModify.xaml.cs">
       <DependentUpon>UCCellStyleModify.xaml</DependentUpon>
@@ -149,6 +155,9 @@
     </Compile>
     <Compile Include="UserControls\UCComponentModify.xaml.cs">
       <DependentUpon>UCComponentModify.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UserControls\UCConditionValueEditor.xaml.cs">
+      <DependentUpon>UCConditionValueEditor.xaml</DependentUpon>
     </Compile>
     <Compile Include="UserControls\UCDataSetWizard.xaml.cs">
       <DependentUpon>UCDataSetWizard.xaml</DependentUpon>
@@ -212,6 +221,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="UserControls\UCCellPropertyLister.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="UserControls\UCCellStyleModify.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -221,6 +234,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="UserControls\UCComponentModify.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UserControls\UCConditionValueEditor.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -241,8 +258,8 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="UserControls\UCObjectPropertyLister.xaml">
-      <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="UserControls\UCReportImageModify.xaml">
       <SubType>Designer</SubType>

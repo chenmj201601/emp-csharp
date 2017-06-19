@@ -22,7 +22,6 @@ namespace NetInfo.EMP.Reports.Controls
 
         #region 公共属性
 
-        string LinkUrl { get; set; }
 
         #endregion
 

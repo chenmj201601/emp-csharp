@@ -22,7 +22,6 @@ using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -450,7 +449,8 @@ namespace NetInfo.EMP.Reports.Controls
             header.ColSpan = 1;
             header.Grid = this;
             header.DataContext = header;
-            header.SetBinding(ToolTipProperty, new Binding("Rect"));
+            header.CellKey = CellUtil.GetCellKey(header);
+            header.CellName =CellUtil.GetCellTitle(header);
             Children.Add(header);
             mGridCells.Add(
                 string.Format("{0}{1}", header.RowIndex.ToString("000"), header.ColumnIndex.ToString("000")), header);
@@ -469,7 +469,8 @@ namespace NetInfo.EMP.Reports.Controls
                 header.ColSpan = 1;
                 header.Grid = this;
                 header.DataContext = header;
-                header.SetBinding(ToolTipProperty, new Binding("Rect"));
+                header.CellKey = CellUtil.GetCellKey(header);
+                header.CellName = CellUtil.GetCellTitle(header);
                 Children.Add(header);
                 mGridCells.Add(
                     string.Format("{0}{1}", header.RowIndex.ToString("000"), header.ColumnIndex.ToString("000")), header);
@@ -489,7 +490,8 @@ namespace NetInfo.EMP.Reports.Controls
                 header.ColSpan = 1;
                 header.Grid = this;
                 header.DataContext = header;
-                header.SetBinding(ToolTipProperty, new Binding("Rect"));
+                header.CellKey = CellUtil.GetCellKey(header);
+                header.CellName = CellUtil.GetCellTitle(header);
                 Children.Add(header);
                 mGridCells.Add(
                     string.Format("{0}{1}", header.RowIndex.ToString("000"), header.ColumnIndex.ToString("000")), header);
@@ -516,7 +518,8 @@ namespace NetInfo.EMP.Reports.Controls
                     cell.ColSpan = 1;
                     cell.Grid = this;
                     cell.DataContext = cell;
-                    //cell.SetBinding(ToolTipProperty, new Binding("Rect"));
+                    cell.CellKey = CellUtil.GetCellKey(cell);
+                    cell.CellName = CellUtil.GetCellTitle(cell);
 
                     if (cell.Content == null)
                     {
@@ -562,7 +565,14 @@ namespace NetInfo.EMP.Reports.Controls
                 cell.Grid = this;
                 cell.DataContext = cell;
                 cell.Tag = reportCell;
-                //cell.SetBinding(ToolTipProperty, new Binding("Rect"));
+                cell.CellKey = CellUtil.GetCellKey(cell);
+                cell.CellName = CellUtil.GetCellTitle(cell);
+                cell.LinkUrl = reportCell.LinkUrl;
+                cell.ExtDirection = reportCell.ExtDirection;
+                cell.LeftParent = reportCell.LeftParent;
+                cell.TopParent = reportCell.TopParent;
+                cell.FormatType = reportCell.FormatType;
+                cell.FormatString = reportCell.FormatString;
 
 
                 #region 报表内容
@@ -624,21 +634,6 @@ namespace NetInfo.EMP.Reports.Controls
                     }
                     imageElement.Cell = cell;
                     cell.Content = imageElement;
-                }
-
-                #endregion
-
-
-                #region 链接等报表元素公有属性
-
-                var cellElement = cell.Content as ICellElement;
-                if (cellElement != null)
-                {
-                    var reportElement = reportCell.Element;
-                    if (reportElement != null)
-                    {
-                        cellElement.LinkUrl = reportElement.LinkUrl;
-                    }
                 }
 
                 #endregion
@@ -1279,7 +1274,6 @@ namespace NetInfo.EMP.Reports.Controls
 
 
         #region Others
-
 
 
         #endregion

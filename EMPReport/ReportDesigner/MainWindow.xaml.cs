@@ -101,7 +101,8 @@ namespace ReportDesigner
             PanelFileExplorer.IsVisibleChanged += (s, e) => SetViewPanelCheck();
             PanelDataSource.IsVisibleChanged += (s, e) => SetViewPanelCheck();
             PanelDataSet.IsVisibleChanged += (s, e) => SetViewPanelCheck();
-            PanelObjectProperty.IsVisibleChanged += (s, e) => SetViewPanelCheck();
+            PanelCellPropertyBox.IsVisibleChanged += (s, e) => SetViewPanelCheck();
+            PanelElementPropertyBox.IsVisibleChanged += (s, e) => SetViewPanelCheck();
             PanelComponentBox.IsVisibleChanged += (s, e) => SetViewPanelCheck();
         }
 
@@ -501,7 +502,8 @@ namespace ReportDesigner
         void DesignGrid_GridSelected(object sender, RoutedPropertyChangedEventArgs<GridSelectedEventArgs> e)
         {
             SetToolBarStatus();
-            SetObjectProperty();
+            CreateCellPropertyBox();
+            CreateElementPropertyBox();
             SetStatus();
         }
 
@@ -1464,15 +1466,20 @@ namespace ReportDesigner
             {
                 CheckBoxDataSet.IsChecked = panel.IsVisible;
             }
-            panel = GetPanlByContentID("PanelObjectProperty");
-            if (panel != null)
-            {
-                CheckBoxObjectProperty.IsChecked = panel.IsVisible;
-            }
             panel = GetPanlByContentID("PanelComponentBox");
             if (panel != null)
             {
                 CheckBoxComponentBox.IsChecked = panel.IsVisible;
+            }
+            panel = GetPanlByContentID("PanelCellPropertyBox");
+            if (panel != null)
+            {
+                CheckBoxCellPropertyBox.IsChecked = panel.IsVisible;
+            }
+            panel = GetPanlByContentID("PanelElementPropertyBox");
+            if (panel != null)
+            {
+                CheckBoxElementPropertyBox.IsChecked = panel.IsVisible;
             }
         }
 
@@ -1556,7 +1563,8 @@ namespace ReportDesigner
             textElement.Text = string.Empty;
             textElement.Cell = cell;
             cell.Content = textElement;
-            SetObjectProperty();
+            CreateCellPropertyBox();
+            CreateElementPropertyBox();
             var textBox = textElement.TextBox;
             if (textBox != null)
             {
@@ -1579,7 +1587,8 @@ namespace ReportDesigner
             sequenceElement.Text = string.Empty;
             sequenceElement.Cell = cell;
             cell.Content = sequenceElement;
-            SetObjectProperty();
+            CreateCellPropertyBox();
+            CreateElementPropertyBox();
             panel.IsModified = true;
         }
 
@@ -1631,7 +1640,8 @@ namespace ReportDesigner
                 reportElement.Cell = cell;
             }
             cell.Content = reportElement;
-            SetObjectProperty();
+            CreateCellPropertyBox();
+            CreateElementPropertyBox();
             panel.IsModified = true;
         }
 
@@ -2229,7 +2239,7 @@ namespace ReportDesigner
             }
         }
 
-        public void SetObjectProperty()
+        public void CreateCellPropertyBox()
         {
             var panel = GetCurrentDesignPanel();
             if (panel == null) { return; }
@@ -2239,10 +2249,29 @@ namespace ReportDesigner
             if (cells.Count > 0)
             {
                 var cell = cells[0];
-                var element = cell.Content;
-                ObjectPropertyLister.DataContext = element;
-                ObjectPropertyLister.Panel = panel;
-                ObjectPropertyLister.Refresh();
+                UCCellPropertyLister uc = new UCCellPropertyLister();
+                uc.Panel = panel;
+                uc.DataContext = cell;
+                PanelCellPropertyBox.Content = uc;
+            }
+        }
+
+        public void CreateElementPropertyBox()
+        {
+            var panel = GetCurrentDesignPanel();
+            if (panel == null) { return; }
+            var grid = panel.Grid;
+            if (grid == null) { return; }
+            var cells = grid.SelectedCells;
+            if (cells.Count > 0)
+            {
+                var cell = cells[0];
+                var element = cell.Content as ICellElement;
+                if (element == null) { return;}
+                UCObjectPropertyLister uc = new UCObjectPropertyLister();
+                uc.Panel = panel;
+                uc.DataContext = element;
+                PanelElementPropertyBox.Content = uc;
             }
         }
 

@@ -54,6 +54,14 @@ namespace ReportDesigner.Commands
         private static readonly RoutedUICommand mCellStyleDeleteCommand = new RoutedUICommand();
         private static readonly RoutedUICommand mComponentDeleteCommand = new RoutedUICommand();
 
+        private static readonly RoutedUICommand mConditionAddCommand = new RoutedUICommand();
+        private static readonly RoutedUICommand mConditionRemoveCommand = new RoutedUICommand();
+        private static readonly RoutedUICommand mConditionValueEditCommand = new RoutedUICommand();
+
+        private static readonly RoutedUICommand mOrderAddCommand = new RoutedUICommand();
+        private static readonly RoutedUICommand mOrderRemoveCommand = new RoutedUICommand();
+
+
         public static RoutedUICommand AppAboutCommand
         {
             get { return mAppAboutCommand; }
@@ -167,6 +175,31 @@ namespace ReportDesigner.Commands
         public static RoutedUICommand ComponentDeleteCommand
         {
             get { return mComponentDeleteCommand; }
+        }
+
+        public static RoutedUICommand ConditionAddCommand
+        {
+            get { return mConditionAddCommand; }
+        }
+
+        public static RoutedUICommand ConditionRemoveCommand
+        {
+            get { return mConditionRemoveCommand; }
+        }
+
+        public static RoutedUICommand ConditionValueEditCommand
+        {
+            get { return mConditionValueEditCommand; }
+        }
+
+        public static RoutedUICommand OrderAddCommand
+        {
+            get { return mOrderAddCommand; }
+        }
+
+        public static RoutedUICommand OrderRemoveCommand
+        {
+            get { return mOrderRemoveCommand; }
         }
     }
 }

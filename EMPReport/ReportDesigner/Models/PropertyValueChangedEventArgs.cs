@@ -15,8 +15,6 @@
 //
 //======================================================================
 
-using NetInfo.EMP.Reports.Controls;
-
 namespace ReportDesigner.Models
 {
     /// <summary>
@@ -24,7 +22,7 @@ namespace ReportDesigner.Models
     /// </summary>
     public class PropertyValueChangedEventArgs
     {
-        public ICellElement ObjectInstance { get; set; }
+        public object ObjectInstance { get; set; }
         /// <summary>
         /// 属性项
         /// </summary>

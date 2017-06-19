@@ -74,8 +74,6 @@ namespace NetInfo.EMP.Reports.Controls
 
         #region CellElement
 
-        public string LinkUrl { get; set; }
-
         public GridCell Cell { get; set; }
 
         #endregion
@@ -85,8 +83,9 @@ namespace NetInfo.EMP.Reports.Controls
 
         public ReportDataSet DataSet { get; set; }
         public ReportDataField DataField { get; set; }
-        public int ExtMethod { get; set; }
-        public bool IsMerge { get; set; }
+        public int DataOptMethod { get; set; }
+        public int GroupMode { get; set; }
+        public int CollectMode { get; set; }
 
         #endregion
 
@@ -97,8 +96,9 @@ namespace NetInfo.EMP.Reports.Controls
         {
             SequenceElement sequenceElement = new SequenceElement();
             sequenceElement.Text = reportSequence.Expression;
-            sequenceElement.ExtMethod = reportSequence.ExtMethod;
-            sequenceElement.IsMerge = reportSequence.IsMerge == 1;
+            sequenceElement.DataOptMethod = reportSequence.DataOptMethod;
+            sequenceElement.GroupMode = reportSequence.GroupMode;
+            sequenceElement.CollectMode = reportSequence.CollectMode;
             return sequenceElement;
         }
 
@@ -111,8 +111,9 @@ namespace NetInfo.EMP.Reports.Controls
         {
             ReportSequence reportSequence = new ReportSequence();
             reportSequence.Expression = Text;
-            reportSequence.ExtMethod = ExtMethod;
-            reportSequence.IsMerge = IsMerge ? 1 : 0;
+            reportSequence.DataOptMethod = DataOptMethod;
+            reportSequence.GroupMode = GroupMode;
+            reportSequence.CollectMode = CollectMode;
             if (DataSet != null)
             {
                 reportSequence.DataSetName = DataSet.Name;

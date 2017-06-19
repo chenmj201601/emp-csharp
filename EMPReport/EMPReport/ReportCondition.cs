@@ -2,15 +2,15 @@
 //
 //        Copyright © 2017 NetInfo Technologies Ltd.
 //        All rights reserved
-//        guid1:                    5d291b2e-c446-4dd4-856e-f3e06b33149a
+//        guid1:                    b44ee50a-f296-489b-8dc5-76c416657e7f
 //        CLR Version:              4.0.30319.42000
-//        Name:                     ReportDataField
+//        Name:                     ReportCondition
 //        Computer:                 CHARLEY-PC
 //        Organization:             NetInfo
 //        Namespace:                NetInfo.EMP.Reports
-//        File Name:                ReportDataField
+//        File Name:                ReportCondition
 //
-//        Created by Charley at 2017/4/27 14:56:51
+//        Created by Charley at 2017/5/31 10:47:17
 //        http://www.netinfo.com 
 //
 //======================================================================
@@ -21,32 +21,29 @@ using System.Xml.Serialization;
 namespace NetInfo.EMP.Reports
 {
     [XmlRoot(Namespace = "http://netinfo.com/emp/reports")]
-    public class ReportDataField
+    public class ReportCondition
     {
         /// <summary>
-        /// 形式如：{DataSourceName.FieldName}
+        /// 字段，如果各个表中有相同字段名，用 DataTableName_DataFieldName 表示
         /// </summary>
         [XmlAttribute]
-        public string Key { get; set; }
+        public string Field { get; set; }
         /// <summary>
-        /// 字段名，如果多个表中有相同的字段名，用 DataTableName_FieldName 表示
+        /// 比较类型，等于，大于，小于等
         /// </summary>
         [XmlAttribute]
-        public string Name { get; set; }
+        public int Judge { get; set; }
         /// <summary>
-        /// 显示名，可修改，默认与 Name 相同
+        /// 关系类型，与，或 等
         /// </summary>
         [XmlAttribute]
-        public string Display { get; set; }
-        [XmlAttribute]
-        public int DataType { get; set; }
-        [XmlAttribute]
-        public string FieldName { get; set; }
-        [XmlAttribute]
-        public string TableName { get; set; }
+        public int Relation { get; set; }
+        /// <summary>
+        /// 值，如果是字段值，用花括号表示法，如 {FieldName}
+        /// </summary>
+        [XmlElement]
+        public string Value { get; set; }
 
-        [XmlIgnore]
-        public ReportDataTable Table { get; set; }
         [XmlIgnore]
         public ReportDataSet DataSet { get; set; }
     }

@@ -16,7 +16,6 @@
 //======================================================================
 
 using System.ComponentModel;
-using NetInfo.EMP.Reports.Controls;
 using ReportDesigner.UserControls;
 
 
@@ -52,7 +51,7 @@ namespace ReportDesigner.Models
 
         public ObjectPropertyInfo Info { get; set; }
 
-        public ICellElement ObjectInstance { get; set; }
+        public object ObjectInstance { get; set; }
 
         public ReportDesignPanel Panel { get; set; }
 

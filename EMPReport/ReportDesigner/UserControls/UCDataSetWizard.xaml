@@ -3,6 +3,8 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:cmd="clr-namespace:ReportDesigner.Commands"
+             xmlns:uc="clr-namespace:ReportDesigner.UserControls"
              mc:Ignorable="d" 
              MinWidth="500"
              MinHeight="350"
@@ -90,7 +92,7 @@
                             <RowDefinition></RowDefinition>
                         </Grid.RowDefinitions>
                         <TextBlock Grid.Row="0" Text="2、选择数据表..." Style="{DynamicResource TextBlockWizardTitleStyle}"></TextBlock>
-                        <ListBox Name="ListBoxTables" Grid.Row="1" SelectionMode="Single" Background="Transparent">
+                        <ListBox Name="ListBoxTables" Grid.Row="1" SelectionMode="Extended" Background="Transparent">
                             <ListBox.ItemTemplate>
                                 <DataTemplate DataType="ListBoxItem">
                                     <TextBlock Text="{Binding Display}"></TextBlock>
@@ -116,7 +118,7 @@
                                 <ListBox Name="ListBoxColumns" Margin="5" SelectionMode="Extended" Background="Transparent">
                                     <ListBox.ItemTemplate>
                                         <DataTemplate DataType="ListBoxItem">
-                                            <TextBlock Text="{Binding Display}"></TextBlock>
+                                            <TextBlock Text="{Binding Display}" ToolTip="{Binding Tip}"></TextBlock>
                                         </DataTemplate>
                                     </ListBox.ItemTemplate>
                                 </ListBox>
@@ -131,18 +133,18 @@
                                 <Button Name="BtnFieldRemove" Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center"
                                         Content="&lt;" Background="Transparent"></Button>
                             </Grid>
-                           <GroupBox Grid.Column="2" Header="已选择字段">
+                            <GroupBox Grid.Column="2" Header="已选择字段">
                                 <Grid Margin="5">
-                                   <Grid.RowDefinitions>
-                                       <RowDefinition Height="30"></RowDefinition>
-                                       <RowDefinition></RowDefinition>
-                                   </Grid.RowDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="30"></RowDefinition>
+                                        <RowDefinition></RowDefinition>
+                                    </Grid.RowDefinitions>
                                     <CheckBox Name="CheckBoxAllFields" Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Center"
                                               HorizontalContentAlignment="Center" Content="所有字段"></CheckBox>
                                     <ListBox Name="ListBoxFields" Grid.Row="1" SelectionMode="Extended" Background="Transparent">
                                         <ListBox.ItemTemplate>
                                             <DataTemplate DataType="ListBoxItem">
-                                                <TextBlock Text="{Binding Display}"></TextBlock>
+                                                <TextBlock Text="{Binding Display}" ToolTip="{Binding Tip}"></TextBlock>
                                             </DataTemplate>
                                         </ListBox.ItemTemplate>
                                     </ListBox>
@@ -166,7 +168,189 @@
                             <CheckBox Name="CheckBoxNoCondition" Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Center"
                                               HorizontalContentAlignment="Center" Content="无筛选条件" IsChecked="True"></CheckBox>
                             <Grid Grid.Row="1">
-                                
+                                <ListView Name="ListViewConditions" IsEnabled="False">
+                                    <ListView.View>
+                                        <GridView>
+                                            <GridViewColumn Width="150" Header="字段">
+                                                <GridViewColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <ComboBox SelectedItem="{Binding Field}" HorizontalAlignment="Stretch"
+                                                            ItemsSource="{Binding ListFields,
+                                                            RelativeSource={RelativeSource FindAncestor,AncestorType={x:Type uc:UCDataSetWizard}}}">
+                                                            <ComboBox.ItemTemplate>
+                                                                <DataTemplate DataType="{x:Type ComboBoxItem}">
+                                                                    <TextBlock Text="{Binding Display}" ToolTip="{Binding Tip}"></TextBlock>
+                                                                </DataTemplate>
+                                                            </ComboBox.ItemTemplate>
+                                                        </ComboBox>
+                                                    </DataTemplate>
+                                                </GridViewColumn.CellTemplate>
+                                            </GridViewColumn>
+                                            <GridViewColumn Width="80" Header="">
+                                                <GridViewColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <ComboBox SelectedItem="{Binding Judge}" HorizontalAlignment="Stretch"
+                                                            ItemsSource="{Binding ListJugeTypes,
+                                                            RelativeSource={RelativeSource FindAncestor,AncestorType={x:Type uc:UCDataSetWizard}}}">
+                                                            <ComboBox.ItemTemplate>
+                                                                <DataTemplate DataType="{x:Type ComboBoxItem}">
+                                                                    <TextBlock Text="{Binding Display}" ToolTip="{Binding Tip}"></TextBlock>
+                                                                </DataTemplate>
+                                                            </ComboBox.ItemTemplate>
+                                                        </ComboBox>
+                                                    </DataTemplate>
+                                                </GridViewColumn.CellTemplate>
+                                            </GridViewColumn>
+                                            <GridViewColumn Width="150" Header="值">
+                                                <GridViewColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <StackPanel Orientation="Horizontal">
+                                                            <TextBox Text="{Binding Value}" 
+                                                                     VerticalAlignment="Center"
+                                                                     VerticalContentAlignment="Center"
+                                                                     Height="25"
+                                                                     Width="100"></TextBox>
+                                                            <Button Background="Transparent" 
+                                                                    VerticalAlignment="Center"
+                                                                    Content=" . . . "
+                                                                    Margin="2,0,0,0"
+                                                                    Command="cmd:ReportDesignerCommands.ConditionValueEditCommand"
+                                                                    CommandParameter="{Binding}"></Button>
+                                                        </StackPanel>
+                                                    </DataTemplate>
+                                                </GridViewColumn.CellTemplate>
+                                            </GridViewColumn>
+                                            <GridViewColumn Width="80" Header="关系">
+                                                <GridViewColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <ComboBox SelectedItem="{Binding Relation}" HorizontalAlignment="Stretch"
+                                                            ItemsSource="{Binding ListRelationTypes,
+                                                            RelativeSource={RelativeSource FindAncestor,AncestorType={x:Type uc:UCDataSetWizard}}}">
+                                                            <ComboBox.ItemTemplate>
+                                                                <DataTemplate DataType="{x:Type ComboBoxItem}">
+                                                                    <TextBlock Text="{Binding Display}" ToolTip="{Binding Tip}"></TextBlock>
+                                                                </DataTemplate>
+                                                            </ComboBox.ItemTemplate>
+                                                        </ComboBox>
+                                                    </DataTemplate>
+                                                </GridViewColumn.CellTemplate>
+                                            </GridViewColumn>
+                                            <GridViewColumn Width="80">
+                                                <GridViewColumn.Header>
+                                                    <GridViewColumnHeader ToolTip="添加一个条件"
+                                                        Command="cmd:ReportDesignerCommands.ConditionAddCommand">
+                                                        <Image Stretch="Uniform" Height="16"
+                                                               VerticalAlignment="Center"
+                                                               Source="/ReportDesigner;component/Images/00034.png"></Image>
+                                                    </GridViewColumnHeader>
+                                                </GridViewColumn.Header>
+                                                <GridViewColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <StackPanel Orientation="Horizontal">
+                                                            <Button Height="16" ToolTip="删除此条件"
+                                                                    Style="{DynamicResource ButtonIconButtonStyle}"
+                                                                    VerticalAlignment="Center"
+                                                                    Command="cmd:ReportDesignerCommands.ConditionRemoveCommand"
+                                                                    CommandParameter="{Binding}">
+                                                                <Image Stretch="Uniform"
+                                                               Source="/ReportDesigner;component/Images/00035.png"></Image>
+                                                            </Button>
+                                                        </StackPanel>
+                                                    </DataTemplate>
+                                                </GridViewColumn.CellTemplate>
+                                            </GridViewColumn>
+                                        </GridView>
+                                    </ListView.View>
+                                    <ListView.ItemContainerStyle>
+                                        <Style TargetType="{x:Type ListViewItem}">
+                                            <Setter Property="HorizontalContentAlignment" Value="Stretch"></Setter>
+                                        </Style>
+                                    </ListView.ItemContainerStyle>
+                                </ListView>
+                            </Grid>
+                        </Grid>
+                    </Grid>
+                </TabItem>
+                <TabItem Header="指定排序方式">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="50"></RowDefinition>
+                            <RowDefinition></RowDefinition>
+                        </Grid.RowDefinitions>
+                        <TextBlock Grid.Row="0" Text="4、指定排序方式..." Style="{DynamicResource TextBlockWizardTitleStyle}"></TextBlock>
+                        <Grid Grid.Row="1">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="30"></RowDefinition>
+                                <RowDefinition></RowDefinition>
+                            </Grid.RowDefinitions>
+                            <CheckBox Name="CheckBoxNoOrder" Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Center"
+                                              HorizontalContentAlignment="Center" Content="无排序方式" IsChecked="True"></CheckBox>
+                            <Grid Grid.Row="1">
+                                <ListView Name="ListViewOrders" IsEnabled="False">
+                                    <ListView.View>
+                                        <GridView>
+                                            <GridViewColumn Width="150" Header="字段">
+                                                <GridViewColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <ComboBox SelectedItem="{Binding Field}" HorizontalAlignment="Stretch"
+                                                            ItemsSource="{Binding ListFields,
+                                                            RelativeSource={RelativeSource FindAncestor,AncestorType={x:Type uc:UCDataSetWizard}}}">
+                                                            <ComboBox.ItemTemplate>
+                                                                <DataTemplate DataType="{x:Type ComboBoxItem}">
+                                                                    <TextBlock Text="{Binding Display}" ToolTip="{Binding Tip}"></TextBlock>
+                                                                </DataTemplate>
+                                                            </ComboBox.ItemTemplate>
+                                                        </ComboBox>
+                                                    </DataTemplate>
+                                                </GridViewColumn.CellTemplate>
+                                            </GridViewColumn>
+                                            <GridViewColumn Width="150" Header="排序方向">
+                                                <GridViewColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <ComboBox SelectedItem="{Binding Direction}" HorizontalAlignment="Stretch"
+                                                            ItemsSource="{Binding ListOrderDirections,
+                                                            RelativeSource={RelativeSource FindAncestor,AncestorType={x:Type uc:UCDataSetWizard}}}">
+                                                            <ComboBox.ItemTemplate>
+                                                                <DataTemplate DataType="{x:Type ComboBoxItem}">
+                                                                    <TextBlock Text="{Binding Display}" ToolTip="{Binding Tip}"></TextBlock>
+                                                                </DataTemplate>
+                                                            </ComboBox.ItemTemplate>
+                                                        </ComboBox>
+                                                    </DataTemplate>
+                                                </GridViewColumn.CellTemplate>
+                                            </GridViewColumn>
+                                            <GridViewColumn Width="80">
+                                                <GridViewColumn.Header>
+                                                    <GridViewColumnHeader ToolTip="添加一个排序方式"
+                                                        Command="cmd:ReportDesignerCommands.OrderAddCommand">
+                                                        <Image Stretch="Uniform" Height="16"
+                                                               VerticalAlignment="Center"
+                                                               Source="/ReportDesigner;component/Images/00034.png"></Image>
+                                                    </GridViewColumnHeader>
+                                                </GridViewColumn.Header>
+                                                <GridViewColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <StackPanel Orientation="Horizontal">
+                                                            <Button Height="16" ToolTip="删除此排序方式"
+                                                                    Style="{DynamicResource ButtonIconButtonStyle}"
+                                                                    VerticalAlignment="Center"
+                                                                    Command="cmd:ReportDesignerCommands.OrderRemoveCommand"
+                                                                    CommandParameter="{Binding}">
+                                                                <Image Stretch="Uniform"
+                                                               Source="/ReportDesigner;component/Images/00035.png"></Image>
+                                                            </Button>
+                                                        </StackPanel>
+                                                    </DataTemplate>
+                                                </GridViewColumn.CellTemplate>
+                                            </GridViewColumn>
+                                        </GridView>
+                                    </ListView.View>
+                                    <ListView.ItemContainerStyle>
+                                        <Style TargetType="{x:Type ListViewItem}">
+                                            <Setter Property="HorizontalContentAlignment" Value="Stretch"></Setter>
+                                        </Style>
+                                    </ListView.ItemContainerStyle>
+                                </ListView>
                             </Grid>
                         </Grid>
                     </Grid>
@@ -201,6 +385,7 @@
                                         <RowDefinition Height="30"></RowDefinition>
                                         <RowDefinition Height="30"></RowDefinition>
                                         <RowDefinition Height="30"></RowDefinition>
+                                        <RowDefinition></RowDefinition>
                                     </Grid.RowDefinitions>
                                     <TextBlock Grid.Column="0" Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Center"
                                            Text="数据源："></TextBlock>
@@ -214,6 +399,16 @@
                                     <TextBlock Name="TxtDataTable" Grid.Column="3" Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Center"></TextBlock>
                                     <TextBlock Name="TxtFieldCount" Grid.Column="1" Grid.Row="1" HorizontalAlignment="Left" VerticalAlignment="Center"></TextBlock>
                                     <TextBlock Name="TxtConditionCount" Grid.Column="3" Grid.Row="1" HorizontalAlignment="Left" VerticalAlignment="Center"></TextBlock>
+                                    <TextBlock Grid.Column="0" Grid.Row="2"
+                                               HorizontalAlignment="Left" VerticalAlignment="Center"
+                                               Text="查询语句："></TextBlock>
+                                    <CheckBox Name="CbEnableEdit" Grid.Column="1" Grid.Row="2" 
+                                              HorizontalAlignment="Left" VerticalAlignment="Center"
+                                              VerticalContentAlignment="Center"
+                                              Content="启用编辑" IsChecked="False"></CheckBox>
+                                    <TextBox Name="TxtSql" Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="4" Margin="3,2"
+                                             HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto"
+                                             TextWrapping="Wrap" IsReadOnly="True"></TextBox>
                                 </Grid>
                             </GroupBox>
                         </Grid>

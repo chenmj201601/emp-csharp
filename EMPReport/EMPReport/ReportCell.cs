@@ -23,6 +23,11 @@ namespace NetInfo.EMP.Reports
     [XmlRoot(Namespace = "http://netinfo.com/emp/reports")]
     public class ReportCell
     {
+        /// <summary>
+        /// 单元格的标识，由行，列号组成，格式为{0:D03}{1:D03}
+        /// </summary>
+        [XmlAttribute]
+        public string Key { get; set; }
         [XmlAttribute]
         public int RowIndex { get; set; }
         [XmlAttribute]
@@ -33,6 +38,18 @@ namespace NetInfo.EMP.Reports
         public int ColSpan { get; set; }
         [XmlAttribute]
         public int Style { get; set; }
+        [XmlAttribute]
+        public string LinkUrl { get; set; }
+        [XmlAttribute]
+        public int ExtDirection { get; set; }
+        [XmlAttribute]
+        public string LeftParent { get; set; }
+        [XmlAttribute]
+        public string TopParent { get; set; }
+        [XmlAttribute]
+        public int FormatType { get; set; }
+        [XmlAttribute]
+        public string FormatString { get; set; }
         [XmlElement]
         public ReportElement Element { get; set; }
     }

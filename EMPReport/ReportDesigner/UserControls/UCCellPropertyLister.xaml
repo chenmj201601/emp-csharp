@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="ReportDesigner.UserControls.UCObjectPropertyLister"
+﻿<UserControl x:Class="ReportDesigner.UserControls.UCCellPropertyLister"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -8,7 +8,7 @@
              BorderThickness="1"
              BorderBrush="Gray"
              d:DesignHeight="300" d:DesignWidth="500" Background="White">
-    
+
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -16,7 +16,7 @@
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>
-    
+
     <Grid>
         <Border Opacity="0.2"></Border>
         <Grid>
@@ -35,21 +35,30 @@
                             <RowDefinition Height="25"></RowDefinition>
                             <RowDefinition></RowDefinition>
                         </Grid.RowDefinitions>
-                        <Border Grid.Row="0" Grid.Column="0" Grid.RowSpan="2">
-                            <Rectangle Margin="5">
+                        <Border Grid.Row="0" Grid.Column="0" Grid.RowSpan="2"
+                                BorderThickness="1" BorderBrush="Gray"  Margin="3">
+                            <Rectangle Margin="2">
                                 <Rectangle.Fill>
                                     <VisualBrush Visual="{Binding}"></VisualBrush>
                                 </Rectangle.Fill>
                             </Rectangle>
                         </Border>
-                        <TextBlock Name="TxtElementType" Grid.Column="1" Grid.Row="0" Style="{DynamicResource TextBlockTitleStyle}"
-                       Text="{Binding StrElementType,RelativeSource={RelativeSource FindAncestor,AncestorType={x:Type local:UCObjectPropertyLister}}}"></TextBlock>
-                        <TextBox Name="TxtElementText" Grid.Column="1" Grid.Row="1" Style="{DynamicResource TextBoxContentStyle}"
-                       Text="{Binding StrElementText,RelativeSource={RelativeSource FindAncestor,AncestorType={x:Type local:UCObjectPropertyLister}}}"
-                                 IsReadOnly="{Binding ElementTextReadOnly,RelativeSource={RelativeSource FindAncestor,AncestorType={x:Type local:UCObjectPropertyLister}}}"></TextBox>
+                        <Grid Grid.Column="1" Grid.Row="0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"></ColumnDefinition>
+                                <ColumnDefinition></ColumnDefinition>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Grid.Column="0" 
+                                       Style="{DynamicResource TextBlockTitleStyle}"
+                                       Text="单元格："></TextBlock>
+                            <TextBlock Grid.Column="1" 
+                                       Style="{DynamicResource TextBlockTitleStyle}"
+                                       Text="{Binding CellName,RelativeSource={RelativeSource FindAncestor,AncestorType={x:Type local:UCCellPropertyLister}}}"></TextBlock>
+                        </Grid>
                     </Grid>
                 </Grid>
             </Border>
+            
             <Grid Grid.Row="1">
                 <ListBox Name="ListBoxPropertyList"
                      Style="{DynamicResource ListBoxPropertyStyle}"
@@ -58,7 +67,7 @@
                         <DataTemplate DataType="{x:Type ListBoxItem}">
                             <Border Style="{DynamicResource BorderPropertyItemStyle}">
                                 <DockPanel LastChildFill="True">
-                                    <Border Width="{Binding NameWidth,RelativeSource={RelativeSource FindAncestor,AncestorType={x:Type local:UCObjectPropertyLister}}}" DockPanel.Dock="Left" Style="{DynamicResource BorderPropertyNameStyle}">
+                                    <Border Width="{Binding NameWidth,RelativeSource={RelativeSource FindAncestor,AncestorType={x:Type local:UCCellPropertyLister}}}" DockPanel.Dock="Left" Style="{DynamicResource BorderPropertyNameStyle}">
                                         <StackPanel Orientation="Horizontal">
                                             <TextBlock Text="{Binding PropertyName}" 
                                            ToolTip="{Binding PropertyName}"
@@ -82,7 +91,9 @@
                     </ListBox.GroupStyle>
                 </ListBox>
             </Grid>
+            
         </Grid>
+      
     </Grid>
-   
+    
 </UserControl>

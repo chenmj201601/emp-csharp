@@ -26,6 +26,24 @@ namespace NetInfo.EMP.Reports.Controls
     /// </summary>
     public class CellBase : ContentControl, IGridCell
     {
+        public static readonly DependencyProperty CellNameProperty =
+            DependencyProperty.Register("CellName", typeof(string), typeof(CellBase), new PropertyMetadata(default(string)));
+
+        public string CellName
+        {
+            get { return (string)GetValue(CellNameProperty); }
+            set { SetValue(CellNameProperty, value); }
+        }
+
+        public static readonly DependencyProperty CellKeyProperty =
+            DependencyProperty.Register("CellKey", typeof(string), typeof(CellBase), new PropertyMetadata(default(string)));
+
+        public string CellKey
+        {
+            get { return (string)GetValue(CellKeyProperty); }
+            set { SetValue(CellKeyProperty, value); }
+        }
+
         public static readonly DependencyProperty RowIndexProperty =
             DependencyProperty.Register("RowIndex", typeof(int), typeof(CellBase), new PropertyMetadata(default(int)));
 

@@ -59,14 +59,19 @@ namespace NetInfo.EMP.Reports.Controls
             OnCellMouse(this, args);
         }
 
+
+        #region SelectedProperty
+
         public static readonly DependencyProperty SelectedProperty =
-            DependencyProperty.Register("Selected", typeof(bool), typeof(GridCell), new PropertyMetadata(default(bool)));
+          DependencyProperty.Register("Selected", typeof(bool), typeof(GridCell), new PropertyMetadata(default(bool)));
 
         public bool Selected
         {
             get { return (bool)GetValue(SelectedProperty); }
             set { SetValue(SelectedProperty, value); }
         }
+
+        #endregion
 
 
         #region HAlign
@@ -100,16 +105,18 @@ namespace NetInfo.EMP.Reports.Controls
         #region TextDecration
 
         public static readonly DependencyProperty TextDecrationProperty =
-            DependencyProperty.Register("TextDecration", typeof (TextDecorationCollection), typeof (GridCell), new PropertyMetadata(default(TextDecorationCollection)));
+            DependencyProperty.Register("TextDecration", typeof(TextDecorationCollection), typeof(GridCell), new PropertyMetadata(default(TextDecorationCollection)));
 
         public TextDecorationCollection TextDecration
         {
-            get { return (TextDecorationCollection) GetValue(TextDecrationProperty); }
+            get { return (TextDecorationCollection)GetValue(TextDecrationProperty); }
             set { SetValue(TextDecrationProperty, value); }
         }
 
         #endregion
 
+
+        #region CellMouseEvent
 
         /// <summary>
         /// 单元格的鼠标事件，可以将鼠标事件报告给网格，其中附带当前单元格信息
@@ -134,11 +141,24 @@ namespace NetInfo.EMP.Reports.Controls
             }
         }
 
+        #endregion
+
+
+        #region ReportCell
+
         public VisualStyle CellStyle { get; set; }
+        public string LinkUrl { get; set; }
+        public int ExtDirection { get; set; }
+        public string LeftParent { get; set; }
+        public string TopParent { get; set; }
+        public int FormatType { get; set; }
+        public string FormatString { get; set; }
         /// <summary>
         /// 附加数据，预定义样式
         /// </summary>
         public object AddedData1 { get; set; }
+
+        #endregion
 
     }
 }

@@ -15,13 +15,13 @@
 //
 //======================================================================
 
-using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Media;
+using NetInfo.EMP.Reports;
 using NetInfo.EMP.Reports.Controls;
 using NetInfo.Wpf.Controls;
 using ReportDesigner.Models;
@@ -38,7 +38,7 @@ namespace ReportDesigner.UserControls
 
         private bool mIsInited;
         private ObjectPropertyInfo mPropertyInfo;
-        private ICellElement mObjectInstance;
+        private object mObjectInstance;
         private ReportDesignPanel mPanel;
 
         private ObservableCollection<PropertyValueEnumItem> mListEnumValueItems =
@@ -116,17 +116,29 @@ namespace ReportDesigner.UserControls
                 case ReportPropertyFactory.PRO_VALIGN:
                     InitEnumVAligns();
                     break;
-                case ReportPropertyFactory.PRO_DATASET:
+                case ReportPropertyFactory.PRO_EXT_DIRECTION:
+                    InitEnumExtDirections();
+                    break;
+                case ReportPropertyFactory.PRO_FORMAT_TYPE:
+                    InitEnumFormatTypes();
+                    break;
+                case ReportPropertyFactory.PRO_SEQUENCE_DATASET:
                     InitEnumDataSets();
                     break;
-                case ReportPropertyFactory.PRO_DATAFIELD:
+                case ReportPropertyFactory.PRO_SEQUENCE_DATAFIELD:
                     InitEnumDataFields();
                     break;
-                case ReportPropertyFactory.PRO_SEQUENCE_EXT_METHOHD:
-                    InitEnumExtMethod();
+                case ReportPropertyFactory.PRO_SEQUENCE_OPT_METHOD:
+                    InitEnumDataOptMethods();
+                    break;
+                case ReportPropertyFactory.PRO_SEQUENCE_GROUP_MODE:
+                    InitEnumGroupModes();
+                    break;
+                case ReportPropertyFactory.PRO_SEQUENCE_COLLECT_MODE:
+                    InitEnumCollectModes();
                     break;
                 case ReportPropertyFactory.PRO_IMAGE_STRETCH:
-                    InitEnumStretchMode();
+                    InitEnumStretchModes();
                     break;
             }
         }
@@ -148,22 +160,22 @@ namespace ReportDesigner.UserControls
         private void InitEnumHAligns()
         {
             PropertyValueEnumItem item = new PropertyValueEnumItem();
-            item.Value = "0";
+            item.Value = ((int)HorizontalAlignment.Left).ToString();
             item.Display = "左对齐";
             item.Description = item.Display;
             mListEnumValueItems.Add(item);
             item = new PropertyValueEnumItem();
-            item.Value = "1";
+            item.Value = ((int)HorizontalAlignment.Center).ToString();
             item.Display = "居中对齐";
             item.Description = item.Display;
             mListEnumValueItems.Add(item);
             item = new PropertyValueEnumItem();
-            item.Value = "2";
+            item.Value = ((int)HorizontalAlignment.Right).ToString();
             item.Display = "右对齐";
             item.Description = item.Display;
             mListEnumValueItems.Add(item);
             item = new PropertyValueEnumItem();
-            item.Value = "3";
+            item.Value = ((int)HorizontalAlignment.Stretch).ToString();
             item.Display = "拉伸";
             item.Description = item.Display;
             mListEnumValueItems.Add(item);
@@ -172,23 +184,61 @@ namespace ReportDesigner.UserControls
         private void InitEnumVAligns()
         {
             PropertyValueEnumItem item = new PropertyValueEnumItem();
-            item.Value = "0";
+            item.Value = ((int)VerticalAlignment.Top).ToString();
             item.Display = "顶对齐";
             item.Description = item.Display;
             mListEnumValueItems.Add(item);
             item = new PropertyValueEnumItem();
-            item.Value = "1";
+            item.Value = ((int)VerticalAlignment.Center).ToString();
             item.Display = "中间对齐";
             item.Description = item.Display;
             mListEnumValueItems.Add(item);
             item = new PropertyValueEnumItem();
-            item.Value = "2";
+            item.Value = ((int)VerticalAlignment.Bottom).ToString();
             item.Display = "底对齐";
             item.Description = item.Display;
             mListEnumValueItems.Add(item);
             item = new PropertyValueEnumItem();
-            item.Value = "3";
+            item.Value = ((int)VerticalAlignment.Stretch).ToString();
             item.Display = "拉伸";
+            item.Description = item.Display;
+            mListEnumValueItems.Add(item);
+        }
+
+        private void InitEnumExtDirections()
+        {
+            PropertyValueEnumItem item = new PropertyValueEnumItem();
+            item.Value = ((int)CellExtDirection.None).ToString();
+            item.Display = "不扩展";
+            item.Description = item.Display;
+            mListEnumValueItems.Add(item);
+            item = new PropertyValueEnumItem();
+            item.Value = ((int)CellExtDirection.Vertical).ToString();
+            item.Display = "纵向扩展";
+            item.Description = item.Display;
+            mListEnumValueItems.Add(item);
+            item = new PropertyValueEnumItem();
+            item.Value = ((int)CellExtDirection.Horizontal).ToString();
+            item.Display = "横向扩展";
+            item.Description = item.Display;
+            mListEnumValueItems.Add(item);
+        }
+
+        private void InitEnumFormatTypes()
+        {
+            PropertyValueEnumItem item = new PropertyValueEnumItem();
+            item.Value = ((int)CellFormatType.None).ToString();
+            item.Display = "常规";
+            item.Description = item.Display;
+            mListEnumValueItems.Add(item);
+            item = new PropertyValueEnumItem();
+            item.Value = ((int)CellFormatType.Numeric).ToString();
+            item.Display = "数值";
+            item.Description = item.Display;
+            mListEnumValueItems.Add(item);
+            item = new PropertyValueEnumItem();
+            item.Value = ((int)CellFormatType.Text).ToString();
+            item.Display = "文本";
             item.Description = item.Display;
             mListEnumValueItems.Add(item);
         }
@@ -232,44 +282,82 @@ namespace ReportDesigner.UserControls
             }
         }
 
-        private void InitEnumExtMethod()
+        private void InitEnumDataOptMethods()
         {
             PropertyValueEnumItem item = new PropertyValueEnumItem();
-            item.Value = "0";
-            item.Display = "不扩展";
+            item.Value = ((int)DataOperationMethod.Group).ToString();
+            item.Display = "分组";
             item.Description = item.Display;
             mListEnumValueItems.Add(item);
             item = new PropertyValueEnumItem();
-            item.Value = "1";
-            item.Display = "纵向扩展";
+            item.Value = ((int)DataOperationMethod.List).ToString();
+            item.Display = "列表";
             item.Description = item.Display;
             mListEnumValueItems.Add(item);
             item = new PropertyValueEnumItem();
-            item.Value = "2";
-            item.Display = "横向扩展";
+            item.Value = ((int)DataOperationMethod.Collect).ToString();
+            item.Display = "汇总";
             item.Description = item.Display;
             mListEnumValueItems.Add(item);
         }
 
-        private void InitEnumStretchMode()
+        private void InitEnumGroupModes()
         {
             PropertyValueEnumItem item = new PropertyValueEnumItem();
-            item.Value = "0";
+            item.Value = ReportSequence.GROUP_MODE_TRADITIONAL.ToString();
+            item.Display = "普通";
+            item.Description = item.Display;
+            mListEnumValueItems.Add(item);
+            item = new PropertyValueEnumItem();
+            item.Value = ReportSequence.GROUP_MODE_ADJACENT_CONTINUE.ToString();
+            item.Display = "相邻连续";
+            item.Description = item.Display;
+            mListEnumValueItems.Add(item);
+        }
+
+        private void InitEnumCollectModes()
+        {
+            PropertyValueEnumItem item = new PropertyValueEnumItem();
+            item.Value = ReportSequence.COLLECT_MODE_SUM.ToString();
+            item.Display = "求和";
+            item.Description = item.Display;
+            mListEnumValueItems.Add(item);
+            item = new PropertyValueEnumItem();
+            item.Value = ReportSequence.COLLECT_MODE_AVG.ToString();
+            item.Display = "平均值";
+            item.Description = item.Display;
+            mListEnumValueItems.Add(item);
+            item = new PropertyValueEnumItem();
+            item.Value = ReportSequence.COLLECT_MODE_MAX.ToString();
+            item.Display = "最大值";
+            item.Description = item.Display;
+            mListEnumValueItems.Add(item);
+            item = new PropertyValueEnumItem();
+            item.Value = ReportSequence.COLLECT_MODE_MIN.ToString();
+            item.Display = "最小值";
+            item.Description = item.Display;
+            mListEnumValueItems.Add(item);
+        }
+
+        private void InitEnumStretchModes()
+        {
+            PropertyValueEnumItem item = new PropertyValueEnumItem();
+            item.Value = ((int)Stretch.None).ToString();
             item.Display = "无";
             item.Description = item.Display;
             mListEnumValueItems.Add(item);
             item = new PropertyValueEnumItem();
-            item.Value = "1";
+            item.Value = ((int)Stretch.Fill).ToString();
             item.Display = "铺满";
             item.Description = item.Display;
             mListEnumValueItems.Add(item);
             item = new PropertyValueEnumItem();
-            item.Value = "2";
+            item.Value = ((int)Stretch.Uniform).ToString();
             item.Display = "保持宽高比";
             item.Description = item.Display;
             mListEnumValueItems.Add(item);
             item = new PropertyValueEnumItem();
-            item.Value = "3";
+            item.Value = ((int)Stretch.UniformToFill).ToString();
             item.Display = "保持宽高比铺满";
             item.Description = item.Display;
             mListEnumValueItems.Add(item);

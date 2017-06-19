@@ -112,10 +112,6 @@ namespace ReportDesigner.Models
                 }
                 cellElement = imageElement;
             }
-            if (cellElement != null)
-            {
-                cellElement.LinkUrl = reportElement.LinkUrl;
-            }
             return cellElement;
         }
 

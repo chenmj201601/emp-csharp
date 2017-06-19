@@ -131,7 +131,6 @@ namespace ReportDesigner.Models
             info.Style = style;
             reportText = new ReportText();
             reportText.Text = "链接";
-            reportText.LinkUrl = "#";
             info.Element = reportText;
             infos.Add(info);
             info = new ComponentInfo();
